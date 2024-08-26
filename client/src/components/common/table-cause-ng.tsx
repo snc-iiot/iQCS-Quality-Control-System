@@ -30,9 +30,6 @@ export const TableCauseNg = () => {
       </div>
 
       <Table>
-        {/* <TableCaption>
-          A list of your recent invoices.
-        </TableCaption> */}
         <TableHeader>
           <TableRow className="whitespace-nowrap">
             <TableHead className="whitespace-nowrap">No.</TableHead>
