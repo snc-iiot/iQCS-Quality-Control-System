@@ -5,3 +5,4 @@ export * from "./defect";
 export * from "./ng";
 export * from "./dashboard";
 export * from "./productivity";
+export * from "./process";

@@ -8,6 +8,7 @@ export * from "./setting-case";
 export * from "./login-page";
 export * from "./part-page";
 export * from "./cause-page";
+export * from "./process-page";
 export * from "./dashboard-page";
 
 export * from "./menu-page";

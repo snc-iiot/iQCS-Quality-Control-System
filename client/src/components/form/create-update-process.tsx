@@ -1,0 +1,134 @@
+import { cn } from "@/lib/utils";
+import { usePart } from "@/services/hooks";
+import { TCreateUpdateProcess } from "@/types";
+import { FC, useEffect, useState } from "react";
+import * as Yup from "yup";
+import { PageHeader } from "../common/page-header";
+import { Required } from "../common/required";
+import { FormField } from "../ui-pattern";
+import { InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
+import { Button } from "../ui/button";
+
+interface CreateUpdateProcessProps {
+  isTitleVisible?: boolean;
+  className?: string;
+  data?: Partial<TCreateUpdateProcess>;
+  onClose?: () => void;
+}
+
+export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const { mutateCreatePart, mutateUpdatePart } = usePart();
+  const [initialValues, setInitialValues] = useState<TCreateUpdateProcess>({
+    process_id: data?.process_id || "",
+    process_name: data?.process_name || "",
+    process_description: data?.process_description || "",
+  });
+
+  // Define a validation schema using Yup
+  const validationSchema = Yup.object().shape({
+    process_name: Yup.string().required("โปรดระบุชื่อ Process"),
+  });
+
+  // Define the submit handler
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    setSubmitting(true);
+    if (data) {
+      const res = await mutateUpdatePart({
+        ...data,
+        ...values,
+      });
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
+    if (!data) {
+      const res = await mutateCreatePart(values);
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (data) {
+      setInitialValues({
+        process_id: data.process_id ?? "",
+        process_name: data.process_name ?? "",
+        process_description: data.process_description ?? "",
+      });
+    }
+  }, [data]);
+
+  return (
+    <div className={cn("relative flex w-full flex-col gap-2", className)}>
+      {isTitleVisible && (
+        <PageHeader
+          title="บันทึกข้อมูล Process"
+          description={
+            <div className="flex flex-col gap-1 text-sm">
+              <p>โปรดกรอกข้อมูลให้ครบถ้วน</p>
+              <div className="flex items-center gap-1">
+                <Required />
+                <span>จำเป็นต้องกรอก</span>
+              </div>
+            </div>
+          }
+          className="sticky top-0 bg-white"
+        />
+      )}
+
+      <FormField
+        id="process-form"
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        initialValues={initialValues}
+      >
+        {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
+          <div className="space-y-5">
+            <InputForm
+              label="Process ID."
+              name="process_id"
+              value={values?.process_id}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.process_id}
+              readOnly
+              hidden={(values?.process_id ?? "") === ""}
+            />
+
+            <InputForm
+              label="Process name"
+              placeholder="โปรดระบุชื่อ Process name"
+              name="process_name"
+              value={values.process_name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.process_name}
+            />
+
+            <TextAreaForm
+              label="Description"
+              placeholder="โปรดระบุรายละเอียด"
+              name="process_description"
+              value={values.process_description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.process_description}
+              labelOptional="(Optional)"
+            />
+            <div className="flex w-full gap-2">
+              <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                บันทึก / Save
+              </Button>
+              <Button variant="secondary" className="w-full" type="reset" onClick={handleReset}>
+                ล้างข้อมูล / Reset
+              </Button>
+            </div>
+          </div>
+        )}
+      </FormField>
+    </div>
+  );
+};

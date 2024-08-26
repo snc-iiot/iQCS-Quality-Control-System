@@ -1,6 +1,15 @@
 import { HomeLayout, RootLayout } from "@/layout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { CausePage, DashboardPage, HistoryPage, HomePage, LoginPage, NotFoundPage, PartPage } from "./pages";
+import {
+  CausePage,
+  DashboardPage,
+  HistoryPage,
+  HomePage,
+  LoginPage,
+  NotFoundPage,
+  PartPage,
+  ProcessPage,
+} from "./pages";
 import LoggingProductivityPage from "./pages/logging-productivity-page";
 import MenuLoggingPage from "./pages/menu-logging-page";
 import MenuSettingPage from "./pages/menu-setting-page";
@@ -26,6 +35,7 @@ const App = () => {
 
             <Route path="/settings">
               <Route index element={<MenuSettingPage />} />
+              <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />
               <Route path="cause" element={<CausePage />} />
             </Route>

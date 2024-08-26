@@ -5,17 +5,24 @@ import MenuPage from "./menu-page";
 const MenuSettingPage: FC = () => {
   const data = [
     {
-      title: "ตั้งค่าสาเหตุการเสีย / Setting Cause",
-      href: "cause",
+      title: "ตั้งค่ากระบวนการผลิต / Process setting",
+      href: "process",
       icon: Settings,
       description: "ตั้งค่าสาเหตุการเสีย",
       disabled: false,
     },
     {
-      title: "ตั้งค่า Part ที่ใช้งาน / Setting Part",
+      title: "ตั้งค่า Part ที่ใช้งาน / Part setting",
       href: "part",
       icon: Settings,
       description: "ตั้งค่า Part ที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข",
+      disabled: false,
+    },
+    {
+      title: "ตั้งค่าสาเหตุการเสีย / Cause setting",
+      href: "cause",
+      icon: Settings,
+      description: "ตั้งค่าสาเหตุการเสีย",
       disabled: false,
     },
   ];
