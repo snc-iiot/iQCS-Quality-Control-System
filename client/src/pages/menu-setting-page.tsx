@@ -32,11 +32,18 @@ const MenuSettingPage: FC = () => {
       description: "ตั้งค่าชื่อ Operator ",
       disabled: false,
     },
+    {
+      title: "ตั้งค่า เครื่องจักร / Machine setting",
+      href: "machine",
+      icon: Settings,
+      description: "เพิ่ม ลบ แก้ไข ชื่อเครื่องจักร",
+      disabled: false,
+    },
   ];
 
   return (
     <div className="container mx-auto flex h-full w-full flex-col overflow-y-auto p-2">
-      <MenuPage {...{ data }} />
+      <MenuPage data={data} />
     </div>
   );
 };

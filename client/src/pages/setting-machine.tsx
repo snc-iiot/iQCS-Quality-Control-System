@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/common/page-header";
-import { CreateUpdateAccount } from "@/components/form";
+import { CreateUpdateMachine } from "@/components/form";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,10 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { FC, useState } from "react";
 
-export const AccountSettingPage: FC = () => {
+export const SettingMachinePage: FC = () => {
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -28,12 +27,12 @@ export const AccountSettingPage: FC = () => {
       key: "no",
     },
     {
-      label: "ชื่อ - นามสกุล / Name - Surname",
-      key: "name",
+      label: "ชื่อเครื่องจักร / Machine name",
+      key: "machine_name",
     },
     {
-      label: "หมายเหตุ / Remark",
-      key: "remark",
+      label: "หมายเลขเครื่องจักร / Machine no.",
+      key: "machine_no",
     },
     {
       label: "Action",
@@ -51,40 +50,39 @@ export const AccountSettingPage: FC = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>เพิ่มชื่อ / Add name</DialogTitle>
-            <DialogDescription>กรุณากรอกชื่อ Operator ที่ต้องการเพิ่ม</DialogDescription>
+            <DialogTitle>เพิ่มเครื่องจักร / Add machine</DialogTitle>
+            <DialogDescription>กรุณากรอกชื่อเครื่องจักร และหมายเลขเครื่องจักรที่ต้องการเพิ่ม</DialogDescription>
           </DialogHeader>
           <div className="mt-2">
-            <CreateUpdateAccount />
+            <CreateUpdateMachine />
           </div>
         </DialogContent>
       </Dialog>
       <main className="flex h-full w-full flex-col gap-2">
-        <PageHeader title="ตั้งค่า Operator name / Operator name setting" description="ตั้งค่าชื่อ Operator " />
+        <PageHeader title="ตั้งค่า เครื่องจักร / Machine setting" description="ตั้งค่าชื่อ Operator " />
         <div className="flex w-full justify-between">
           <Input placeholder="ค้นหา" className="w-1/3" onChange={(e) => setSearch(e.target.value)} value={search} />
-          <Button onClick={() => setIsDialogOpen(true)}>เพิ่มชื่อ / Add name</Button>
+          <Button onClick={() => setIsDialogOpen(true)}>เพิ่มเครื่องจักร / Add machine</Button>
         </div>
         <div>
-          <Table className="relative h-full w-full border-collapse">
-            <TableHeader className="sticky top-0 z-10 bg-secondary">
-              <TableRow className="whitespace-nowrap">
-                {HEADER?.map((header) => (
-                  <TableHead key={header.label} className={cn("whitespace-nowrap")}>
-                    {header.label}
-                  </TableHead>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {HEADER.map((item) => (
+                  <TableHead key={item.key}>{item.label}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {new Array(10).fill(0).map((_, index) => (
-                <TableRow key={index} className="whitespace-nowrap">
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>นาย สมชาย ใจดี</TableCell>
-                  <TableCell>Operator ที่ใช้งานระบบ</TableCell>
+              {[1, 2, 3, 4, 5].map((item) => (
+                <TableRow key={item}>
+                  <TableCell>1</TableCell>
+                  <TableCell>เครื่องจักร 1</TableCell>
+                  <TableCell>123456</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <button className="text-blue-500 hover:underline">Edit</button>
+                      {/* <button className="text-red-500 hover:underline">Delete</button> */}
                       <AlertDialog>
                         <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
                         <AlertDialogContent>

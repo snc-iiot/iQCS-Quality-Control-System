@@ -10,6 +10,7 @@ import {
   NotFoundPage,
   PartPage,
   ProcessPage,
+  SettingMachinePage,
 } from "./pages";
 import LoggingProductivityPage from "./pages/logging-productivity-page";
 import MenuLoggingPage from "./pages/menu-logging-page";
@@ -40,6 +41,7 @@ const App = () => {
               <Route path="part" element={<PartPage />} />
               <Route path="cause" element={<CausePage />} />
               <Route path="account" element={<AccountSettingPage />} />
+              <Route path="machine" element={<SettingMachinePage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

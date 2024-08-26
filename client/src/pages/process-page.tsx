@@ -95,10 +95,11 @@ export const ProcessPage: FC = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
-                              setSelectedProcess(part);
+                              // setSelectedProcess(part);
                               setIsDialogUpdateOpen(true);
                             }}
-                            className="text-blue-500"
+                            className="text-blue-
+                            500"
                           >
                             Edit
                           </button>

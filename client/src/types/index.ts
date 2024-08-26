@@ -6,3 +6,5 @@ export * from "./ng";
 export * from "./dashboard";
 export * from "./productivity";
 export * from "./process";
+export * from "./account";
+export * from "./machine";
