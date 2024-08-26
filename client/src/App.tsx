@@ -1,6 +1,7 @@
 import { HomeLayout, RootLayout } from "@/layout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
+  AccountSettingPage,
   CausePage,
   DashboardPage,
   HistoryPage,
@@ -38,6 +39,7 @@ const App = () => {
               <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />
               <Route path="cause" element={<CausePage />} />
+              <Route path="account" element={<AccountSettingPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

@@ -16,3 +16,4 @@ export * from "./menu-logging-page";
 export * from "./menu-setting-page";
 
 export * from "./logging-productivity-page";
+export * from "./setting-account";

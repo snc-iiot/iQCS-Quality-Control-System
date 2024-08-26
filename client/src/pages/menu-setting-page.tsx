@@ -25,6 +25,13 @@ const MenuSettingPage: FC = () => {
       description: "ตั้งค่าสาเหตุการเสีย",
       disabled: false,
     },
+    {
+      title: "ตั้งค่า Operator name / Operator name setting",
+      href: "account",
+      icon: Settings,
+      description: "ตั้งค่าชื่อ Operator ",
+      disabled: false,
+    },
   ];
 
   return (
