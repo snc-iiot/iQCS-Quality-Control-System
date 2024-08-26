@@ -1,0 +1,199 @@
+[
+  {
+    "service_name": "ศูนย์จองออนไลน์",
+    "sub_service": [
+      {
+        "sub_service_name": "จองรถส่วนกลาง",
+        "sub_service_id": "1"
+      },
+      {
+        "sub_service_name": "จองรถเก๋ง รถตู้",
+        "sub_service_id": "2"
+      },
+      {
+        "sub_service_name": "จองห้องประชุม",
+        "sub_service_id": "3"
+      },
+      {
+        "sub_service_name": "ตู้ล็อคเกอร์",
+        "sub_service_id": "4"
+      },
+      {
+        "sub_service_name": "จองห้องดนตรี",
+        "sub_service_id": "5"
+      },
+      {
+        "sub_service_name": "จองสนามกีฬา",
+        "sub_service_id": "6"
+      }
+    ]
+  },
+  {
+    "service_name": "เว็บไซต์บริการ",
+    "sub_service": [
+      {
+        "sub_service_name": "iPMS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "CoDE Service",
+        "sub_service_id": "8"
+      }
+    ]
+  },
+  {
+    "service_name": "บริการด้าน IT",
+    "sub_service": [
+      {
+        "sub_service_name": "ติดต่อแผนก IT",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "ขอใช้งานอินเทอร์เน็ต",
+        "sub_service_id": "8"
+      }
+    ]
+  },
+  {
+    "service_name": "ขออนุมัติทั่วไป",
+    "sub_service": [
+      {
+        "sub_service_name": "ขออนุมัติบุคคลภายนอก",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "K2",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "ขออนุมัติออกนอกพื้นที่",
+        "sub_service_id": "8"
+      }
+    ]
+  },
+  {
+    "service_name": "แบบฟอร์มฝ่ายบุคคล",
+    "sub_service": [
+      {
+        "sub_service_name": "ยื่นคำร้องเอกสารทั่วไป",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "ขอทำบัตรประจำตัวพนักงาน",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "ระบบลงเวลาทำงาน",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "ระบบจ่ายเงินเดือน",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "ยูนิฟอร์มพนักงาน",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "แบบแจ้งการตั้งครรภ์",
+        "sub_service_id": "8"
+      },
+      {
+        "sub_service_name": "ปฎิทินการทำงาน",
+        "sub_service_id": "8"
+      }
+    ]
+  },
+  {
+    "service_name": "แบบฟอร์มทั่วไป",
+    "sub_service": [
+      {
+        "sub_service_name": "แจ้งซ่อมอาคารสถานที่",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "แจ้งสภาพที่ไม่ปลอดภัย",
+        "sub_service_id": "7"
+      }
+    ]
+  },
+  {
+    "service_name": "ระบบคุณภาพ",
+    "sub_service": [
+      {
+        "sub_service_name": "กิจกรรมการเรียนการสอน",
+        "sub_service_id": "7"
+      }
+    ]
+  },
+  {
+    "service_name": "แผนกจัดซื้อ",
+    "sub_service": [
+      {
+        "sub_service_name": "ระบบขึ้นทะเบียนผู้ขาย",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "ระบบประเมินผู้ขาย",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "ระบบตรวจสอบผู้ขาย",
+        "sub_service_id": "7"
+      }
+    ]
+  },
+  {
+    "service_name": "แผนกพัฒนา",
+    "sub_service": [
+      {
+        "sub_service_name": "iQMS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iPMS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iCCS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iCFO",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "IIoT",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iPSS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iMSS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iCMMS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "PRD",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iWMS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "iDPS",
+        "sub_service_id": "7"
+      },
+      {
+        "sub_service_name": "Node Red",
+        "sub_service_id": "7"
+      }
+    ]
+  }
+]

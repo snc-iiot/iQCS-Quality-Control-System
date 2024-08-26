@@ -1,0 +1,317 @@
+import { PageHeader } from "@/components/common/page-header";
+import { CardProcess } from "@/components/ui-pattern";
+import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Input } from "@/components/ui/input";
+import { PROCESS_LIST } from "@/helpers/common.helper";
+import { useDashboardHelper } from "@/helpers/dashboard.helper";
+import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
+import { cn } from "@/lib/utils";
+import { useDefect } from "@/services/hooks";
+import { useAtomStore } from "@/store";
+import { TGraphSummary } from "@/types";
+import { FC, useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+
+export const DashboardPage: FC = () => {
+  const [selected, setSelected] = useState({
+    type: "daily",
+    start_date: renderFormattedPayloadDate(new Date()) ?? "",
+    end_date: "",
+  });
+
+  const { useGetSummaryDefectsByDateGraph, useGetTopDefects } = useDefect();
+
+  const { graphSummaryList, topDefectList } = useAtomStore();
+  const [shiftSelected, setShiftSelected] = useState<string>("ALL");
+  const { groupProcess, groupDate } = useDashboardHelper(
+    graphSummaryList
+      ?.filter((item) => (shiftSelected == "ALL" ? true : item?.shift === shiftSelected))
+      ?.map((info) => ({ ...info, date: info?.datetime.slice(0, 10) }))
+  );
+
+  const [processSelected, setProcessSelected] = useState<string>("ALL");
+
+  const mapCardProcess = PROCESS_LIST?.map((process) => {
+    const data = groupProcess("process")[process];
+    const total = data?.reduce((acc, curr) => acc + curr?.ng_quantity, 0) ?? 0;
+    const ng = data?.reduce((acc, curr) => acc + curr?.ng_quantity, 0) ?? 0;
+    return {
+      process,
+      total,
+      ng,
+      raw_data: data,
+    };
+  });
+
+  const getDateRange = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const dates = [];
+
+    for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+      const day = String(dt.getDate()).padStart(2, "0");
+      const month = String(dt.getMonth() + 1).padStart(2, "0");
+      const year = dt.getFullYear();
+      dates.push(`${year}-${month}-${day}`);
+    }
+
+    return dates;
+  };
+
+  const defectData = (process: string) => {
+    const dataTimeSlot = groupProcess("time_slot");
+    const dateRange = getDateRange(selected?.start_date, selected?.end_date);
+    const dataGroupDate = groupDate(dateRange);
+
+    if (selected?.type === "daily") {
+      const data = Object.keys(dataTimeSlot)?.map((key) => {
+        return {
+          ...dataTimeSlot[key]
+            ?.filter((item) => (process === "ALL" ? true : item?.process === process))
+            ?.reduce(
+              (acc, curr) => {
+                return {
+                  ...acc,
+                  [curr?.process]: curr?.ng_quantity,
+                };
+              },
+              { time_slot: key }
+            ),
+        };
+      });
+      return data;
+    } else {
+      const data = dateRange?.map((key) => {
+        const { groupProcess } = useDashboardHelper(dataGroupDate[key] as TGraphSummary[]);
+        const dataGroupProcess = groupProcess("process");
+
+        const dataChart = PROCESS_LIST.reduce(
+          (acc, info) => {
+            acc[info] = dataGroupProcess[info]?.reduce((sum, curr) => sum + curr?.ng_quantity, 0) ?? 0;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
+
+        return {
+          time_slot: key,
+          ...dataChart,
+        };
+      });
+
+      return data;
+    }
+  };
+
+  const chartConfig = {
+    desktop: {
+      label: "Desktop",
+      color: "hsl(var(--chart-1))",
+    },
+    mobile: {
+      label: "Mobile",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig;
+
+  // console.log("GET_TIME_SLOTS", GET_TIME_SLOTS(selectedDate));
+
+  const { isLoading: isLoadingSummaryDefectsByDateGraph } = useGetSummaryDefectsByDateGraph(
+    selected?.start_date,
+    selected?.type === "daily" ? selected?.start_date : selected?.end_date
+  );
+  const { isLoading: isLoadingTopDefects } = useGetTopDefects(
+    selected?.start_date,
+    selected?.type === "daily" ? selected?.start_date : selected?.end_date,
+    processSelected,
+    shiftSelected
+  );
+
+  return (
+    <div className="flex h-full w-full flex-col gap-2 overflow-auto p-2 md:overflow-hidden">
+      <div className="flex h-min w-full flex-col items-center gap-1 md:flex-row">
+        <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
+
+        <div className="flex w-full flex-col gap-2 md:w-min md:flex-row">
+          <ul className="flex w-full items-center gap-2 rounded-sm bg-slate-100 p-1 px-2 text-center text-sm font-medium text-gray-500 md:w-min">
+            {["Daily", "Period"]?.map((item, i) => (
+              <li
+                key={i}
+                className="w-full cursor-pointer md:w-min"
+                onClick={() => {
+                  setSelected({
+                    ...selected,
+                    type: item?.toLocaleLowerCase(),
+                    end_date: item === "Period" ? selected?.start_date : "",
+                  });
+                }}
+              >
+                <p
+                  className={`active inline-block w-full rounded-sm ${
+                    selected?.type === item?.toLocaleLowerCase() ? "bg-green-600" : ""
+                  } ${
+                    selected?.type === item?.toLocaleLowerCase()
+                      ? ""
+                      : "bg-white !text-gray-900 hover:bg-gray-200 hover:text-gray-900"
+                  } p-1 text-white md:w-20`}
+                  aria-current="page"
+                >
+                  {item}
+                </p>
+              </li>
+            ))}
+          </ul>
+
+          <Input
+            className="block w-full md:w-[14rem] lg:w-[10rem]"
+            value={selected?.start_date}
+            onChange={(e) => setSelected({ ...selected, start_date: e.target.value })}
+            type="date"
+          />
+
+          <Input
+            className="block w-full md:w-[14rem] lg:w-[10rem]"
+            value={selected?.end_date}
+            onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
+            type="date"
+            disabled={selected?.type !== "period"}
+            min={selected?.start_date}
+          />
+        </div>
+      </div>
+
+      <div className="flex h-max flex-col space-y-2 md:h-full md:overflow-hidden">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-7">
+          {mapCardProcess?.map((process, i) => (
+            <CardProcess
+              key={process?.process}
+              title={process?.process}
+              value={process?.ng}
+              isActive={processSelected === process?.process}
+              onClick={() => {
+                if (processSelected === process?.process) {
+                  setProcessSelected("ALL");
+                }
+                if (processSelected !== process?.process) {
+                  setProcessSelected(process?.process);
+                }
+              }}
+              color={["#EF476F", "#F78C6B", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#C8A8E9"][i]}
+            />
+          ))}
+        </div>
+
+        <div
+          className="grid h-full w-full grid-cols-1 space-y-2 overflow-hidden rounded-md 
+        md:grid-cols-1 md:gap-2 md:space-y-0 lg:grid-cols-3 lg:gap-2"
+        >
+          <div className="flex h-[20rem] w-full flex-col space-y-2 overflow-auto rounded-md border p-2 shadow md:h-full">
+            <div className={cn("w-full")}>
+              <h1 className="text-sm font-semibold">
+                10 สาเหตุที่ทำให้งานเสียมากที่สุด / Top 10 causes that cause the most defects
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                รายการสาเหตุที่ทำให้งานเสียมากที่สุดในวันที่ {selected?.start_date} / Top 10 causes that cause the most
+                defects on {selected?.start_date}
+              </p>
+            </div>
+            {!isLoadingTopDefects ? (
+              <div className="flex w-full flex-1 flex-col overflow-auto pr-2">
+                <div>
+                  {topDefectList?.length === 0 && (
+                    <div className="flex w-full justify-center">
+                      <p className="text-xs">ไม่พบข้อมูล / No data found</p>
+                    </div>
+                  )}
+                  {topDefectList?.map((defect, index) => (
+                    <div
+                      key={`top-defect-detail-${index}`}
+                      className={cn(
+                        "grid w-full grid-cols-2 p-1",
+                        "border-b border-gray-100",
+                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      )}
+                    >
+                      <div className="flex flex-col">
+                        <p className="text-xs font-medium">{defect?.case_name}</p>
+                      </div>
+                      <div className="flex w-full justify-end">
+                        <p className="text-xs">{defect?.ng_quantity}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-full w-full justify-center">
+                <p className="text-xs">กำลังโหลดข้อมูล / Loading data...</p>
+              </div>
+            )}
+          </div>
+
+          <div className="col-span-2 flex h-full w-full flex-col gap-2 rounded-md border p-2 shadow">
+            <div className="flex flex-col gap-2 md:flex-row">
+              <div className={cn("w-full")}>
+                <h1 className="text-sm font-semibold">รายละเอียดของข้อมูลที่มีการบันทึก / Data Details</h1>
+                <p className="text-xs text-muted-foreground">
+                  รายละเอียดของข้อมูลที่มีการบันทึกในระบบ / Details of data that have been recorded in the system
+                </p>
+              </div>
+              <SelectForm
+                value={shiftSelected}
+                className="w-full md:w-[14rem] lg:w-[14rem]"
+                onChange={(e) => setShiftSelected(e.target.value)}
+                options={[
+                  {
+                    label: "ทั้งหมด",
+                    value: "ALL",
+                  },
+                  {
+                    label: "กะเช้า / Day",
+                    value: "DAY",
+                  },
+                  {
+                    label: "กะดึก / Night",
+                    value: "NIGHT",
+                  },
+                ]}
+              />
+            </div>
+            <div className="flex h-[14rem] w-full flex-col md:h-full lg:h-full">
+              {isLoadingSummaryDefectsByDateGraph ? (
+                <>
+                  <div className="flex h-full w-full justify-center">
+                    <p className="text-xs">กำลังโหลดข้อมูล / Loading data...</p>
+                  </div>
+                </>
+              ) : (
+                <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+                  <BarChart accessibilityLayer data={defectData(processSelected)}>
+                    <CartesianGrid vertical={true} />
+                    <YAxis />
+                    <XAxis dataKey="time_slot" tickLine={true} tickMargin={10} axisLine={false} />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
+                    {PROCESS_LIST?.map((process, i) => (
+                      <>
+                        {(processSelected === "ALL" || processSelected === process) && (
+                          <Bar
+                            key={process}
+                            dataKey={process}
+                            fill={["#EF476F", "#F78C6B", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#C8A8E9"][i]}
+                            radius={1}
+                            stackId="ng"
+                          />
+                        )}
+                      </>
+                    ))}
+                  </BarChart>
+                </ChartContainer>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,20 @@
+{
+  "nuxt.isNuxtApp": false,
+  "cSpell.words": [
+    "clsx",
+    "combobox",
+    "datetime",
+    "Formik",
+    "ianvs",
+    "lucide",
+    "shadcn",
+    "Swal",
+    "sweetalert",
+    "tanstack",
+    "webp",
+    "กระบวนการผลิต",
+    "บันทึกข้อมูลของเสีย",
+    "ระบบบันทึกข้อมูลของเสีย",
+    "เลือกกระบวนการผลิต"
+  ]
+}

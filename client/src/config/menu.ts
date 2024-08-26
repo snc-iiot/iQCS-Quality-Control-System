@@ -1,0 +1,43 @@
+export const menuItems = [
+  {
+    title: "แดชบอร์ด",
+    href: "/",
+    icon: "home",
+  },
+  {
+    title: "บันทึกยอด",
+    href: "/logging",
+    icon: "layoutDashboard",
+  },
+  {
+    title: "ประวัติการบันทึก",
+    href: "/history",
+    icon: "history",
+  },
+  {
+    title: "ตั้งค่าระบบ",
+    href: "/settings",
+    icon: "settings",
+  },
+
+  // {
+  //   title: "แชทบอท",
+  //   href: "/chatbot",
+  //   icon: "messageSquare",
+  // },
+  // {
+  //   title: "บริการ",
+  //   href: "/services",
+  //   icon: "combine",
+  // },
+  // {
+  //   title: "การแจ้งเตือน",
+  //   href: "/notifications",
+  //   icon: "bell",
+  // },
+  {
+    title: "ออกจากระบบ",
+    href: "/log-out",
+    icon: "log-out",
+  },
+];
