@@ -24,7 +24,7 @@ import { CacheModule } from '@nestjs/cache-manager';
       port: 5432,
       username: 'Backend-CoDE',
       password: '$nc.C0DE@z0z3',
-      database: 'Toolbox_V1_DEV',
+      database: 'iQCS_V1_DEV',
       // database: 'Toolbox_V1_PRD',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
