@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useAccount } from "@/services/hooks/use-account";
 import { TCreateUpdateAccount } from "@/types";
 import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -14,9 +15,10 @@ interface CreateUpdateAccountProps {
   onClose?: () => void;
 }
 
-export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisible, className, data }) => {
-  //   const { mutateCreateAccount, mutateUpdateAccount } = useAccount();
+export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const { mutateCreateAccount, mutateUpdateAccount } = useAccount();
   const [initialValues, setInitialValues] = useState<TCreateUpdateAccount>({
+    account_id: data?.account_id || "",
     name: data?.name || "",
     remark: data?.remark || "",
   });
@@ -37,28 +39,29 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
   ) => {
     console.log(values);
     setSubmitting(true);
-    // if (data) {
-    //   const res = await mutateUpdateAccount({
-    //     ...data,
-    //     ...values,
-    //   });
-    //   setSubmitting(res?.status == "success" ? false : true);
-    //   if (res?.status == "success") {
-    //     onClose && onClose();
-    //   }
-    // }
-    // if (!data) {
-    //   const res = await mutateCreateAccount(values);
-    //   setSubmitting(res?.status == "success" ? false : true);
-    //   if (res?.status == "success") {
-    //     onClose && onClose();
-    //   }
-    // }
+    if (data) {
+      const res = await mutateUpdateAccount({
+        ...data,
+        ...values,
+      });
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
+    if (!data) {
+      const res = await mutateCreateAccount(values);
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
   };
 
   useEffect(() => {
     if (data) {
       setInitialValues({
+        account_id: data.account_id ?? "",
         name: data.name ?? "",
         remark: data.remark ?? "",
       });

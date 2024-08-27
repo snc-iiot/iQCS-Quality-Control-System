@@ -302,7 +302,7 @@ export const convertToISODateString = (dateString: string | undefined) => {
   if (!dateString) return dateString;
 
   const date = new Date(dateString);
-  return date?.toISOString();
+  return date.toISOString();
 };
 
 /**
@@ -323,7 +323,7 @@ export const convertToEpoch = (dateString: string | undefined) => {
  */
 export const getCurrentDateTimeInISO = () => {
   const date = new Date();
-  return date?.toISOString();
+  return date.toISOString();
 };
 
 /**
@@ -358,4 +358,18 @@ export const convertMinutesToHoursMinutesString = (totalMinutes: number): string
   const { hours, minutes } = convertMinutesToHoursAndMinutes(totalMinutes);
 
   return `${hours ? `${hours}h ` : ``}${minutes ? `${minutes}m ` : ``}`;
+};
+
+// 2024-W33
+export const getStartDateEndDateOfWeek = (week: number, year: number) => {
+  const startDate = new Date(year, 0, 1 + (week - 1) * 7);
+  const endDate = new Date(year, 0, 1 + (week - 1) * 7 + 6);
+
+  return { startDate, endDate };
+};
+
+//return 2024-W33
+export const getWeekString = (date: Date) => {
+  const week = getWeekNumberOfDate(date);
+  return `${date.getFullYear()}-W${week?.toString().padStart(2, "0")}`;
 };

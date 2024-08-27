@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useMachine } from "@/services/hooks/use-machine";
 import { TCreateUpdateMachine } from "@/types";
 import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -14,9 +15,10 @@ interface CreateUpdateMachineProps {
   onClose?: () => void;
 }
 
-export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisible, className, data }) => {
-  //   const { mutateCreateMachine, mutateUpdateMachine } = useMachine();
+export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const { mutateCreateMachine, mutateUpdateMachine } = useMachine();
   const [initialValues, setInitialValues] = useState<TCreateUpdateMachine>({
+    machine_id: data?.machine_id || "",
     machine_name: data?.machine_name || "",
     machine_no: data?.machine_no || "",
     description: data?.description || "",
@@ -37,33 +39,33 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
       setSubmitting: (isSubmitting: boolean) => void;
     }
   ) => {
-    console.log(values);
     setSubmitting(true);
-    // if (data) {
-    //   const res = await mutateUpdateMachine({
-    //     ...data,
-    //     ...values,
-    //   });
-    //   setSubmitting(res?.status == "success" ? false : true);
-    //   if (res?.status == "success") {
-    //     onClose && onClose();
-    //   }
-    // }
-    // if (!data) {
-    //   const res = await mutateCreateMachine(values);
-    //   setSubmitting(res?.status == "success" ? false : true);
-    //   if (res?.status == "success") {
-    //     onClose && onClose();
-    //   }
-    // }
+    if (data) {
+      const res = await mutateUpdateMachine({
+        ...data,
+        ...values,
+      });
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
+    if (!data) {
+      const res = await mutateCreateMachine(values);
+      setSubmitting(res?.status == "success" ? false : true);
+      if (res?.status == "success") {
+        onClose && onClose();
+      }
+    }
   };
 
   useEffect(() => {
     if (data) {
       setInitialValues({
-        machine_name: data.machine_name ?? "",
-        machine_no: data.machine_no ?? "",
-        description: data.description ?? "",
+        machine_id: data?.machine_id ?? "",
+        machine_name: data?.machine_name ?? "",
+        machine_no: data?.machine_no ?? "",
+        description: data?.description ?? "",
       });
     }
   }, [data]);
