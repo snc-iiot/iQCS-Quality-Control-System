@@ -57,11 +57,12 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
     accept: {
       "image/*": [],
     },
+    maxSize: 5242880, // 5MB
     maxFiles: 1,
     onDrop: (files) => {
       const file = files[0];
       base64Helper
-        ?.getBase64(file)
+        ?.getImageBase64(file, 800, 600)
         ?.then((base64) => {
           setInitialValues((prevValues) => ({
             ...prevValues,

@@ -1,4 +1,4 @@
-import { HomeLayout, RootLayout } from "@/layout";
+import { HomeLayout, RootLayout, SettingWrapper } from "@/layout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   AccountSettingPage,
@@ -23,19 +23,15 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
-
             <Route path="/logging">
               <Route index element={<MenuLoggingPage />} />
               <Route path="productivity" element={<LoggingProductivityPage />} />
               <Route path="ng-product" element={<HomePage />} />
             </Route>
-
             <Route path="/history" element={<HistoryPage />} />
-
-            <Route path="/settings">
+            <Route path="/settings" element={<SettingWrapper />}>
               <Route index element={<MenuSettingPage />} />
               <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />
