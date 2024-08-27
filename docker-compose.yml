@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  toolbox-prd-api-v1:
+    # toolbox-dev-api-v1:
+    build: .
+    # container_name: my_nest_app
+    ports:
+      - '30111:3000' # PROD
+      # - '30112:3000' # DEV
+    restart: always

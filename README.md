@@ -1,46 +1,73 @@
-# iQCS: Quality Control System
-**Summary**
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+</p>
 
-Our Quality Control System software is designed to empower manufacturers and production teams with a comprehensive solution to ensure product excellence. This robust software facilitates meticulous tracking of every step in the production process, from raw material inspection to final product delivery. With features like real-time quality inspection, traceability, document management, and corrective action tracking, the system provides an integrated platform to maintain high standards of quality across your entire production line.
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-The intuitive dashboard offers a snapshot of key metrics, enabling quick identification of potential issues and facilitating proactive management. The software’s powerful data analysis tools allow users to generate detailed reports, uncover trends, and make data-driven decisions that drive continuous improvement.
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
----
+## Description
 
-### **Key Features Include:**
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-1. **Settings**
+## Installation
 
-   - **Processes Settings:** Create, edit, and delete processes used in the system.
+```bash
+$ npm install
+```
 
-   - **Part Settings:** Add fields for various processes, set product pricing, and specify customer names.
+## Running the app
 
-   - **Account Settings:** Manage user accounts within the system.
+```bash
+# development
+$ npm run start
 
-   - **Machine Settings:** Create, edit, and delete machine information.
+# watch mode
+$ npm run start:dev
 
-   - **Routing Setting:** Arrange process sequences for traceability and dashboard organization.
+# production mode
+$ npm run start:prod
+```
 
-2. **Logging Results**
+## Test
 
-   - **NG Product:** Filter parts and causes related to different processes, calculate costs for non-conforming products, rework, or scrap, add machine users, and automatically resize images.
+```bash
+# unit tests
+$ npm run test
 
-3. **Notification**
+# e2e tests
+$ npm run test:e2e
 
-   - **Error Alerts:** Notify users through Line Notify when errors or non-conforming products are detected.
+# test coverage
+$ npm run test:cov
+```
 
-4. **Document Management**
+## Support
 
-   - **Quality Document Management:** Upload, download, edit, and search for documents related to quality control, such as certificates and inspection reports.
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-5. **Complaint Management**
+## Stay in touch
 
-   - **Customer Complaint Tracking:** Record and track customer complaints, edit complaint details, filter complaints, and export complaint data for reporting.
+- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-6. **Data Analysis**
+## License
 
-   - **Quality Analysis Reporting:** Create and customize graphs and quality analysis reports, save and export reports, and drill down into data for deeper analysis.
-
----
-
-Designed for ease of use and scalability, our Quality Control System software is an essential tool for companies committed to delivering high-quality products and achieving operational excellence. Whether you're a small business or a large enterprise, our software adapts to your needs, helping you maintain compliance, reduce waste, and enhance customer satisfaction.
+Nest is [MIT licensed](LICENSE).
