@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, Plant } from './entities';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 // import { AuthLoginDto } from './dto/auth-login.dto';
@@ -16,6 +16,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Plant)
+    private readonly plantRepository: Repository<Plant>,
   ) {}
 
   async login(input: LoginDto): Promise<TServiceResponse> {
@@ -141,6 +143,25 @@ export class UsersService {
         statusCode: 201,
         message: 'Password updated successfully',
         data: [updated],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async findAllPlants(): Promise<TServiceResponse> {
+    try {
+      const results = await this.plantRepository.find();
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'All plants',
+        data: results,
       };
     } catch (error) {
       return {

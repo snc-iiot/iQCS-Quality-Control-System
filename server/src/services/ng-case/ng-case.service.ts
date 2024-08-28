@@ -9,7 +9,7 @@ import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
 export class NgCaseService {
   constructor(
     @InjectRepository(NgCases)
-    private readonly NgCaseRepository: Repository<NgCases>,
+    private readonly ngCaseRepository: Repository<NgCases>,
   ) {}
 
   async create(
@@ -23,7 +23,7 @@ export class NgCaseService {
         processes: input.processes,
         plant_code: decoded.plant_code,
       };
-      const created = await this.NgCaseRepository.save(record);
+      const created = await this.ngCaseRepository.save(record);
 
       return {
         status: 'success',
@@ -48,7 +48,7 @@ export class NgCaseService {
         description: input.description ?? '',
         processes: input.processes,
       };
-      const updated = await this.NgCaseRepository.update(
+      const updated = await this.ngCaseRepository.update(
         { case_id: input.case_id },
         record,
       );
@@ -71,7 +71,8 @@ export class NgCaseService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      const results = await this.NgCaseRepository.find({
+      console.log(decoded);
+      const results = await this.ngCaseRepository.find({
         where: {
           plant_code: decoded.plant_code,
         },
@@ -98,7 +99,7 @@ export class NgCaseService {
 
   async findOne(input: FindNgCaseDto): Promise<TServiceResponse> {
     try {
-      const results = await this.NgCaseRepository.find({
+      const results = await this.ngCaseRepository.find({
         where: {
           case_id: input.case_id,
         },
@@ -122,7 +123,7 @@ export class NgCaseService {
 
   async delete(input: FindNgCaseDto): Promise<TServiceResponse> {
     try {
-      const deleted = await this.NgCaseRepository.delete({
+      const deleted = await this.ngCaseRepository.delete({
         case_id: input.case_id,
       });
 

@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'tb_part_material' })
-export class PartManagement {
+export class Part {
   @PrimaryColumn()
   part_id: string;
 

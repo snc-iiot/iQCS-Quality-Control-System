@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PartManagementController } from './part-management.controller';
-import { PartManagementService } from './part-management.service';
+import { PartManagementController } from './parts.controller';
+import { PartManagementService } from './parts.service';
 
 describe('PartManagementController', () => {
   let controller: PartManagementController;

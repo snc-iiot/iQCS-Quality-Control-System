@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class DeleteProductivityDto {
+export class FindMachineDto {
   @IsUUID()
   @IsNotEmpty()
-  prod_log_id: string;
+  machine_id: string;
 }

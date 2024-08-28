@@ -12,8 +12,7 @@ import { UsersModule } from './services/users/users.module';
 import { NgCaseModule } from './services/ng-case/ng-case.module';
 import { JwtMiddleware } from './common/middlewares';
 import { DefectModule } from './services/defects/defects.module';
-import { PartManagementModule } from './services/part-management/part-management.module';
-import { ProductivityModule } from './services/productivity/productivity.module';
+import { PartsModule } from './services/parts/parts.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MachinesModule } from './services/machines/machines.module';
 import { ProcessesModule } from './services/processes/processes.module';
@@ -35,8 +34,7 @@ import { ProcessesModule } from './services/processes/processes.module';
     UsersModule,
     NgCaseModule,
     DefectModule,
-    PartManagementModule,
-    ProductivityModule,
+    PartsModule,
     MachinesModule,
     ProcessesModule,
   ],
@@ -45,14 +43,22 @@ import { ProcessesModule } from './services/processes/processes.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // consumer.apply(JwtMiddleware).forRoutes({
-    //   path: '/auth*',
-    //   method: RequestMethod.ALL,
-    // });
+    consumer
+      .apply(JwtMiddleware)
+      .exclude('/users/login', '/users/gen-pass', '/users/plants')
+      .forRoutes({
+        path: '/users*',
+        method: RequestMethod.ALL,
+      });
 
     consumer.apply(JwtMiddleware).forRoutes({
       path: '/ng-cases*',
-      method: RequestMethod.PATCH,
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/machines*',
+      method: RequestMethod.ALL,
     });
 
     consumer

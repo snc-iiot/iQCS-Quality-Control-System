@@ -40,6 +40,12 @@ export class UsersController {
     return res.status(result.statusCode).json(result);
   }
 
+  @Get('plants')
+  async findAllPlants(@Res() res: Response) {
+    const result = await this.usersService.findAllPlants();
+    return res.status(result.statusCode).json(result);
+  }
+
   // @Post('login-with-employee-id')
   // async loginWithEmployeeId(
   //   @Body() body: LoginWithEmployeeIdDto,
