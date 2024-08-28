@@ -13,6 +13,7 @@ import { NgCaseModule } from './services/ng-case/ng-case.module';
 import { JwtMiddleware } from './common/middlewares';
 import { DefectModule } from './services/defects/defects.module';
 import { PartManagementModule } from './services/part-management/part-management.module';
+import { ProcessManagementModule } from './services/process-management/process-management.module';
 import { ProductivityModule } from './services/productivity/productivity.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
@@ -35,6 +36,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     DefectModule,
     PartManagementModule,
     ProductivityModule,
+    ProcessManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
