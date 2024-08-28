@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Machine } from './entities';
+import { TServiceResponse, TJwtPayload } from 'src/types';
+import { CreateMachineDto, UpdateMachineDto, FindMachineDto } from './dto';
 
 @Injectable()
 export class MachinesService {
@@ -10,8 +12,9 @@ export class MachinesService {
     private readonly machineRepository: Repository<Machine>,
   ) {}
 
+  /*
   async create(
-    input: CreateNgCaseDto,
+    input: CreateMachineDto,
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
@@ -21,12 +24,12 @@ export class MachinesService {
         processes: input.processes,
         plant_code: decoded.plant_code,
       };
-      const created = await this.NgCaseRepository.save(record);
+      const created = await this.machineRepository.save(record);
 
       return {
         status: 'success',
         statusCode: 201,
-        message: 'Ng case created successfully',
+        message: 'Machine created successfully',
         data: [created],
       };
     } catch (error) {
@@ -139,4 +142,5 @@ export class MachinesService {
       };
     }
   }
+    */
 }
