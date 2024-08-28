@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NgCases } from './entities/ng-case.entity';
-import { TServiceResponse } from 'src/types';
+import { TJwtPayload, TServiceResponse } from 'src/types';
 import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
 
 @Injectable()
@@ -12,12 +12,16 @@ export class NgCaseService {
     private readonly NgCaseRepository: Repository<NgCases>,
   ) {}
 
-  async create(input: CreateNgCaseDto): Promise<TServiceResponse> {
+  async create(
+    input: CreateNgCaseDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
       const record = {
         case_name: input.case_name,
         description: input.description ?? '',
         processes: input.processes,
+        plant_code: decoded.plant_code,
       };
       const created = await this.NgCaseRepository.save(record);
 
@@ -45,7 +49,7 @@ export class NgCaseService {
         processes: input.processes,
       };
       const updated = await this.NgCaseRepository.update(
-        { ng_id: input.ng_id },
+        { case_id: input.case_id },
         record,
       );
 
@@ -65,9 +69,12 @@ export class NgCaseService {
     }
   }
 
-  async findAll(): Promise<TServiceResponse> {
+  async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
       const results = await this.NgCaseRepository.find({
+        where: {
+          plant_code: decoded.plant_code,
+        },
         order: {
           created_at: 'DESC',
         },
@@ -93,7 +100,7 @@ export class NgCaseService {
     try {
       const results = await this.NgCaseRepository.find({
         where: {
-          ng_id: input.ng_id,
+          case_id: input.case_id,
         },
       });
 
@@ -115,15 +122,15 @@ export class NgCaseService {
 
   async delete(input: FindNgCaseDto): Promise<TServiceResponse> {
     try {
-      const updated = await this.NgCaseRepository.delete({
-        ng_id: input.ng_id,
+      const deleted = await this.NgCaseRepository.delete({
+        case_id: input.case_id,
       });
 
       return {
         status: 'success',
         statusCode: 200,
         message: 'Ng case deleted successfully',
-        data: [updated],
+        data: [deleted],
       };
     } catch (error) {
       return {

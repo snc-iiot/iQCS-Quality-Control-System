@@ -15,6 +15,8 @@ import { DefectModule } from './services/defects/defects.module';
 import { PartManagementModule } from './services/part-management/part-management.module';
 import { ProductivityModule } from './services/productivity/productivity.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { MachinesModule } from './services/machines/machines.module';
+import { ProcessesModule } from './services/processes/processes.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { CacheModule } from '@nestjs/cache-manager';
     DefectModule,
     PartManagementModule,
     ProductivityModule,
+    MachinesModule,
+    ProcessesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

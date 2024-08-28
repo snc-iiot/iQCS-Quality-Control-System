@@ -18,7 +18,7 @@ type TProcess =
 export class UpdateNgCaseDto {
   @IsUUID()
   @IsNotEmpty()
-  ng_id: string;
+  case_id: string;
 
   @IsString()
   @IsNotEmpty()

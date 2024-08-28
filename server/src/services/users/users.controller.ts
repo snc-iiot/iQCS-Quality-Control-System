@@ -1,8 +1,18 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Query, Get, Body, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Patch,
+  Query,
+  Get,
+  Body,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { LoginDto } from './dto';
-import { Response } from 'express';
+import { LoginDto, ChangePasswordDto } from './dto';
+import { TJwtPayload } from 'src/types';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -11,6 +21,16 @@ export class UsersController {
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response) {
     const result = await this.usersService.login(body);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Patch('change-password')
+  async changePassword(
+    @Body() body: ChangePasswordDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.usersService.changePassword(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 

@@ -9,7 +9,7 @@ import {
 @Entity({ name: 'tb_ng_cases' })
 export class NgCases {
   @PrimaryColumn()
-  ng_id: string;
+  case_id: string;
 
   @Column()
   case_name: string;
@@ -19,6 +19,9 @@ export class NgCases {
 
   @Column({ type: 'jsonb' })
   processes: string[];
+
+  @Column()
+  plant_code: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
