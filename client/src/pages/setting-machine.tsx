@@ -15,9 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useMachine } from "@/services/hooks/use-machine";
 import { FC, useState } from "react";
 
 export const SettingMachinePage: FC = () => {
+  const { mutateDeleteMachine } = useMachine();
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -94,7 +96,13 @@ export const SettingMachinePage: FC = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
-                            <AlertDialogAction>ลบ / Delete</AlertDialogAction>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                await mutateDeleteMachine("1");
+                              }}
+                            >
+                              ลบ / Delete
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

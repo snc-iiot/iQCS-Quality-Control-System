@@ -68,7 +68,6 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
             ...prevValues,
             image: base64,
           }));
-
           setAcceptedFiles([]); // Clear acceptedFiles
         })
         .catch((error) => {

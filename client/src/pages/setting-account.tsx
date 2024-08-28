@@ -16,9 +16,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { useAccount } from "@/services/hooks/use-account";
 import { FC, useState } from "react";
 
 export const AccountSettingPage: FC = () => {
+  const { mutateDeleteAccount } = useAccount();
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -96,7 +98,13 @@ export const AccountSettingPage: FC = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
-                            <AlertDialogAction>ลบ / Delete</AlertDialogAction>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                await mutateDeleteAccount("delete");
+                              }}
+                            >
+                              ลบ / Delete
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

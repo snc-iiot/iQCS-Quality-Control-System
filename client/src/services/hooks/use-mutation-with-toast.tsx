@@ -26,14 +26,14 @@ export const useMutationWithToast = <TData,>(
 
       // Show result Swal
       Swal.fire({
-        title: res.message,
-        icon: res.status,
+        title: res?.message,
+        icon: res?.status,
         timer: 2000,
         showConfirmButton: false,
       });
 
       if (revalidateKey) {
-        queryClient.invalidateQueries({
+        queryClient?.invalidateQueries({
           queryKey: revalidateKey,
         });
       }
