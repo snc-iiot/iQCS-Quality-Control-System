@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProcessManagement } from './entities/process-management.entity';
-import { TJwtPayload, TServiceResponse } from 'src/types';
+import { TServiceResponse } from 'src/types';
 import { CreateProcessDto } from './dto/create-process.dto';
+import { UpdateProcessDto } from './dto/update-process.dto';
 
 @Injectable()
 export class ProcessManagementService {
@@ -62,6 +63,35 @@ export class ProcessManagementService {
         statusCode: 200,
         message: 'Process created successfully',
         data: [created],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async update(input: UpdateProcessDto): Promise<TServiceResponse> {
+    try {
+      const record = {
+        process_name: input.process_name,
+        process_description: input.process_description ?? '',
+        process_color: input.process_color,
+      };
+
+      const updated = await this.processManagementRepository.update(
+        { process_name: input.process_name },
+        record,
+      );
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Process updated successfully',
+        data: [updated],
       };
     } catch (error) {
       return {
