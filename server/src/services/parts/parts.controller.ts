@@ -8,41 +8,41 @@ import {
   Get,
   Res,
 } from '@nestjs/common';
-import { PartManagementService } from './part-management.service';
+import { PartsService } from './parts.service';
 import { Response } from 'express';
 import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
 
-@Controller('part-management')
-export class PartManagementController {
-  constructor(private readonly partManagementService: PartManagementService) {}
+@Controller('parts')
+export class PartsController {
+  constructor(private readonly partService: PartsService) {}
 
   @Post()
   async create(@Body() body: CreatePartDto, @Res() res: Response) {
-    const result = await this.partManagementService.create(body);
+    const result = await this.partService.create(body);
     return res.status(result.statusCode).json(result);
   }
 
   @Put()
   async update(@Body() body: UpdatePartDto, @Res() res: Response) {
-    const result = await this.partManagementService.update(body);
+    const result = await this.partService.update(body);
     return res.status(result.statusCode).json(result);
   }
 
   @Get()
   async findAll(@Res() res: Response) {
-    const result = await this.partManagementService.findAll();
+    const result = await this.partService.findAll();
     return res.status(result.statusCode).json(result);
   }
 
   @Get('part-info')
   async findOne(@Query() query: FindPartDto, @Res() res: Response) {
-    const result = await this.partManagementService.findOne(query);
+    const result = await this.partService.findOne(query);
     return res.status(result.statusCode).json(result);
   }
 
   @Delete()
   async delete(@Query() query: FindPartDto, @Res() res: Response) {
-    const result = await this.partManagementService.delete(query);
+    const result = await this.partService.delete(query);
     return res.status(result.statusCode).json(result);
   }
 }

@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DefectsLogging } from './entities';
-import { PartManagement } from 'src/services/part-management/entities';
+import { Part } from 'src/services/parts/entities';
 import { TServiceResponse } from 'src/types';
 import {
   CreateDefectsDto,
@@ -22,9 +22,9 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 export class DefectService {
   constructor(
     @InjectRepository(DefectsLogging)
-    private readonly DefectsLoggingRepository: Repository<DefectsLogging>,
-    @InjectRepository(PartManagement)
-    private readonly PartManagementRepository: Repository<PartManagement>,
+    private readonly defectsLoggingRepository: Repository<DefectsLogging>,
+    @InjectRepository(Part)
+    private readonly partRepository: Repository<Part>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -44,7 +44,7 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      const checkPartExists = await this.PartManagementRepository.findOne({
+      const checkPartExists = await this.partRepository.findOne({
         where: { part_code: input.part_code },
       });
 
@@ -89,7 +89,7 @@ export class DefectService {
       }
       // */
 
-      const created = await this.DefectsLoggingRepository.save(record);
+      const created = await this.defectsLoggingRepository.save(record);
 
       return {
         status: 'success',
@@ -130,9 +130,8 @@ export class DefectService {
       // const datetime = new Date(input.datetime);
       // if (process.platform === 'win32')
       // datetime.setHours(datetime.getHours() - 7);
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: input.start_datetime,
           end_datetime: input.end_datetime,
@@ -186,9 +185,8 @@ export class DefectService {
     input: FindByDatetimeRangeDto,
   ): Promise<TServiceResponse> {
     try {
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: input.start_datetime,
           end_datetime: input.end_datetime,
@@ -271,9 +269,8 @@ export class DefectService {
       //   ],
       // };
       // /*
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -392,9 +389,8 @@ export class DefectService {
       //   ],
       // };
       // /*
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -538,9 +534,8 @@ export class DefectService {
       // };
       // /*
 
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -708,9 +703,8 @@ export class DefectService {
       const filterProcess =
         input.process === 'ALL' ? processes : [input.process];
 
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.process in (:...process)', { process: filterProcess })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
@@ -783,9 +777,8 @@ export class DefectService {
             ? allShiftNight
             : [...allShiftDay, ...allShiftNight];
 
-      const results = await this.DefectsLoggingRepository.createQueryBuilder(
-        't1',
-      )
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
         .where('t1.process in (:...process)', { process: filterProcess })
         .andWhere('t1.datetime in (:...datetime)', { datetime: filterShift })
         // .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -822,7 +815,7 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      const checkPartExists = await this.PartManagementRepository.findOne({
+      const checkPartExists = await this.partRepository.findOne({
         where: { part_code: input.part_code },
       });
 
@@ -873,7 +866,7 @@ export class DefectService {
       // */
 
       if (record.image === null && input.image != 'DELETE') delete record.image;
-      const updated = await this.DefectsLoggingRepository.update(
+      const updated = await this.defectsLoggingRepository.update(
         { defects_log_id: input.defects_log_id },
         record,
       );
@@ -911,7 +904,7 @@ export class DefectService {
       }
         */
 
-      const deleted = await this.DefectsLoggingRepository.delete({
+      const deleted = await this.defectsLoggingRepository.delete({
         defects_log_id: input.defects_log_id,
       });
 

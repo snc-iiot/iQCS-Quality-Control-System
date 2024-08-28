@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NgCases } from './entities/ng-case.entity';
-import { TJwtPayload, TServiceResponse } from 'src/types';
-import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
+import { Machine } from './entities';
 
 @Injectable()
-export class NgCaseService {
+export class MachinesService {
   constructor(
-    @InjectRepository(NgCases)
-    private readonly ngCaseRepository: Repository<NgCases>,
+    @InjectRepository(Machine)
+    private readonly machineRepository: Repository<Machine>,
   ) {}
 
   async create(
@@ -23,7 +21,7 @@ export class NgCaseService {
         processes: input.processes,
         plant_code: decoded.plant_code,
       };
-      const created = await this.ngCaseRepository.save(record);
+      const created = await this.NgCaseRepository.save(record);
 
       return {
         status: 'success',
@@ -48,7 +46,7 @@ export class NgCaseService {
         description: input.description ?? '',
         processes: input.processes,
       };
-      const updated = await this.ngCaseRepository.update(
+      const updated = await this.NgCaseRepository.update(
         { case_id: input.case_id },
         record,
       );
@@ -71,8 +69,7 @@ export class NgCaseService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      console.log(decoded);
-      const results = await this.ngCaseRepository.find({
+      const results = await this.NgCaseRepository.find({
         where: {
           plant_code: decoded.plant_code,
         },
@@ -99,7 +96,7 @@ export class NgCaseService {
 
   async findOne(input: FindNgCaseDto): Promise<TServiceResponse> {
     try {
-      const results = await this.ngCaseRepository.find({
+      const results = await this.NgCaseRepository.find({
         where: {
           case_id: input.case_id,
         },
@@ -123,7 +120,7 @@ export class NgCaseService {
 
   async delete(input: FindNgCaseDto): Promise<TServiceResponse> {
     try {
-      const deleted = await this.ngCaseRepository.delete({
+      const deleted = await this.NgCaseRepository.delete({
         case_id: input.case_id,
       });
 

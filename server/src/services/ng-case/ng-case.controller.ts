@@ -6,25 +6,34 @@ import {
   Delete,
   Body,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { NgCaseService } from './ng-case.service';
-import { query, Response } from 'express';
 import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
+import { TJwtPayload } from 'src/types';
 
 @Controller('ng-cases')
 export class NgCaseController {
   constructor(private readonly ngCaseService: NgCaseService) {}
 
   @Post()
-  async create(@Body() body: CreateNgCaseDto, @Res() res: Response) {
-    const result = await this.ngCaseService.create(body);
+  async create(
+    @Body() body: CreateNgCaseDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.ngCaseService.create(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.ngCaseService.findAll();
+  async findAll(
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.ngCaseService.findAll(req.decoded);
     return res.status(result.statusCode).json(result);
   }
 

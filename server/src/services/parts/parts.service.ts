@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PartManagement } from './entities/part-meterial.entity';
+import { Part } from './entities/part-meterial.entity';
 import { TServiceResponse } from 'src/types';
 import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
 
 @Injectable()
-export class PartManagementService {
+export class PartsService {
   constructor(
-    @InjectRepository(PartManagement)
-    private readonly PartManagementRepository: Repository<PartManagement>,
+    @InjectRepository(Part)
+    private readonly partRepository: Repository<Part>,
   ) {}
 
   async create(input: CreatePartDto): Promise<TServiceResponse> {
     try {
-      const partExists = await this.PartManagementRepository.find({
+      const partExists = await this.partRepository.find({
         where: { part_code: input.part_code },
         take: 1,
       });
@@ -32,7 +32,7 @@ export class PartManagementService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
       };
-      const created = await this.PartManagementRepository.save(record);
+      const created = await this.partRepository.save(record);
 
       return {
         status: 'success',
@@ -56,7 +56,7 @@ export class PartManagementService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
       };
-      const updated = await this.PartManagementRepository.update(
+      const updated = await this.partRepository.update(
         { part_code: input.part_code },
         record,
       );
@@ -79,7 +79,7 @@ export class PartManagementService {
 
   async findAll(): Promise<TServiceResponse> {
     try {
-      const results = await this.PartManagementRepository.find({
+      const results = await this.partRepository.find({
         order: { created_at: 'DESC' },
         select: [
           'part_code',
@@ -108,7 +108,7 @@ export class PartManagementService {
 
   async findOne(input: FindPartDto): Promise<TServiceResponse> {
     try {
-      const results = await this.PartManagementRepository.find({
+      const results = await this.partRepository.find({
         where: { part_code: input.part_code },
         take: 1,
         order: { created_at: 'DESC' },
@@ -139,7 +139,7 @@ export class PartManagementService {
 
   async delete(input: FindPartDto): Promise<TServiceResponse> {
     try {
-      const deleted = await this.PartManagementRepository.delete({
+      const deleted = await this.partRepository.delete({
         part_code: input.part_code,
       });
 

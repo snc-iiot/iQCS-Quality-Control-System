@@ -6,19 +6,22 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'tb_ng_cases' })
-export class NgCases {
+@Entity({ name: 'tb_machines' })
+export class Machine {
   @PrimaryColumn()
-  case_id: string;
+  machine_id: string;
 
   @Column()
-  case_name: string;
+  machine_no: string;
+
+  @Column()
+  machine_name: string;
 
   @Column()
   description: string;
 
-  @Column({ type: 'jsonb' })
-  processes: string[];
+  @Column()
+  location: string;
 
   @Column()
   plant_code: string;
