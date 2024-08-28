@@ -37,7 +37,7 @@ export class NgCaseController {
     return res.status(result.statusCode).json(result);
   }
 
-  @Get('ng-info')
+  @Get('info')
   async findOne(@Query() query: FindNgCaseDto, @Res() res: Response) {
     const result = await this.ngCaseService.findOne(query);
     return res.status(result.statusCode).json(result);
