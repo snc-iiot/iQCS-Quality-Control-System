@@ -2,24 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProcessManagement } from './entities/process-management.entity';
-import { TServiceResponse } from 'src/types';
+import { User } from '../users/entities/user.entity';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { UpdateProcessDto } from './dto/update-process.dto';
+import { TServiceResponse } from 'src/types';
 
 @Injectable()
 export class ProcessManagementService {
   constructor(
     @InjectRepository(ProcessManagement)
     private readonly processManagementRepository: Repository<ProcessManagement>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(
     input: CreateProcessDto,
-    // decoded: TJwtPayload,
     userId: string,
   ): Promise<TServiceResponse> {
     try {
-      // Check if process_name already exists
       const processExists = await this.processManagementRepository.findOne({
         where: { process_name: input.process_name },
       });
@@ -33,13 +34,11 @@ export class ProcessManagementService {
         };
       }
 
-      // Get plant_code from tb_users table using query builder
-      const user = await this.processManagementRepository.query(
-        `SELECT plant_code FROM tb_users WHERE user_id = $1 LIMIT 1`,
-        [userId],
-      );
+      const user = await this.userRepository.findOne({
+        where: { user_id: userId },
+      });
 
-      if (!user.length) {
+      if (!user) {
         return {
           status: 'error',
           statusCode: 404,
@@ -53,7 +52,7 @@ export class ProcessManagementService {
         process_description: input.process_description ?? '',
         process_color: input.process_color,
         process_order: 1,
-        plant_code: user[0].plant_code,
+        plant_code: user.plant_code, // plant_code from user
       });
 
       const created = await this.processManagementRepository.save(record);
@@ -63,35 +62,6 @@ export class ProcessManagementService {
         statusCode: 200,
         message: 'Process created successfully',
         data: [created],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async update(input: UpdateProcessDto): Promise<TServiceResponse> {
-    try {
-      const record = {
-        process_name: input.process_name,
-        process_description: input.process_description ?? '',
-        process_color: input.process_color,
-      };
-
-      const updated = await this.processManagementRepository.update(
-        { process_name: input.process_name },
-        record,
-      );
-
-      return {
-        status: 'success',
-        statusCode: 200,
-        message: 'Process updated successfully',
-        data: [updated],
       };
     } catch (error) {
       return {

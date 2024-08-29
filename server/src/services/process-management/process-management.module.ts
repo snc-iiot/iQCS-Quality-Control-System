@@ -1,13 +1,14 @@
-// src/services/process-management/process-management.module.ts
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProcessManagementService } from './process-management.service';
 import { ProcessManagementController } from './process-management.controller';
 import { ProcessManagement } from './entities/process-management.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from '../users/users.module'; // Import UsersModule
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProcessManagement]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([ProcessManagement, User]), // Include User entity
+  ],
   controllers: [ProcessManagementController],
   providers: [ProcessManagementService],
 })

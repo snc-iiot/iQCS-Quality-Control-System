@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Req, Put } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { ProcessManagementService } from './process-management.service';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { ExtendedRequest } from './interfaces/extended-request.interface';
-import { UpdateProcessDto } from './dto/update-process.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('process-management')
 export class ProcessManagementController {
@@ -10,16 +10,11 @@ export class ProcessManagementController {
     private readonly processManagementService: ProcessManagementService,
   ) {}
 
+  @UseGuards(JwtAuthGuard) // Assuming you have JWT authentication
   @Post('create')
-  async create(@Body() body: CreateProcessDto, @Req() req: ExtendedRequest) {
-    const userId = req.user.userId;
+  async create(@Body() body: CreateProcessDto, @Req() req: Request) {
+    const userId = req.user['userId']; // Adjust this according to your JWT payload
     const result = await this.processManagementService.create(body, userId);
-    return result;
-  }
-
-  @Put('update')
-  async update(@Body() body: UpdateProcessDto) {
-    const result = await this.processManagementService.update(body);
     return result;
   }
 }
