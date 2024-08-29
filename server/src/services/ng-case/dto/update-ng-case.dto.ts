@@ -6,15 +6,6 @@ import {
   IsUUID,
 } from 'class-validator';
 
-type TProcess =
-  | 'CUTTING'
-  | 'BENDING'
-  | 'PRESS'
-  | 'SPOT'
-  | 'PAINTING'
-  | 'PRE-ASSEMBLY'
-  | 'ASSEMBLY';
-
 export class UpdateNgCaseDto {
   @IsUUID()
   @IsNotEmpty()
@@ -26,7 +17,7 @@ export class UpdateNgCaseDto {
 
   @IsArray()
   @ArrayMinSize(1)
-  processes: TProcess[];
+  processes: string[];
 
   description: string;
 }

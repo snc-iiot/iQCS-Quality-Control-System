@@ -12,16 +12,16 @@ export class MachinesService {
     private readonly machineRepository: Repository<Machine>,
   ) {}
 
-  /*
   async create(
     input: CreateMachineDto,
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       const record = {
-        case_name: input.case_name,
+        machine_no: input.machine_no ?? '',
+        machine_name: input.machine_name,
         description: input.description ?? '',
-        processes: input.processes,
+        location: input.location,
         plant_code: decoded.plant_code,
       };
       const created = await this.machineRepository.save(record);
@@ -42,22 +42,23 @@ export class MachinesService {
     }
   }
 
-  async update(input: UpdateNgCaseDto): Promise<TServiceResponse> {
+  async update(input: UpdateMachineDto): Promise<TServiceResponse> {
     try {
       const record = {
-        case_name: input.case_name,
+        machine_no: input.machine_no ?? '',
+        machine_name: input.machine_name,
         description: input.description ?? '',
-        processes: input.processes,
+        location: input.location ?? '',
       };
-      const updated = await this.NgCaseRepository.update(
-        { case_id: input.case_id },
+      const updated = await this.machineRepository.update(
+        { machine_id: input.machine_id },
         record,
       );
 
       return {
         status: 'success',
         statusCode: 201,
-        message: 'Ng case updated successfully',
+        message: 'Machine updated successfully',
         data: [updated],
       };
     } catch (error) {
@@ -72,7 +73,7 @@ export class MachinesService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      const results = await this.NgCaseRepository.find({
+      const results = await this.machineRepository.find({
         where: {
           plant_code: decoded.plant_code,
         },
@@ -84,7 +85,7 @@ export class MachinesService {
       return {
         status: 'success',
         statusCode: 200,
-        message: 'All Ng cases',
+        message: 'All Machines',
         data: results,
       };
     } catch (error) {
@@ -97,18 +98,18 @@ export class MachinesService {
     }
   }
 
-  async findOne(input: FindNgCaseDto): Promise<TServiceResponse> {
+  async findOne(input: FindMachineDto): Promise<TServiceResponse> {
     try {
-      const results = await this.NgCaseRepository.find({
+      const results = await this.machineRepository.find({
         where: {
-          case_id: input.case_id,
+          machine_id: input.machine_id,
         },
       });
 
       return {
         status: 'success',
         statusCode: 200,
-        message: 'Get NG case',
+        message: 'Get Machine',
         data: results,
       };
     } catch (error) {
@@ -121,16 +122,16 @@ export class MachinesService {
     }
   }
 
-  async delete(input: FindNgCaseDto): Promise<TServiceResponse> {
+  async delete(input: FindMachineDto): Promise<TServiceResponse> {
     try {
-      const deleted = await this.NgCaseRepository.delete({
-        case_id: input.case_id,
+      const deleted = await this.machineRepository.delete({
+        machine_id: input.machine_id,
       });
 
       return {
         status: 'success',
         statusCode: 200,
-        message: 'Ng case deleted successfully',
+        message: 'Machine deleted successfully',
         data: [deleted],
       };
     } catch (error) {
@@ -142,5 +143,4 @@ export class MachinesService {
       };
     }
   }
-    */
 }

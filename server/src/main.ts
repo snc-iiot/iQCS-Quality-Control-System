@@ -12,7 +12,7 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(new ValidationPipe());
-  const server = await app.listen(3002);
+  const server = await app.listen(3000);
   server.setTimeout(300000); // 5 minutes
 }
 bootstrap();

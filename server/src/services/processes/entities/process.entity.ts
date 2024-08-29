@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'tb_processes' })
-export class ProcessManagement {
+export class Process {
   @PrimaryColumn()
   process_id: string;
 
