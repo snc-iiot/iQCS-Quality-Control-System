@@ -6,7 +6,7 @@ Our Quality Control System software is designed to empower manufacturers and pro
 The intuitive dashboard offers a snapshot of key metrics, enabling quick identification of potential issues and facilitating proactive management. The software’s powerful data analysis tools allow users to generate detailed reports, uncover trends, and make data-driven decisions that drive continuous improvement.
 
 ---
-
+ 
 ### **Key Features Include:**
 
 1. **Settings**
