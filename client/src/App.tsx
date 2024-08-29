@@ -27,9 +27,11 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
+
             <Route path="/logging">
               <Route index element={<HomePage />} />
             </Route>
+
             <Route path="/history" element={<HistoryPage />} />
 
             <Route path="/management">
@@ -38,7 +40,7 @@ const App = () => {
               <Route path="complaint" element={<PartPage />} />
             </Route>
 
-            <Route path="/settings">
+            <Route path="/settings" element={<SettingWrapper />}>
               <Route index element={<MenuSettingPage />} />
               <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />

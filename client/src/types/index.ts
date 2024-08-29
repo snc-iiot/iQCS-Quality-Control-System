@@ -9,3 +9,6 @@ export * from "./process";
 export * from "./account";
 export * from "./machine";
 export * from "./document";
+export * from "./document";
+export * from "./account";
+export * from "./machine";

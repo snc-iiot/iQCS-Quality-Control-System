@@ -104,7 +104,6 @@ export const ProcessPage: FC = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
-                              // setSelectedProcess(part);
                               setSelectedProcess(process);
                               setIsDialogUpdateOpen(true);
                             }}
