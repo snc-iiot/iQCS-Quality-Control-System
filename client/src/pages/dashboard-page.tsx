@@ -4,7 +4,7 @@ import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Input } from "@/components/ui/input";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
-import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
+import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
@@ -134,7 +134,7 @@ export const DashboardPage: FC = () => {
         <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
 
         <div className="flex w-full flex-col gap-2 md:w-min md:flex-row">
-          <ul className="flex w-full items-center gap-2 rounded-sm bg-slate-100 p-1 px-2 text-center text-sm font-medium text-gray-500 md:w-min">
+          {/* <ul className="flex w-full items-center gap-2 rounded-sm bg-slate-100 p-1 px-2 text-center text-sm font-medium text-gray-500 md:w-min">
             {["Daily", "Period"]?.map((item, i) => (
               <li
                 key={i}
@@ -161,23 +161,89 @@ export const DashboardPage: FC = () => {
                 </p>
               </li>
             ))}
-          </ul>
-
-          <Input
-            className="block w-full md:w-[14rem] lg:w-[10rem]"
-            value={selected?.start_date}
-            onChange={(e) => setSelected({ ...selected, start_date: e.target.value })}
-            type="date"
+          </ul> */}
+          <SelectForm
+            value={selected?.type}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "week") {
+                const [year, week] = getWeekString(new Date(selected?.start_date)).split("-W");
+                const YEAR = parseInt(year);
+                const WEEK = parseInt(week);
+                const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
+                setSelected({
+                  ...selected,
+                  type: e.target.value,
+                  start_date: renderFormattedPayloadDate(new Date(start_date)) ?? "",
+                  end_date: renderFormattedPayloadDate(new Date(end_date)) ?? "",
+                });
+              } else if (value == "period") {
+                setSelected({
+                  ...selected,
+                  type: e.target.value,
+                  end_date: selected?.start_date,
+                });
+              } else {
+                setSelected({
+                  ...selected,
+                  type: e.target.value,
+                });
+              }
+            }}
+            options={[
+              {
+                label: "รายวัน / Daily",
+                value: "daily",
+              },
+              {
+                label: "ระยะเวลา / Period",
+                value: "period",
+              },
+              {
+                label: "สัปดาห์ / Week",
+                value: "week",
+              },
+            ]}
+            className="w-[10rem]"
           />
+          {selected?.type === "week" && (
+            <Input
+              onChange={(e) => {
+                const value = e.target.value;
+                const [year, week] = value.split("-W");
+                const YEAR = parseInt(year);
+                const WEEK = parseInt(week);
+                const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
+                setSelected({
+                  ...selected,
+                  start_date: renderFormattedPayloadDate(new Date(start_date)) ?? "",
+                  end_date: renderFormattedPayloadDate(new Date(end_date)) ?? "",
+                });
+              }}
+              value={getWeekString(new Date(selected?.start_date))}
+              className="block w-full md:w-[14rem] lg:w-[10rem]"
+              type="week"
+            />
+          )}
+          {selected?.type !== "week" && (
+            <>
+              <Input
+                className="block w-full md:w-[14rem] lg:w-[10rem]"
+                value={selected?.start_date}
+                onChange={(e) => setSelected({ ...selected, start_date: e.target.value })}
+                type="date"
+              />
 
-          <Input
-            className="block w-full md:w-[14rem] lg:w-[10rem]"
-            value={selected?.end_date}
-            onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
-            type="date"
-            disabled={selected?.type !== "period"}
-            min={selected?.start_date}
-          />
+              <Input
+                className="block w-full md:w-[14rem] lg:w-[10rem]"
+                value={selected?.end_date}
+                onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
+                type="date"
+                disabled={selected?.type !== "period"}
+                min={selected?.start_date}
+              />
+            </>
+          )}
         </div>
       </div>
 

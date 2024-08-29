@@ -107,7 +107,8 @@ export const ProcessPage: FC = () => {
                               setSelectedProcess(process);
                               setIsDialogUpdateOpen(true);
                             }}
-                            className="text-blue-500"
+                            className="text-blue-
+                            500"
                           >
                             Edit
                           </button>

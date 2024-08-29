@@ -38,6 +38,20 @@ const MenuSettingPage: FC = () => {
       description: "ตั้งค่าสาเหตุการเสีย",
       disabled: false,
     },
+    {
+      title: "ตั้งค่า Operator name / Operator name setting",
+      href: "account",
+      icon: Settings,
+      description: "ตั้งค่าชื่อ Operator ",
+      disabled: false,
+    },
+    {
+      title: "ตั้งค่า เครื่องจักร / Machine setting",
+      href: "machine",
+      icon: Settings,
+      description: "เพิ่ม ลบ แก้ไข ชื่อเครื่องจักร",
+      disabled: false,
+    },
   ];
 
   return (

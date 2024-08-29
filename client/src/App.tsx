@@ -1,6 +1,7 @@
-import { HomeLayout, RootLayout } from "@/layout";
+import { HomeLayout, RootLayout, SettingWrapper } from "@/layout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
+  AccountSettingPage,
   CausePage,
   DashboardPage,
   HistoryPage,
@@ -9,6 +10,7 @@ import {
   NotFoundPage,
   PartPage,
   ProcessPage,
+  SettingMachinePage,
 } from "./pages";
 import DocumentManagementPage from "./pages/document-management-page";
 import LoggingProductivityPage from "./pages/logging-productivity-page";
@@ -23,7 +25,6 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
 
@@ -41,11 +42,13 @@ const App = () => {
               <Route path="complaint" element={<PartPage />} />
             </Route>
 
-            <Route path="/settings">
+            <Route path="/settings" element={<SettingWrapper />}>
               <Route index element={<MenuSettingPage />} />
               <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />
               <Route path="cause" element={<CausePage />} />
+              <Route path="account" element={<AccountSettingPage />} />
+              <Route path="machine" element={<SettingMachinePage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

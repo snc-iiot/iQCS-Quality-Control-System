@@ -7,3 +7,5 @@ export * from "./dashboard";
 export * from "./productivity";
 export * from "./process";
 export * from "./document";
+export * from "./account";
+export * from "./machine";
