@@ -16,6 +16,8 @@ import { PartsModule } from './services/parts/parts.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MachinesModule } from './services/machines/machines.module';
 import { ProcessesModule } from './services/processes/processes.module';
+import { OperatorsModule } from './services/operators/operators.module';
+import { DocumentsModule } from './services/documents/documents.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { ProcessesModule } from './services/processes/processes.module';
     PartsModule,
     MachinesModule,
     ProcessesModule,
+    OperatorsModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -66,6 +70,21 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/operators*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/parts*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/documents*',
+      method: RequestMethod.ALL,
+    });
+
     consumer
       .apply(JwtMiddleware)
       .exclude(
@@ -81,10 +100,5 @@ export class AppModule implements NestModule {
         path: '/defects-logging*',
         method: RequestMethod.ALL,
       });
-
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: '/parts*',
-      method: RequestMethod.ALL,
-    });
   }
 }
