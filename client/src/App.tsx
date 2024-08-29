@@ -12,8 +12,6 @@ import {
   ProcessPage,
   SettingMachinePage,
 } from "./pages";
-import LoggingProductivityPage from "./pages/logging-productivity-page";
-import MenuLoggingPage from "./pages/menu-logging-page";
 import MenuSettingPage from "./pages/menu-setting-page";
 
 const App = () => {
@@ -26,9 +24,7 @@ const App = () => {
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="/logging">
-              <Route index element={<MenuLoggingPage />} />
-              <Route path="productivity" element={<LoggingProductivityPage />} />
-              <Route path="ng-product" element={<HomePage />} />
+              <Route index element={<HomePage />} />
             </Route>
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/settings" element={<SettingWrapper />}>

@@ -1,8 +1,10 @@
 import { API_BASE_URL } from "@/helpers/common.helper";
 import { TCreateUpdateMachine, TMachine, TResponse } from "@/types";
 import { APIService } from "./api.service";
+import { useAtomStore } from "@/store";
 
 export class MachineService extends APIService {
+  atomStore = useAtomStore();
   constructor() {
     super(API_BASE_URL);
   }
@@ -10,6 +12,7 @@ export class MachineService extends APIService {
   public getMachines = async (): Promise<TMachine[]> => {
     try {
       const { data } = await this.get<TResponse<TMachine[]>>(`/machines`);
+      this.atomStore.setMachineList(data?.data ?? []);
       return data?.data ?? [];
     } catch (error) {
       console.error(error);

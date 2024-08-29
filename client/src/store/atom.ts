@@ -7,6 +7,7 @@ import {
   TProductivity,
   TProductivitySummary,
   TTopDefect,
+  TMachine
 } from "@/types";
 import { atom } from "jotai";
 
@@ -19,3 +20,5 @@ export const topDefectAtom = atom<TTopDefect[]>([]);
 
 export const productivityAtom = atom<TProductivity[]>([]);
 export const productivitySummaryAtom = atom<TProductivitySummary[]>([]);
+
+export const machineAtom = atom<TMachine[]>([]);

@@ -5,13 +5,6 @@ import MenuPage from "./menu-page";
 const MenuLoggingPage: FC = () => {
   const data = [
     {
-      title: "ยอดการผลิต / Productivity",
-      href: "productivity",
-      icon: ClipboardPenLine,
-      description: "บันทึกยอดการผลิตในแต่ล่ะช่วงเวลา",
-      disabled: false,
-    },
-    {
       title: "ยอดงาน NG / NG product",
       href: "ng-product",
       icon: ClipboardPenLine,
@@ -22,7 +15,7 @@ const MenuLoggingPage: FC = () => {
 
   return (
     <div className="container mx-auto flex h-full w-full flex-col overflow-y-auto p-2">
-      <MenuPage {...{ data }} />
+      <MenuPage data={data} />
     </div>
   );
 };

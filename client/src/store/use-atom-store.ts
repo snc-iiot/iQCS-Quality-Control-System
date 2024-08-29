@@ -8,6 +8,7 @@ import {
   productivityAtom,
   productivitySummaryAtom,
   topDefectAtom,
+  machineAtom
 } from "./atom";
 
 export const useAtomStore = () => {
@@ -21,6 +22,8 @@ export const useAtomStore = () => {
 
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
   const [productivitySummaryList, setProductivitySummaryList] = useAtom(productivitySummaryAtom);
+
+  const [machineList, setMachineList] = useAtom(machineAtom);
 
   return {
     partList,
@@ -39,5 +42,7 @@ export const useAtomStore = () => {
     setProductivityList,
     productivitySummaryList,
     setProductivitySummaryList,
+    machineList,
+    setMachineList,
   };
 };

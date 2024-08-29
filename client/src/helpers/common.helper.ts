@@ -1,6 +1,6 @@
-// export const API_BASE_URL = "http://10.1.9.133:3000/api";
+export const API_BASE_URL = "http://10.1.8.175:3000/api";
 
-export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/toolbox/prd/v1";
+// export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/toolbox/dev/v1";
 
 export const PROCESS_LIST = ["CUTTING", "BENDING", "PRESS", "SPOT", "PAINTING", "PRE-ASSEMBLY", "ASSEMBLY"];
 

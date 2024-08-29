@@ -20,6 +20,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
   const [initialValues, setInitialValues] = useState<TCreateUpdateAccount>({
     account_id: data?.account_id || "",
     name: data?.name || "",
+    responsbility: data?.responsbility || "",
     remark: data?.remark || "",
   });
 
@@ -37,7 +38,6 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
       setSubmitting: (isSubmitting: boolean) => void;
     }
   ) => {
-    console.log(values);
     setSubmitting(true);
     if (data) {
       const res = await mutateUpdateAccount({
@@ -61,9 +61,10 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
   useEffect(() => {
     if (data) {
       setInitialValues({
-        account_id: data.account_id ?? "",
-        name: data.name ?? "",
-        remark: data.remark ?? "",
+        account_id: data?.account_id ?? "",
+        name: data?.name ?? "",
+        responsbility: data?.responsbility ?? "",
+        remark: data?.remark ?? "",
       });
     }
   }, [data]);
@@ -88,6 +89,17 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.name}
+              required
+            />
+            <InputForm
+              id="responsbility"
+              name="responsbility"
+              label="ตำแหน่ง / Position"
+              placeholder="ระบุตำแหน่ง"
+              value={values.responsbility}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.responsbility}
               required
             />
             <TextAreaForm
