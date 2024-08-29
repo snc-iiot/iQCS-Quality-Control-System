@@ -6,25 +6,35 @@ import {
   Query,
   Body,
   Get,
+  Req,
   Res,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
+import { TJwtPayload } from 'src/types';
 
 @Controller('parts')
 export class PartsController {
   constructor(private readonly partService: PartsService) {}
 
   @Post()
-  async create(@Body() body: CreatePartDto, @Res() res: Response) {
-    const result = await this.partService.create(body);
+  async create(
+    @Body() body: CreatePartDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.partService.create(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
   @Put()
-  async update(@Body() body: UpdatePartDto, @Res() res: Response) {
-    const result = await this.partService.update(body);
+  async update(
+    @Body() body: UpdatePartDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.partService.update(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
@@ -34,7 +44,7 @@ export class PartsController {
     return res.status(result.statusCode).json(result);
   }
 
-  @Get('part-info')
+  @Get('info')
   async findOne(@Query() query: FindPartDto, @Res() res: Response) {
     const result = await this.partService.findOne(query);
     return res.status(result.statusCode).json(result);

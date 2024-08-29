@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NgCases } from './entities/ng-case.entity';
+import { NgCases } from './entities';
 import { TJwtPayload, TServiceResponse } from 'src/types';
 import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
 

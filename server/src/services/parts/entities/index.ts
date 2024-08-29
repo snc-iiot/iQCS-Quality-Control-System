@@ -1,1 +1,1 @@
-export * from './part-meterial.entity';
+export * from './part.entity';

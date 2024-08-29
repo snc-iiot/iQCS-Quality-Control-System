@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Part } from './entities/part-meterial.entity';
-import { TServiceResponse } from 'src/types';
+import { Repository, Not } from 'typeorm';
+import { Part } from './entities';
+import { TServiceResponse, TJwtPayload } from 'src/types';
 import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
 
 @Injectable()
@@ -12,10 +12,20 @@ export class PartsService {
     private readonly partRepository: Repository<Part>,
   ) {}
 
-  async create(input: CreatePartDto): Promise<TServiceResponse> {
+  async create(
+    input: CreatePartDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    // return {
+    //   status: 'success',
+    //   statusCode: 200,
+    //   message: 'Demo0',
+    //   data: [{ input, decoded }],
+    // };
     try {
+      //! Block duplicate part code
       const partExists = await this.partRepository.find({
-        where: { part_code: input.part_code },
+        where: { part_code: input.part_code, plant_code: decoded.plant_code },
         take: 1,
       });
 
@@ -28,10 +38,20 @@ export class PartsService {
         };
 
       const record = {
+        sap_code: input.sap_code,
         part_code: input.part_code,
         part_name: input.part_name,
         part_description: input.part_description ?? '',
+        processes: input.processes,
+        plant_code: decoded.plant_code,
       };
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo1',
+      //   data: [{ record }],
+      // };
       const created = await this.partRepository.save(record);
 
       return {
@@ -50,14 +70,38 @@ export class PartsService {
     }
   }
 
-  async update(input: UpdatePartDto): Promise<TServiceResponse> {
+  async update(
+    input: UpdatePartDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
+      //! Block duplicate part code
+      const partExists = await this.partRepository.find({
+        where: {
+          part_code: input.part_code,
+          plant_code: decoded.plant_code,
+          part_id: Not(input.part_id),
+        },
+        take: 1,
+      });
+
+      if (partExists.length > 0)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Part already exists',
+          data: [],
+        };
+
       const record = {
+        sap_code: input.sap_code,
+        part_code: input.part_code,
         part_name: input.part_name,
         part_description: input.part_description ?? '',
+        processes: input.processes,
       };
       const updated = await this.partRepository.update(
-        { part_code: input.part_code },
+        { part_id: input.part_id },
         record,
       );
 
@@ -81,13 +125,16 @@ export class PartsService {
     try {
       const results = await this.partRepository.find({
         order: { created_at: 'DESC' },
-        select: [
-          'part_code',
-          'part_name',
-          'part_description',
-          'created_at',
-          'updated_at',
-        ],
+        // select: [
+        //   'sap_code',
+        //   'part_code',
+        //   'part_name',
+        //   'part_description',
+        //   'plant_code',
+        //   'plant_code',
+        //   'created_at',
+        //   'updated_at',
+        // ],
       });
 
       return {
@@ -109,16 +156,16 @@ export class PartsService {
   async findOne(input: FindPartDto): Promise<TServiceResponse> {
     try {
       const results = await this.partRepository.find({
-        where: { part_code: input.part_code },
+        where: { part_id: input.part_id },
         take: 1,
         order: { created_at: 'DESC' },
-        select: [
-          'part_code',
-          'part_name',
-          'part_description',
-          'created_at',
-          'updated_at',
-        ],
+        // select: [
+        //   'part_code',
+        //   'part_name',
+        //   'part_description',
+        //   'created_at',
+        //   'updated_at',
+        // ],
       });
 
       return {
@@ -140,7 +187,7 @@ export class PartsService {
   async delete(input: FindPartDto): Promise<TServiceResponse> {
     try {
       const deleted = await this.partRepository.delete({
-        part_code: input.part_code,
+        part_id: input.part_id,
       });
 
       return {

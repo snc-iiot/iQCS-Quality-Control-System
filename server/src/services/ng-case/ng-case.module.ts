@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NgCases } from './entities/ng-case.entity';
+import { NgCases } from './entities';
 import { NgCaseService } from './ng-case.service';
 import { NgCaseController } from './ng-case.controller';
 
