@@ -8,3 +8,4 @@ export * from "./productivity";
 export * from "./process";
 export * from "./account";
 export * from "./machine";
+export * from "./document";

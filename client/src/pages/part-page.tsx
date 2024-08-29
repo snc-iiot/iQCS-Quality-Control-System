@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdatePart } from "@/components/form";
+import { CheckboxForm } from "@/components/ui-pattern/form-field/check-box-form";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
@@ -23,8 +25,10 @@ import { FC, useState } from "react";
 
 const HEADER = [
   "No.",
+  "Process.",
   "Part No.",
   "Part Name",
+  "Part Price",
   "Part Description",
   "Created Date",
   "Updated Date",
@@ -33,10 +37,11 @@ const HEADER = [
 ];
 
 export const PartPage: FC = () => {
-  const { partList } = useAtomStore();
+  const { partList, processList } = useAtomStore();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
+  const [fields, setFields] = useState<{ [key: string]: string[] }>({});
 
   const [selectedPart, setSelectedPart] = useState<TPart | null>(null);
 
@@ -44,8 +49,10 @@ export const PartPage: FC = () => {
 
   const filteredPart = partList?.filter(
     (part) =>
-      part?.part_code?.toLowerCase().includes(search.toLowerCase()) ||
-      part?.part_name?.toLowerCase().includes(search.toLowerCase())
+      (part?.part_code?.toLowerCase().includes(search.toLowerCase()) ||
+        part?.part_name?.toLowerCase().includes(search.toLowerCase()) ||
+        part?.part_price?.toLowerCase().includes(search.toLowerCase())) &&
+      (fields?.process?.includes(part?.process_name) || fields?.process?.length === 0)
   );
 
   const { mutateDeletePart } = usePart();
@@ -53,14 +60,40 @@ export const PartPage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        <PageHeader
-          title="ตั้งค่า Part ที่ใช้งาน / Setting Part"
-          description="ตั้งค่า Part ที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข"
-        />
-        <div className="flex w-full justify-between">
-          <Input placeholder="ค้นหา" className="w-1/3" onChange={(e) => setSearch(e.target.value)} value={search} />
-          <Button onClick={() => setIsDialogOpen(true)}>Add Part</Button>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <PageHeader
+            title="ตั้งค่า Part ที่ใช้งาน / Setting Part"
+            description="ตั้งค่า Part ที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข"
+          />
+          <div className="flex w-full justify-end gap-2">
+            <Input
+              placeholder="ค้นหา"
+              className="w-full md:w-1/4"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+            />
+            <Dropdown
+              label="Field"
+              content={
+                <div className="px-2">
+                  <CheckboxForm
+                    label="Process name"
+                    value={fields?.process}
+                    onChange={(e) => setFields({ ...fields, process: e })}
+                    options={processList?.map(({ process_name }) => ({
+                      label: process_name,
+                      value: process_name,
+                    }))}
+                  />
+                </div>
+              }
+            />
+            <Button className="whitespace-nowrap" onClick={() => setIsDialogOpen(true)}>
+              Add Part
+            </Button>
+          </div>
         </div>
+
         <div className="flex h-full w-full flex-col overflow-y-auto rounded-md border">
           <div className="flex h-full flex-col">
             <div className="flex h-0 grow flex-col">
@@ -85,8 +118,10 @@ export const PartPage: FC = () => {
                   {filteredPart?.map((part, index) => (
                     <TableRow className="whitespace-nowrap" key={index}>
                       <TableCell>{index + 1}</TableCell>
+                      <TableCell>{part?.process_name ?? "TEST"}</TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
+                      <TableCell>{part?.part_price ?? "100"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>

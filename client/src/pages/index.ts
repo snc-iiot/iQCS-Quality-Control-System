@@ -10,9 +10,11 @@ export * from "./part-page";
 export * from "./cause-page";
 export * from "./process-page";
 export * from "./dashboard-page";
+export * from "./document-management-page";
 
 export * from "./menu-page";
 export * from "./menu-logging-page";
+export * from "./menu-management-page";
 export * from "./menu-setting-page";
 
 export * from "./logging-productivity-page";

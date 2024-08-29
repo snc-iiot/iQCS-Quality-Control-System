@@ -23,7 +23,7 @@ import { TNGCause } from "@/types";
 import { FC, useMemo, useState } from "react";
 
 export const CausePage: FC = () => {
-  const { ngCauseList } = useAtomStore();
+  const { ngCauseList, processList } = useAtomStore();
   const [search, setSearch] = useState<string>("");
   const { mutateDeleteNGCause } = useNGCause();
 
@@ -69,7 +69,10 @@ export const CausePage: FC = () => {
       })
       ?.map((ngCause) => ({
         ...ngCause,
-        processes: ngCause.processes?.join(", ") || "-",
+        processes:
+          ngCause.processes
+            ?.map((info) => processList?.find((item) => item?.process_id === info)?.process_name)
+            ?.join(", ") || "-",
         description: ngCause.description || "-",
         created_at: renderFormattedDateWithTime(new Date(ngCause.created_at)),
         updated_at: renderFormattedDateWithTime(new Date(ngCause.updated_at)),
@@ -99,7 +102,7 @@ export const CausePage: FC = () => {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={async () => {
-                      await mutateDeleteNGCause(ngCause?.ng_id);
+                      await mutateDeleteNGCause(ngCause?.case_id);
                     }}
                   >
                     Continue
@@ -115,14 +118,21 @@ export const CausePage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        <PageHeader title="ตั้งค่าสาเหตุการเสีย / Cause settings" description="เพิ่ม แก้ไข ลบ สาเหตุการเสีย" />
-        <div className="flex h-full flex-col gap-2">
-          <div className="flex w-full items-center justify-between">
-            <Input placeholder="Search" className="w-1/3" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Button className="w-max" onClick={() => setIsOpenCreateUpdateDialog(true)}>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <PageHeader title="ตั้งค่าสาเหตุการเสีย / Cause settings" description="เพิ่ม แก้ไข ลบ สาเหตุการเสีย" />
+          <div className="flex w-full justify-end gap-2">
+            <Input
+              placeholder="ค้นหา"
+              className="w-full md:w-1/4"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button className="whitespace-nowrap" onClick={() => setIsOpenCreateUpdateDialog(true)}>
               Add Cause
             </Button>
           </div>
+        </div>
+        <div className="flex h-full flex-col gap-2">
           <div className="flex h-0 w-full flex-grow flex-col overflow-y-auto rounded-md border">
             <Table className="relative h-full w-full border-collapse">
               <TableHeader className="sticky top-0 z-10 bg-secondary">
@@ -141,7 +151,7 @@ export const CausePage: FC = () => {
                   </TableRow>
                 )}
                 {ngCauseMapped?.map((defect) => (
-                  <TableRow className="whitespace-nowrap" key={defect?.ng_id}>
+                  <TableRow className="whitespace-nowrap" key={defect?.case_id}>
                     {HEADER.map((header) => (
                       <TableCell className={cn("whitespace-nowrap")} key={header.label}>
                         {typeof defect?.[header?.key as keyof TNGCause] === "function" && defect
@@ -173,7 +183,7 @@ export const CausePage: FC = () => {
           </DialogHeader>
           <CreateUpdateCause
             data={{
-              ng_id: selectedNGCause?.ng_id,
+              case_id: selectedNGCause?.case_id,
               case_name: selectedNGCause?.case_name,
               description: selectedNGCause?.description,
               processes: selectedNGCause?.processes,

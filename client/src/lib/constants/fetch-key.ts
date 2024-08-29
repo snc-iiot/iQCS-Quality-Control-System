@@ -1,7 +1,21 @@
+export const CHANGE_PASSWORD = "CHANGE_PASSWORD";
+
+export const GET_PLANTS = "GET_PLANTS";
+
 export const GET_PARTS = "GET_PARTS";
 export const CREATE_PART = "CREATE_PART";
 export const UPDATE_PART = "UPDATE_PART";
 export const DELETE_PART = "DELETE_PART";
+
+export const GET_DOCUMENTS = "GET_DOCUMENTS";
+export const CREATE_DOCUMENT = "CREATE_DOCUMENT";
+export const UPDATE_DOCUMENT = "UPDATE_DOCUMENT";
+export const DELETE_DOCUMENT = "DELETE_DOCUMENT";
+
+export const GET_PROCESS = "GET_PROCESS";
+export const CREATE_PROCESS = "CREATE_PROCESS";
+export const UPDATE_PROCESS = "UPDATE_PROCESS";
+export const DELETE_PROCESS = "DELETE_PROCESS";
 
 export const GET_NG_CAUSES = "GET_NG_CAUSES";
 export const CREATE_NG_CAUSE = "CREATE_NG_CAUSE";

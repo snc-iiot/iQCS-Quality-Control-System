@@ -16,14 +16,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
-import { usePart } from "@/services/hooks";
+import { useProcess } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TProcess } from "@/types";
 import { FC, useState } from "react";
 
 const HEADER = [
   "No.",
-  "Process ID.",
+  "Process Color",
   "Process Name",
   "Process Description",
   "Created Date",
@@ -33,7 +33,7 @@ const HEADER = [
 ];
 
 export const ProcessPage: FC = () => {
-  const { partList } = useAtomStore();
+  const { processList } = useAtomStore();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
@@ -42,24 +42,31 @@ export const ProcessPage: FC = () => {
 
   const [search, setSearch] = useState<string>("");
 
-  const filteredPart = partList?.filter(
-    (part) =>
-      part?.part_code?.toLowerCase().includes(search.toLowerCase()) ||
-      part?.part_name?.toLowerCase().includes(search.toLowerCase())
+  const filteredProcess = processList?.filter(
+    (process) => process?.process_name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const { mutateDeletePart } = usePart();
+  const { mutateDeleteProcess } = useProcess();
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        <PageHeader
-          title="ตั้งค่ากระบวนการผลิต / Process setting"
-          description="ตั้งค่ากระบวนการผลิต และ สามารถเพิ่ม ลบ แก้ไข"
-        />
-        <div className="flex w-full justify-between">
-          <Input placeholder="ค้นหา" className="w-1/3" onChange={(e) => setSearch(e.target.value)} value={search} />
-          <Button onClick={() => setIsDialogOpen(true)}>Add Process</Button>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <PageHeader
+            title="ตั้งค่ากระบวนการผลิต / Process setting"
+            description="ตั้งค่ากระบวนการผลิต และ สามารถเพิ่ม ลบ แก้ไข"
+          />
+          <div className="flex w-full justify-end gap-2">
+            <Input
+              placeholder="ค้นหา"
+              className="w-full md:w-1/4"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+            />
+            <Button className="whitespace-nowrap" onClick={() => setIsDialogOpen(true)}>
+              Add Process
+            </Button>
+          </div>
         </div>
         <div className="flex h-full w-full flex-col overflow-y-auto rounded-md border">
           <div className="flex h-full flex-col">
@@ -75,27 +82,30 @@ export const ProcessPage: FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPart?.length == 0 && (
+                  {filteredProcess?.length == 0 && (
                     <TableRow>
                       <TableCell className="text-center" colSpan={HEADER.length}>
                         No data variable
                       </TableCell>
                     </TableRow>
                   )}
-                  {filteredPart?.map((part, index) => (
+                  {filteredProcess?.map((process, index) => (
                     <TableRow className="whitespace-nowrap" key={index}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{part?.part_code}</TableCell>
-                      <TableCell>{part?.part_name}</TableCell>
-                      <TableCell>{part?.part_description || "-"}</TableCell>
-                      <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
-                      <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>
+                      <TableCell>
+                        <div className="h-6 w-6 rounded-full" style={{ backgroundColor: process?.process_color }} />
+                      </TableCell>
+                      <TableCell>{process?.process_name}</TableCell>
+                      <TableCell>{process?.process_description || "-"}</TableCell>
+                      <TableCell>{renderFormattedDateWithTime(new Date(process?.created_at))}</TableCell>
+                      <TableCell>{renderFormattedDateWithTime(new Date(process?.updated_at))}</TableCell>
                       <TableCell>User Name</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
                               // setSelectedProcess(part);
+                              setSelectedProcess(process);
                               setIsDialogUpdateOpen(true);
                             }}
                             className="text-blue-
@@ -116,7 +126,7 @@ export const ProcessPage: FC = () => {
                                 <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={async () => {
-                                    const res = await mutateDeletePart(part?.part_code);
+                                    const res = await mutateDeleteProcess(process?.process_id);
                                     console.log(res);
                                   }}
                                 >

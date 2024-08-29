@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { usePart } from "@/services/hooks";
+import { useAtomStore } from "@/store";
 import { TCreateUpdatePart } from "@/types";
 import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -7,6 +8,7 @@ import { PageHeader } from "../common/page-header";
 import { Required } from "../common/required";
 import { FormField } from "../ui-pattern";
 import { InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
+import { SelectForm } from "../ui-pattern/form-field/select-form";
 import { Button } from "../ui/button";
 
 interface CreateUpdatePartProps {
@@ -17,17 +19,24 @@ interface CreateUpdatePartProps {
 }
 
 export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const { processList } = useAtomStore();
   const { mutateCreatePart, mutateUpdatePart } = usePart();
   const [initialValues, setInitialValues] = useState<TCreateUpdatePart>({
+    process_id: data?.process_id || "",
     part_code: data?.part_code || "",
     part_name: data?.part_name || "",
+    part_price: data?.part_price || 0,
     part_description: data?.part_description || "",
   });
 
+  const dataProcessList = processList?.map((info) => ({ label: info?.process_name, value: info?.process_name }));
+
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
+    process_id: Yup.string().required("โปรดเลือกกระบวนการผลิต"),
     part_code: Yup.string().required("โปรดระบุ Part No."),
     part_name: Yup.string().required("โปรดระบุชื่อ Part"),
+    part_price: Yup.number().required("โปรดระบุ Price"),
   });
 
   // Define the submit handler
@@ -55,8 +64,10 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
   useEffect(() => {
     if (data) {
       setInitialValues({
+        process_id: data.process_id ?? "",
         part_code: data.part_code ?? "",
         part_name: data.part_name ?? "",
+        part_price: data.part_price ?? 0,
         part_description: data.part_description ?? "",
       });
     }
@@ -79,6 +90,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
           className="sticky top-0 bg-white"
         />
       )}
+
       <FormField
         id="part-form"
         validationSchema={validationSchema}
@@ -87,6 +99,14 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
           <div className="space-y-5">
+            <SelectForm
+              value={values?.process_id}
+              label="กระบวนการผลิต / Process"
+              placeholder="เลือกกระบวนการผลิต"
+              required
+              options={dataProcessList}
+            />
+
             <InputForm
               label="Part No."
               name="part_code"
@@ -104,6 +124,16 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.part_name}
+            />
+            <InputForm
+              label="Part price"
+              placeholder="โปรดระบุ Price"
+              name="part_price"
+              type="number"
+              value={values.part_price}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.part_price}
             />
             <TextAreaForm
               label="Description"

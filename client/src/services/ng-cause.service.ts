@@ -52,7 +52,7 @@ export class NGCauseService extends APIService {
 
   public deleteNGCause = async (id: string): Promise<TResponse<unknown>> => {
     try {
-      const { data } = await this.delete<TResponse<unknown>>(`/ng-cases?ng_id=${id}`);
+      const { data } = await this.delete<TResponse<unknown>>(`/ng-cases?case_id=${id}`);
       return data;
     } catch (error) {
       console.error(error);

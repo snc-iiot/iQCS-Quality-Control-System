@@ -15,7 +15,12 @@ export const menuItems = [
     icon: "history",
   },
   {
-    title: "ตั้งค่าระบบ",
+    title: "การจัดการ",
+    href: "/management",
+    icon: "folder",
+  },
+  {
+    title: "ตั้งค่า",
     href: "/settings",
     icon: "settings",
   },

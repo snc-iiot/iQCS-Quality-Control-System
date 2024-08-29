@@ -22,7 +22,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { GET_TIME_SLOTS, getTimeSlotByDateTimestamp } from "@/helpers";
-import { PROCESS_LIST } from "@/helpers/common.helper";
+import { groupByField } from "@/helpers/array.helper";
 import {
   renderFormattedDate,
   renderFormattedDateWithTime,
@@ -38,7 +38,7 @@ import { FC, useMemo, useState } from "react";
 export const HistoryPage: FC = () => {
   const { useGetRawDefects, mutateDeleteDefect } = useDefect();
 
-  const { defectList } = useAtomStore();
+  const { defectList, productivityList, processList } = useAtomStore();
   const [isOpenDefectDetail, setIsOpenDefectDetail] = useState<boolean>(false);
   const [isOpenDefectEdit, setIsOpenDefectEdit] = useState<boolean>(false);
   const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
@@ -253,8 +253,489 @@ export const HistoryPage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        <PageHeader title="ประวัติการบันทึก / History" description="รายการประวัติการบันทึก / History list" />
-        <Tabs defaultValue="raw-data" className="flex h-full flex-col">
+        {/* <PageHeader
+          title="ประวัติการบันทึก / History"
+          description="รายการประวัติการบันทึก / History list"
+        /> */}
+        <Tabs defaultValue="summary" className="flex h-full flex-col">
+          <TabsList className="max-w-max">
+            <TabsTrigger value="summary">ประวัติการบันทึกยอดการผลิต / History</TabsTrigger>
+            <TabsTrigger value="raw-data">ประวัติการบันทึก / History</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="summary" className="h-full">
+            <div className="flex h-full flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <SelectForm
+                  options={[
+                    {
+                      label: "รายวัน / Daily",
+                      value: "daily",
+                    },
+                    {
+                      label: "ช่วงวันที่ / Date Range",
+                      value: "date_range",
+                    },
+                  ]}
+                  className="w-full md:w-[14rem]"
+                  value={historyFilter?.mode}
+                  onChange={(e) => {
+                    const now = new Date();
+                    const hour = now.getHours();
+                    const minute = now.getMinutes();
+                    const nowDateTime = `${now?.toISOString().split("T")[0]}T${hour}:${minute}`;
+                    setHistoryFilter({
+                      ...historyFilter,
+                      mode: e.target.value as "daily" | "date_range",
+                      start_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                      end_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                    });
+                  }}
+                />
+
+                {historyFilter?.mode === "date_range" ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <DateInputForm
+                      type="datetime-local"
+                      onChange={(e) => {
+                        setHistoryFilter({
+                          ...historyFilter,
+                          start_date_time: e.target.value,
+                        });
+                      }}
+                      value={historyFilter?.start_date_time}
+                      max={historyFilter?.end_date_time}
+                    />
+                    <p className="hidden text-sm md:block">ถึง</p>
+                    <DateInputForm
+                      type="datetime-local"
+                      onChange={(e) => {
+                        setHistoryFilter({
+                          ...historyFilter,
+                          end_date_time: e.target.value,
+                        });
+                      }}
+                      value={historyFilter?.end_date_time}
+                      min={historyFilter?.start_date_time}
+                      disabled={historyFilter?.start_date_time === ""}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <DateInputForm
+                      value={filterHistory?.date}
+                      onChange={(e) => {
+                        setFilterHistory({
+                          ...filterHistory,
+                          date: renderFormattedPayloadDate(e.target.value) ?? "",
+                        });
+                      }}
+                      className="w-full md:w-[14rem]"
+                    />
+                  </>
+                )}
+
+                <SelectForm
+                  options={processList?.map((info) => ({
+                    label: info?.process_name,
+                    value: info?.process_id,
+                  }))}
+                  className="w-full md:w-[14rem]"
+                  value={historyFilter?.process}
+                  onChange={(e) => {
+                    setHistoryFilter({
+                      ...historyFilter,
+                      process: e.target.value,
+                    });
+                  }}
+                />
+
+                <SelectForm
+                  options={[
+                    {
+                      label: "กะเช้า / Day",
+                      value: "DAY",
+                    },
+                    {
+                      label: "กะดึก / Night",
+                      value: "NIGHT",
+                    },
+                  ]}
+                  className="w-full md:w-[14rem]"
+                  value={historyFilter?.shift}
+                  onChange={(e) => {
+                    setHistoryFilter({
+                      ...historyFilter,
+                      shift: e.target.value as "DAY" | "NIGHT",
+                    });
+                  }}
+                />
+
+                <Button
+                  onClick={() => {
+                    const exportData = productivityMapped;
+                    excelHelper.downloadExcelData(exportData, "defects");
+                  }}
+                  className="w-full md:w-max"
+                >
+                  Excel Export
+                </Button>
+              </div>
+
+              {isPendingRawProductivitys ? (
+                <div className="flex h-full flex-col items-center justify-center gap-1">
+                  <Spinner />
+                  <p className="ml-2">Loading...</p>
+                </div>
+              ) : (
+                <div className="flex h-0 w-full flex-grow flex-col overflow-y-auto rounded-md border">
+                  <Table className="relative h-full w-full border-collapse">
+                    <TableHeader className="sticky top-0 z-10 bg-secondary">
+                      <TableRow className="whitespace-nowrap">
+                        {HEADER_PRODUCTIVITY2?.map((header, __index) => (
+                          <TableHead
+                            key={`${header.label}-${__index}`}
+                            className={cn(
+                              "whitespace-nowrap",
+                              !isNaN(productivityMapped?.[0]?.[header.key as keyof TProductivity] as number) &&
+                                "text-right"
+                            )}
+                          >
+                            {header.label}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {mapData()?.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={HEADER.length}>No data available</TableCell>
+                        </TableRow>
+                      )}
+                      {mapData()?.map((defect, __defect_index) => (
+                        <TableRow className="whitespace-nowrap" key={`${__defect_index}`}>
+                          {HEADER_PRODUCTIVITY2?.map((header, header_index) => (
+                            <TableCell
+                              className={cn(
+                                "whitespace-nowrap",
+                                !isNaN(defect?.[header.key as keyof TMapData] as number) && "text-right"
+                              )}
+                              key={`${header_index}`}
+                            >
+                              {typeof defect?.[header?.key as keyof TMapData] === "function" && defect
+                                ? ""
+                                : defect && defect?.[header?.key as keyof TMapData]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell>Total Summary</TableCell>
+                        {historyFilter.shift === "DAY" ? (
+                          <>
+                            <TableCell className="text-right">{summaryMapDataMapped("08:00 - 09:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("09:00 - 10:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("10:00 - 11:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("11:00 - 12:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("12:00 - 13:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("13:00 - 14:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("14:00 - 15:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("15:00 - 16:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("16:00 - 17:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("17:00 - 18:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("18:00 - 19:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("19:00 - 20:00")}</TableCell>
+                          </>
+                        ) : (
+                          <>
+                            <TableCell className="text-right">{summaryMapDataMapped("20:00 - 21:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("21:00 - 22:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("22:00 - 23:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("23:00 - 24:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("24:00 - 01:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("01:00 - 02:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("02:00 - 03:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("03:00 - 04:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("04:00 - 05:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("05:00 - 06:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("06:00 - 07:00")}</TableCell>
+                            <TableCell className="text-right">{summaryMapDataMapped("07:00 - 08:00")}</TableCell>
+                          </>
+                        )}
+
+                        <TableCell colSpan={8}></TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="summary" className="hidden h-full">
+            <div className="flex h-full flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <SelectForm
+                  options={[
+                    {
+                      label: "รายวัน / Daily",
+                      value: "daily",
+                    },
+                    {
+                      label: "ช่วงวันที่ / Date Range",
+                      value: "date_range",
+                    },
+                  ]}
+                  className="w-full md:w-[14rem]"
+                  value={historyFilter?.mode}
+                  onChange={(e) => {
+                    const now = new Date();
+                    const hour = now.getHours();
+                    const minute = now.getMinutes();
+                    const nowDateTime = `${now?.toISOString().split("T")[0]}T${hour}:${minute}`;
+                    setHistoryFilter({
+                      ...historyFilter,
+                      mode: e.target.value as "daily" | "date_range",
+                      start_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                      end_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                    });
+                  }}
+                />
+                {historyFilter?.mode === "date_range" ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <DateInputForm
+                      type="datetime-local"
+                      onChange={(e) => {
+                        setHistoryFilter({
+                          ...historyFilter,
+                          start_date_time: e.target.value,
+                        });
+                      }}
+                      value={historyFilter?.start_date_time}
+                      max={historyFilter?.end_date_time}
+                    />
+                    <p className="hidden text-sm md:block">ถึง</p>
+                    <DateInputForm
+                      type="datetime-local"
+                      onChange={(e) => {
+                        setHistoryFilter({
+                          ...historyFilter,
+                          end_date_time: e.target.value,
+                        });
+                      }}
+                      value={historyFilter?.end_date_time}
+                      min={historyFilter?.start_date_time}
+                      disabled={historyFilter?.start_date_time === ""}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <DateInputForm
+                      value={filterHistory?.date}
+                      onChange={(e) => {
+                        setFilterHistory({
+                          ...filterHistory,
+                          date: renderFormattedPayloadDate(e.target.value) ?? "",
+                        });
+                      }}
+                      className="w-full md:w-[14rem]"
+                    />
+                    {allFilter?.shift?.length === 0 && (
+                      <SelectForm
+                        options={GET_TIME_SLOTS(filterHistory?.date, true)}
+                        value={filterHistory?.time_slot}
+                        onChange={(e) => {
+                          setFilterHistory({
+                            ...filterHistory,
+                            time_slot: e.target.value,
+                          });
+                        }}
+                        className="w-full md:w-[14rem]"
+                      />
+                    )}
+                  </>
+                )}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full md:w-max">
+                      {Object.keys(allFilter).reduce(
+                        (acc, curr) => acc + allFilter[curr as keyof typeof allFilter]?.length,
+                        0
+                      ) === 0
+                        ? "Filter"
+                        : `Filtered ${Object.keys(allFilter).reduce(
+                            (acc, curr) => acc + allFilter[curr as keyof typeof allFilter]?.length,
+                            0
+                          )}`}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="space-y-1">
+                    <div className="space-y-1">
+                      <div className="flex w-full items-center justify-between">
+                        <p className="text-sm font-semibold">Filter by Process</p>
+                        <button
+                          onClick={() =>
+                            setAllFilter({
+                              ...allFilter,
+                              process: [],
+                            })
+                          }
+                          className="text-xs text-red-500 hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <div className="flex flex-col">
+                        {processList?.map((process, _index) => (
+                          <div className="flex items-center gap-2" key={_index}>
+                            <Checkbox
+                              id={process?.process_name}
+                              name={process?.process_name}
+                              checked={allFilter?.process?.includes(process?.process_name)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setAllFilter({
+                                    ...allFilter,
+                                    process: [...allFilter?.process, process?.process_name],
+                                  });
+                                } else {
+                                  setAllFilter({
+                                    ...allFilter,
+                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
+                                  });
+                                }
+                              }}
+                            />
+                            <label htmlFor={process?.process_name} className="text-sm">
+                              {process?.process_name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex w-full items-center justify-between">
+                        <p className="text-sm font-semibold">Filter by Shift</p>
+                        <button
+                          onClick={() =>
+                            setAllFilter({
+                              ...allFilter,
+                              shift: [],
+                            })
+                          }
+                          className="text-xs text-red-500 hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <div className="flex flex-col">
+                        {["DAY", "NIGHT"]?.map((shift, __index) => (
+                          <div className="flex items-center gap-2" key={__index}>
+                            <Checkbox
+                              id={shift}
+                              name={shift}
+                              checked={allFilter?.shift?.includes(shift)}
+                              onCheckedChange={(checked) => {
+                                setFilterHistory({
+                                  ...filterHistory,
+                                  time_slot: "00:00 - 23:59",
+                                });
+                                if (checked) {
+                                  setAllFilter({
+                                    ...allFilter,
+                                    shift: [...allFilter?.shift, shift],
+                                  });
+                                } else {
+                                  setAllFilter({
+                                    ...allFilter,
+                                    shift: allFilter?.shift?.filter((item) => item !== shift),
+                                  });
+                                }
+                              }}
+                            />
+                            <label htmlFor={shift} className="text-sm">
+                              {shift}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <Button
+                  onClick={() => {
+                    const exportData = productivityMapped;
+                    excelHelper.downloadExcelData(exportData, "defects");
+                  }}
+                  className="w-full md:w-max"
+                >
+                  Excel Export
+                </Button>
+              </div>
+              {isPendingRawProductivitys ? (
+                <div className="flex h-full flex-col items-center justify-center gap-1">
+                  <Spinner />
+                  <p className="ml-2">Loading...</p>
+                </div>
+              ) : (
+                <div className="flex h-0 w-full flex-grow flex-col overflow-y-auto rounded-md border">
+                  <Table className="relative h-full w-full border-collapse">
+                    <TableHeader className="sticky top-0 z-10 bg-secondary">
+                      <TableRow className="whitespace-nowrap">
+                        {HEADER_PRODUCTIVITY?.map((header, __index) => (
+                          <TableHead
+                            key={`${header.label}-${__index}`}
+                            className={cn(
+                              "whitespace-nowrap",
+                              !isNaN(productivityMapped?.[0]?.[header.key as keyof TProductivity] as number) &&
+                                "text-right"
+                            )}
+                          >
+                            {header.label}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {productivityMapped?.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={HEADER.length}>No data available</TableCell>
+                        </TableRow>
+                      )}
+                      {productivityMapped?.map((defect, __defect_index) => (
+                        <TableRow className="whitespace-nowrap" key={`${defect?.prod_log_id}-${__defect_index}`}>
+                          {HEADER_PRODUCTIVITY?.map((header, header_index) => (
+                            <TableCell
+                              className={cn(
+                                "whitespace-nowrap",
+                                !isNaN(defect?.[header.key as keyof TProductivity] as number) && "text-right"
+                              )}
+                              key={`${defect?.prod_log_id}-${header_index}`}
+                            >
+                              {typeof defect?.[header?.key as keyof TProductivity] === "function" && defect
+                                ? defect?.action()
+                                : defect && defect?.[header?.key as keyof TProductivity]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 7}>Total Summary</TableCell>
+                        <TableCell className="text-right">{summaryProductivityMapped("ng_quantity")}</TableCell>
+                        <TableCell className="text-right">{summaryProductivityMapped("quantity")}</TableCell>
+                        <TableCell colSpan={8}></TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           <TabsContent value="raw-data" className="h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -369,28 +850,28 @@ export const HistoryPage: FC = () => {
                         </button>
                       </div>
                       <div className="flex flex-col">
-                        {PROCESS_LIST?.map((process, _index) => (
+                        {processList?.map((process, _index) => (
                           <div className="flex items-center gap-2" key={_index}>
                             <Checkbox
-                              id={process}
-                              name={process}
-                              checked={allFilter?.process?.includes(process)}
+                              id={process?.process_name}
+                              name={process?.process_name}
+                              checked={allFilter?.process?.includes(process?.process_name)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: [...allFilter?.process, process],
+                                    process: [...allFilter?.process, process?.process_name],
                                   });
                                 } else {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: allFilter?.process?.filter((item) => item !== process),
+                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
                                   });
                                 }
                               }}
                             />
-                            <label htmlFor={process} className="text-sm">
-                              {process}
+                            <label htmlFor={process?.process_name} className="text-sm">
+                              {process?.process_name}
                             </label>
                           </div>
                         ))}
@@ -548,7 +1029,7 @@ export const HistoryPage: FC = () => {
                 time_slot: getTimeSlotByDateTimestamp(new Date(selectedDefect?.datetime ?? "")?.getTime())?.value,
                 process: selectedDefect?.process || "",
                 part_code: selectedDefect?.part_code || "",
-                ng_id: selectedDefect?.ng_id || "",
+                case_id: selectedDefect?.case_id || "",
                 ng_quantity: selectedDefect?.ng_quantity || null,
                 machine_name: selectedDefect?.machine_name || null,
                 rework_quantity: selectedDefect?.rework_quantity || null,
