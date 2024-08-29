@@ -1,7 +1,7 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsUUID, IsNotEmpty } from 'class-validator';
 
 export class FindPartDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
-  part_code: string;
+  part_id: string;
 }

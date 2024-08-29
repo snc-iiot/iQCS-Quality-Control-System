@@ -12,6 +12,9 @@ export class Part {
   part_id: string;
 
   @Column()
+  sap_code: string;
+
+  @Column()
   part_code: string;
 
   @Column()
@@ -19,6 +22,12 @@ export class Part {
 
   @Column()
   part_description: string;
+
+  @Column({ type: 'jsonb' })
+  processes: string[];
+
+  @Column()
+  plant_code: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
