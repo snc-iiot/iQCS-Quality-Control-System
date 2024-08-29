@@ -1,5 +1,5 @@
-import { PROCESS_LIST } from "@/helpers/common.helper";
 import { useNGCause } from "@/services/hooks";
+import { useAtomStore } from "@/store";
 import { TCreateNGCause } from "@/types";
 import { FC, useEffect, useState } from "react";
 import { FormField } from "../ui-pattern";
@@ -15,8 +15,9 @@ interface ICreateUpdateCause {
 
 export const CreateUpdateCause: FC<ICreateUpdateCause> = ({ data, onClose }) => {
   const { mutateCreateNGCause, mutateUpdateNGCause } = useNGCause();
+  const { processList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateNGCause>({
-    ng_id: data?.ng_id || "",
+    case_id: data?.case_id || "",
     case_name: data?.case_name || "",
     description: data?.description || "",
     processes: data?.processes || [],
@@ -25,7 +26,7 @@ export const CreateUpdateCause: FC<ICreateUpdateCause> = ({ data, onClose }) => 
   // Define the submit handler
   const handleSubmit = async (values: TCreateNGCause, { setSubmitting }: any) => {
     try {
-      const res = data?.ng_id ? await mutateUpdateNGCause(values) : await mutateCreateNGCause(values);
+      const res = data?.case_id ? await mutateUpdateNGCause(values) : await mutateCreateNGCause(values);
       if (res?.status == "success") {
         onClose?.();
       }
@@ -39,7 +40,7 @@ export const CreateUpdateCause: FC<ICreateUpdateCause> = ({ data, onClose }) => 
   useEffect(() => {
     if (data) {
       setInitialValues({
-        ng_id: data?.ng_id || "",
+        case_id: data?.case_id || "",
         case_name: data?.case_name || "",
         description: data?.description || "",
         processes: data?.processes || [],
@@ -77,32 +78,32 @@ export const CreateUpdateCause: FC<ICreateUpdateCause> = ({ data, onClose }) => 
             />
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold">Processes</p>
-              {PROCESS_LIST?.map((process, i) => (
+              {processList?.map((process, i) => (
                 <div className="flex items-center gap-2" key={`process-${i}`}>
                   <Checkbox
-                    name={process}
-                    id={process}
-                    checked={values?.processes?.includes(process)}
+                    name={process?.process_name}
+                    id={process?.process_name}
+                    checked={values?.processes?.includes(process?.process_id)}
                     onCheckedChange={(checked) => {
                       if (checked) {
                         handleChange({
                           target: {
                             name: "processes",
-                            value: [...values?.processes, process],
+                            value: [...values?.processes, process?.process_id],
                           },
                         });
                       } else {
                         handleChange({
                           target: {
                             name: "processes",
-                            value: values?.processes?.filter((p: string) => p !== process),
+                            value: values?.processes?.filter((p: string) => p !== process?.process_id),
                           },
                         });
                       }
                     }}
                   />
-                  <label htmlFor={process} className="text-sm">
-                    {process}
+                  <label htmlFor={process?.process_id} className="text-sm">
+                    {process?.process_name}
                   </label>
                 </div>
               ))}
@@ -119,7 +120,7 @@ export const CreateUpdateCause: FC<ICreateUpdateCause> = ({ data, onClose }) => 
                 onClick={() => {
                   handleReset();
                   setInitialValues({
-                    ng_id: data?.ng_id || "",
+                    case_id: data?.case_id || "",
                     case_name: data?.case_name || "",
                     description: data?.description || "",
                     processes: data?.processes || [],

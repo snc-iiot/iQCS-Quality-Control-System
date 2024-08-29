@@ -2,16 +2,23 @@ import { useAtom } from "jotai";
 import {
   defectAtom,
   defectSummaryAtom,
+  documentAtom,
   graphSummaryAtom,
   ngCauseAtom,
   partAtom,
+  plantsAtom,
+  processAtom,
   productivityAtom,
   productivitySummaryAtom,
   topDefectAtom,
 } from "./atom";
 
 export const useAtomStore = () => {
+  const [plantList, setPlantList] = useAtom(plantsAtom);
+
+  const [processList, setProcessList] = useAtom(processAtom);
   const [partList, setPartList] = useAtom(partAtom);
+  const [documentList, setDocumentList] = useAtom(documentAtom);
   const [ngCauseList, setNgCauseList] = useAtom(ngCauseAtom);
 
   const [defectList, setDefectList] = useAtom(defectAtom);
@@ -23,8 +30,14 @@ export const useAtomStore = () => {
   const [productivitySummaryList, setProductivitySummaryList] = useAtom(productivitySummaryAtom);
 
   return {
+    plantList,
+    setPlantList,
+    processList,
+    setProcessList,
     partList,
     setPartList,
+    documentList,
+    setDocumentList,
     ngCauseList,
     setNgCauseList,
     defectList,

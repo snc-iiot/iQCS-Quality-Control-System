@@ -1,31 +1,43 @@
+import { FormField } from "@/components/ui-pattern";
+import { InputForm } from "@/components/ui-pattern/form-field/input-form";
+import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { Button } from "@/components/ui/button";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { AuthService } from "@/services/auth.service";
-import { useMutationWithToast } from "@/services/hooks";
+import { useCommon, useMutationWithToast } from "@/services/hooks";
+import { useAtomStore } from "@/store";
+import { TRequestSignIn } from "@/types";
+import { Eye, EyeOff, LockKeyhole, User } from "lucide-react";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 
 export const LoginPage: FC = () => {
+  const { plantList } = useAtomStore();
   const navigate = useNavigate();
   const authService = new AuthService();
+  const { useGetPlants } = useCommon();
+  useGetPlants();
 
-  const [employeeId, setEmployeeId] = useState<string>("");
+  const [view, setView] = useState<boolean>(false);
 
   const { mutateAsync: signIn } = useMutationWithToast(
-    async (data: string) => await authService.singInWithEmployee(data),
+    async (data: TRequestSignIn) => await authService.signIn(data),
     "Signing in..."
   );
 
-  const login = async () => {
-    try {
-      const res = await signIn(employeeId);
-      if (res.status === "success") {
-        navigate("/");
-      }
-    } catch (error) {
-      console.error(error);
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    setSubmitting(true);
+    const res = await signIn(values);
+    setSubmitting(res?.status == "success" ? false : true);
+    if (res.status === "success") {
+      navigate("/");
     }
   };
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().required("โปรดระบุ ชื่อผู้ใช้งาน"),
+    password: Yup.string().required("โปรดระบุ รหัสผ่าน"),
+    plant_code: Yup.string().required("กรุณาเลือก Plant Code"),
+  });
 
   const backgroundStyle = {
     backgroundImage: "url(https://snc-services.sncformer.com/snconeway/PDF%20File/snc-logo.png)",
@@ -34,72 +46,102 @@ export const LoginPage: FC = () => {
     backgroundRepeat: "no-repeat",
   };
 
+  const dataTest = plantList?.map(({ plant_code }) => ({
+    label: plant_code,
+    value: plant_code,
+  }));
+
   return (
     <div className="bg-login relative grid h-[100dvh] w-full place-items-center" style={backgroundStyle}>
-      <div className="w-[90%] rounded-xl border bg-white p-4 xl:w-[30%]">
+      <div className="w-[90%] rounded-xl border bg-white p-4 md:w-[60%] lg:w-[40%] xl:w-[30%] 2xl:w-[24%]">
         <img src="https://snc-services.sncformer.com/icmms/images/logo.webp" alt="logo" className="h-7 w-auto" />
         <p className="text-xs text-muted-foreground">บริษัท เอส เอ็น ซี ฟอร์เมอร์ จำกัด (มหาชน) สาขาระยอง</p>
         <div className="h-[1px] w-full bg-border" />
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await login();
+
+        <div className="flex w-full flex-col justify-center py-2">
+          <p className="text-xl font-semibold text-primary">iQCS Quality Control System</p>
+          <p className="mt-[-2px] text-xs text-muted-foreground">ระบบบันทึกข้อมูลยอดงาน NG</p>
+        </div>
+        <FormField
+          id="part-form"
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          initialValues={{
+            username: "",
+            password: "",
+            plant_code: "",
           }}
-          className="w-full space-y-2 py-2"
         >
-          {/* <div>
-            <p className="text-lg font-semibold text-primary">Toolbox On Cloud</p>
-            <p className="text-xs text-muted-foreground">ระบบบันทึกข้อมูลยอดงาน NG</p>
-          </div> */}
-          {/* <InputForm
-            label="Username"
-            required
-            placeholder="Username"
-            name="username"
-            value={form.username}
-            onChange={handleInputChange}
-          />
-          <InputForm
-            label="Password"
-            required
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={form.password}
-            onChange={handleInputChange}
-          /> */}
-          <div className="flex flex-col text-center">
-            <h3 className="text-center text-lg font-bold">กรุณาระบุรหัสพนักงาน</h3>
-            <h3 className="text-center text-lg font-bold">(Please Identify ID)</h3>
-            <p className="text-xs text-muted-foreground">รหัสพนักงาน 7 หลักสุดท้าย (Last 7 Digit of Employee ID)</p>
-          </div>
-          <div className="flex w-full items-center justify-center">
-            <InputOTP
-              maxLength={7}
-              required
-              autoFocus
-              onChange={(value) => {
-                setEmployeeId(value);
-              }}
-            >
-              <InputOTPGroup placeholder=".">
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-                <InputOTPSlot index={6} />
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
-          <Button className="w-full" type="submit">
-            เข้าสู่ระบบ / Sign In
-          </Button>
-        </form>
+          {({ values, errors, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+            <div className="space-y-5">
+              <div className="relative">
+                <User className=" absolute left-2 top-9 text-gray-400" />
+                <InputForm
+                  label="Username"
+                  required
+                  placeholder="Username"
+                  name="username"
+                  className="pl-9"
+                  value={values.username}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.username}
+                />
+              </div>
+
+              <div className="relative">
+                <LockKeyhole className=" absolute left-2 top-9 text-gray-400" />
+                <InputForm
+                  label="Password"
+                  required
+                  type={view ? "" : "password"}
+                  placeholder="Password"
+                  name="password"
+                  className="pl-9"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.password}
+                />
+                {view ? (
+                  <EyeOff
+                    className=" absolute right-2 top-9 cursor-pointer text-gray-400 hover:text-black"
+                    onClick={() => setView(false)}
+                  />
+                ) : (
+                  <Eye
+                    className=" absolute right-2 top-9 cursor-pointer text-gray-400 hover:text-black"
+                    onClick={() => setView(true)}
+                  />
+                )}
+              </div>
+
+              <SelectForm
+                label="Plant Code"
+                required
+                placeholder="Plant code all"
+                name="plant_code"
+                options={dataTest}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.plant_code ?? ""}
+                error={errors.plant_code}
+              />
+
+              <div className="flex w-full gap-2">
+                <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                  เข้าสู่ระบบ / Sign In{" "}
+                </Button>
+              </div>
+            </div>
+          )}
+        </FormField>
       </div>
       <div className="absolute bottom-1 flex w-full flex-wrap justify-between px-2 text-xs text-muted-foreground">
-        <p>Toolbox On Cloud © 2024 99 Industrial Solutions Company Limited. All rights reserved.</p>
+        <p className="hidden md:flex">
+          Quality Control System © 2024 99 Industrial Solutions Company Limited. All rights reserved.
+        </p>
+        <p className="flex md:hidden">iQRS © 2024 99IS. All rights reserved.</p>
         <p>1.0.0</p>
       </div>
     </div>

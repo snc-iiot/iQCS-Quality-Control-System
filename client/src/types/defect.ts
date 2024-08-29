@@ -5,7 +5,7 @@ export type TCreateUpdateDefect = {
   time_slot?: string;
   process: string;
   part_code: string;
-  ng_id: string;
+  case_id: string;
   ng_quantity: number | null;
   machine_name: string | null;
   rework_quantity: number | null;
@@ -23,7 +23,7 @@ export type TDefect = {
   process: string;
   machine_name: string;
   part_code: string;
-  ng_id: string;
+  case_id: string;
   ng_quantity: number;
   rework_quantity: number;
   rework_cost_per_unit: number;
@@ -56,7 +56,7 @@ export type TDefectSummary = {
 };
 
 export type TTopDefect = {
-  ng_id: string;
+  case_id: string;
   case_name: string;
   ng_quantity: number;
 };

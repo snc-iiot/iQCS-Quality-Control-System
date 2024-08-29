@@ -1,6 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GET_NOW_TIME_SLOT, GET_TIME_SLOTS } from "@/helpers";
-import { PROCESS_LIST } from "@/helpers/common.helper";
 import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useProductivity } from "@/services/hooks/use-productivity";
@@ -32,7 +31,7 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
   const { mutateCreateProductivity, mutateUpdateProductivity } = useProductivity();
-  const { partList } = useAtomStore();
+  const { partList, processList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateUpdateProductivity>({
     datetime: data?.datetime || "",
     date: data?.date ?? renderFormattedPayloadDate(new Date()) ?? "",
@@ -134,9 +133,9 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
               label="กระบวนการผลิต / Process"
               name="process"
               placeholder="เลือกกระบวนการผลิต"
-              options={PROCESS_LIST?.map((process) => ({
-                label: process,
-                value: process,
+              options={processList?.map((process) => ({
+                label: process?.process_name,
+                value: process?.process_id,
               }))}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -214,8 +213,6 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
               label="หมายเหตุ / Remarks"
               name="remarks"
               placeholder="โปรดระบุหมายเหตุ"
-              type="number"
-              inputMode="numeric"
               onChange={handleChange}
               onBlur={handleBlur}
               value={values?.remarks ?? ""}

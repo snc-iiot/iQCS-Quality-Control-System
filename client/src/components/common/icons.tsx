@@ -29,6 +29,7 @@ import {
   FileEdit,
   FileText,
   Filter,
+  FolderKanban,
   Grid,
   Heart,
   HelpCircle,
@@ -76,6 +77,7 @@ import {
 
 export const Icons = {
   messageSquare: MessageSquare,
+  folder: FolderKanban,
   wallet: Wallet,
   cog: Cog,
   combine: Combine,

@@ -23,7 +23,6 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GET_TIME_SLOTS, getTimeSlotByDateTimestamp } from "@/helpers";
 import { groupByField } from "@/helpers/array.helper";
-import { PROCESS_LIST } from "@/helpers/common.helper";
 import {
   renderFormattedDate,
   renderFormattedDateWithTime,
@@ -41,7 +40,7 @@ export const HistoryPage: FC = () => {
   const { useGetRawDefects, mutateDeleteDefect } = useDefect();
   const { useGetRawProductivitys, mutateDeleteProductivity } = useProductivity();
 
-  const { defectList, productivityList } = useAtomStore();
+  const { defectList, productivityList, processList } = useAtomStore();
   const [isOpenDefectDetail, setIsOpenDefectDetail] = useState<boolean>(false);
   const [isOpenDefectEdit, setIsOpenDefectEdit] = useState<boolean>(false);
   const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
@@ -573,9 +572,9 @@ export const HistoryPage: FC = () => {
                 )}
 
                 <SelectForm
-                  options={PROCESS_LIST?.map((info) => ({
-                    label: info,
-                    value: info,
+                  options={processList?.map((info) => ({
+                    label: info?.process_name,
+                    value: info?.process_id,
                   }))}
                   className="w-full md:w-[14rem]"
                   value={historyFilter?.process}
@@ -825,28 +824,28 @@ export const HistoryPage: FC = () => {
                         </button>
                       </div>
                       <div className="flex flex-col">
-                        {PROCESS_LIST?.map((process, _index) => (
+                        {processList?.map((process, _index) => (
                           <div className="flex items-center gap-2" key={_index}>
                             <Checkbox
-                              id={process}
-                              name={process}
-                              checked={allFilter?.process?.includes(process)}
+                              id={process?.process_name}
+                              name={process?.process_name}
+                              checked={allFilter?.process?.includes(process?.process_name)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: [...allFilter?.process, process],
+                                    process: [...allFilter?.process, process?.process_name],
                                   });
                                 } else {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: allFilter?.process?.filter((item) => item !== process),
+                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
                                   });
                                 }
                               }}
                             />
-                            <label htmlFor={process} className="text-sm">
-                              {process}
+                            <label htmlFor={process?.process_name} className="text-sm">
+                              {process?.process_name}
                             </label>
                           </div>
                         ))}
@@ -1087,28 +1086,28 @@ export const HistoryPage: FC = () => {
                         </button>
                       </div>
                       <div className="flex flex-col">
-                        {PROCESS_LIST?.map((process, _index) => (
+                        {processList?.map((process, _index) => (
                           <div className="flex items-center gap-2" key={_index}>
                             <Checkbox
-                              id={process}
-                              name={process}
-                              checked={allFilter?.process?.includes(process)}
+                              id={process?.process_name}
+                              name={process?.process_name}
+                              checked={allFilter?.process?.includes(process?.process_name)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: [...allFilter?.process, process],
+                                    process: [...allFilter?.process, process?.process_name],
                                   });
                                 } else {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: allFilter?.process?.filter((item) => item !== process),
+                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
                                   });
                                 }
                               }}
                             />
-                            <label htmlFor={process} className="text-sm">
-                              {process}
+                            <label htmlFor={process?.process_name} className="text-sm">
+                              {process?.process_name}
                             </label>
                           </div>
                         ))}
@@ -1266,7 +1265,7 @@ export const HistoryPage: FC = () => {
                 time_slot: getTimeSlotByDateTimestamp(new Date(selectedDefect?.datetime ?? "")?.getTime())?.value,
                 process: selectedDefect?.process || "",
                 part_code: selectedDefect?.part_code || "",
-                ng_id: selectedDefect?.ng_id || "",
+                case_id: selectedDefect?.case_id || "",
                 ng_quantity: selectedDefect?.ng_quantity || null,
                 machine_name: selectedDefect?.machine_name || null,
                 rework_quantity: selectedDefect?.rework_quantity || null,

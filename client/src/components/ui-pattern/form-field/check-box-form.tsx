@@ -36,8 +36,15 @@ const CheckboxItem: FC<{
 
   return (
     <div className="flex items-center space-x-2">
-      <Checkbox id={id} name={id} value={option.value} checked={checked} onCheckedChange={handleCheckboxChange} />
-      <label className="text-sm" htmlFor={id}>
+      <Checkbox
+        id={id}
+        name={id}
+        value={option.value}
+        checked={checked}
+        onCheckedChange={handleCheckboxChange}
+        className="cursor-pointer"
+      />
+      <label className="mt-[-2px] text-sm" htmlFor={id}>
         {option.label}
       </label>
     </div>
@@ -78,6 +85,11 @@ export const CheckboxForm: FC<CheckboxFormProps> = ({
           onChange={handleCheckboxChange}
         />
       ))}
+      {options?.length === 0 && (
+        <div className="mt-[-4px] flex w-full justify-center text-sm text-gray-400">
+          <p>No data variable</p>
+        </div>
+      )}
     </FormLayout>
   );
 };

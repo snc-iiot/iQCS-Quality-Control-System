@@ -1,41 +1,39 @@
 import { cn } from "@/lib/utils";
-import { useProcess } from "@/services/hooks";
-import { TCreateUpdateProcess } from "@/types";
+import { useDocument } from "@/services/hooks";
+import { TCreateUpdateDocument } from "@/types";
 import { FC, useEffect, useState } from "react";
-import { SketchPicker } from "react-color";
 import * as Yup from "yup";
 import { PageHeader } from "../common/page-header";
 import { Required } from "../common/required";
 import { FormField } from "../ui-pattern";
-import { InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
+import { InputForm } from "../ui-pattern/form-field/input-form";
 import { Button } from "../ui/button";
 
-interface CreateUpdateProcessProps {
+interface CreateUpdateDocumentProps {
   isTitleVisible?: boolean;
   className?: string;
-  data?: Partial<TCreateUpdateProcess>;
+  data?: Partial<TCreateUpdateDocument>;
   onClose?: () => void;
 }
 
-export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisible, className, data, onClose }) => {
-  const { mutateCreateProcess, mutateUpdateProcess } = useProcess();
-  const [initialValues, setInitialValues] = useState<TCreateUpdateProcess>({
-    process_id: data?.process_id || "",
-    process_name: data?.process_name || "",
-    process_color: data?.process_color || "",
-    process_description: data?.process_description || "",
+export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const { mutateCreateDocument, mutateUpdateDocument } = useDocument();
+  const [initialValues, setInitialValues] = useState<TCreateUpdateDocument>({
+    document_name: data?.document_name || "",
+    document: data?.document || "",
   });
 
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
-    process_name: Yup.string().required("โปรดระบุชื่อ Process"),
+    document_name: Yup.string().required("โปรดระบุชื่อ เอกสาร"),
+    document: Yup.string().required("โปรดอัพโหลดเอกสาร"),
   });
 
   // Define the submit handler
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     if (data) {
-      const res = await mutateUpdateProcess({
+      const res = await mutateUpdateDocument({
         ...data,
         ...values,
       });
@@ -45,7 +43,7 @@ export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisib
       }
     }
     if (!data) {
-      const res = await mutateCreateProcess(values);
+      const res = await mutateCreateDocument(values);
       setSubmitting(res?.status == "success" ? false : true);
       if (res?.status == "success") {
         onClose && onClose();
@@ -56,10 +54,8 @@ export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisib
   useEffect(() => {
     if (data) {
       setInitialValues({
-        process_id: data.process_id ?? "",
-        process_name: data.process_name ?? "",
-        process_color: data.process_color ?? "",
-        process_description: data.process_description ?? "",
+        document_name: data.document_name ?? "",
+        document: data.document ?? "",
       });
     }
   }, [data]);
@@ -68,7 +64,7 @@ export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisib
     <div className={cn("relative flex w-full flex-col gap-2", className)}>
       {isTitleVisible && (
         <PageHeader
-          title="บันทึกข้อมูล Process"
+          title="บันทึกข้อมูล Part"
           description={
             <div className="flex flex-col gap-1 text-sm">
               <p>โปรดกรอกข้อมูลให้ครบถ้วน</p>
@@ -83,43 +79,33 @@ export const CreateUpdateProcess: FC<CreateUpdateProcessProps> = ({ isTitleVisib
       )}
 
       <FormField
-        id="process-form"
+        id="part-form"
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         initialValues={initialValues}
       >
-        {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting, setFieldValue }) => (
+        {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
           <div className="space-y-5">
             <InputForm
-              label="Process name"
-              placeholder="โปรดระบุชื่อ Process name"
-              name="process_name"
-              value={values.process_name}
+              label="Document name"
+              placeholder="โปรดระบุชื่อ เอกสาร"
+              name="document_name"
+              value={values.document_name}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={errors.process_name}
-              required
+              error={errors.document_name}
             />
-
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold">Process color</label>
-              <SketchPicker
-                color={values?.process_color || "#ffffff"}
-                onChangeComplete={(color) => setFieldValue("process_color", color.hex)}
-              />
-              <p className="text-xs text-red-500">{errors.process_color}</p>
-            </div>
-
-            <TextAreaForm
-              label="Description"
-              placeholder="โปรดระบุรายละเอียด"
-              name="process_description"
-              value={values.process_description}
+            <InputForm
+              type="file"
+              label="Document"
+              placeholder="โปรดระบุชื่อ เอกสาร"
+              name="document"
+              value={values.document}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={errors.process_description}
-              labelOptional="(Optional)"
+              error={errors.document}
             />
+
             <div className="flex w-full gap-2">
               <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
                 บันทึก / Save

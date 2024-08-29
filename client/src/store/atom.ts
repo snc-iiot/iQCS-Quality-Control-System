@@ -1,15 +1,21 @@
 import {
   TDefect,
   TDefectSummary,
+  TDocument,
   TGraphSummary,
   TNGCause,
   TPart,
+  TPlant,
+  TProcess,
   TProductivity,
   TProductivitySummary,
   TTopDefect,
 } from "@/types";
 import { atom } from "jotai";
 
+export const plantsAtom = atom<TPlant[]>([]);
+export const processAtom = atom<TProcess[]>([]);
+export const documentAtom = atom<TDocument[]>([]);
 export const partAtom = atom<TPart[]>([]);
 export const ngCauseAtom = atom<TNGCause[]>([]);
 export const defectAtom = atom<TDefect[]>([]);

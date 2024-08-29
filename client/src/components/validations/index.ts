@@ -5,7 +5,7 @@ export const validationDefectSchema = Yup.object({
   time_slot: Yup.string().required("โปรดระบุช่วงเวลา"),
   process: Yup.string().required("โปรดระบุ Process"),
   part_code: Yup.string().required("โปรดระบุ Part Code"),
-  ng_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+  case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
   ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(1),
 });
 

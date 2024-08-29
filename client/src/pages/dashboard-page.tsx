@@ -3,14 +3,13 @@ import { CardProcess } from "@/components/ui-pattern";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Input } from "@/components/ui/input";
-import { PROCESS_LIST } from "@/helpers/common.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
 import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TGraphSummary } from "@/types";
-import { FC, useState } from "react";
+import { FC, Fragment, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const DashboardPage: FC = () => {
@@ -22,7 +21,7 @@ export const DashboardPage: FC = () => {
 
   const { useGetSummaryDefectsByDateGraph, useGetTopDefects } = useDefect();
 
-  const { graphSummaryList, topDefectList } = useAtomStore();
+  const { graphSummaryList, topDefectList, processList } = useAtomStore();
   const [shiftSelected, setShiftSelected] = useState<string>("ALL");
   const { groupProcess, groupDate } = useDashboardHelper(
     graphSummaryList
@@ -32,8 +31,8 @@ export const DashboardPage: FC = () => {
 
   const [processSelected, setProcessSelected] = useState<string>("ALL");
 
-  const mapCardProcess = PROCESS_LIST?.map((process) => {
-    const data = groupProcess("process")[process];
+  const mapCardProcess = processList?.map((process) => {
+    const data = groupProcess("process")[process?.process_name];
     const total = data?.reduce((acc, curr) => acc + curr?.ng_quantity, 0) ?? 0;
     const ng = data?.reduce((acc, curr) => acc + curr?.ng_quantity, 0) ?? 0;
     return {
@@ -86,9 +85,10 @@ export const DashboardPage: FC = () => {
         const { groupProcess } = useDashboardHelper(dataGroupDate[key] as TGraphSummary[]);
         const dataGroupProcess = groupProcess("process");
 
-        const dataChart = PROCESS_LIST.reduce(
+        const dataChart = processList.reduce(
           (acc, info) => {
-            acc[info] = dataGroupProcess[info]?.reduce((sum, curr) => sum + curr?.ng_quantity, 0) ?? 0;
+            acc[info?.process_name] =
+              dataGroupProcess[info?.process_name]?.reduce((sum, curr) => sum + curr?.ng_quantity, 0) ?? 0;
             return acc;
           },
           {} as Record<string, number>
@@ -183,21 +183,21 @@ export const DashboardPage: FC = () => {
 
       <div className="flex h-max flex-col space-y-2 md:h-full md:overflow-hidden">
         <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-7">
-          {mapCardProcess?.map((process, i) => (
+          {mapCardProcess?.map((process) => (
             <CardProcess
-              key={process?.process}
-              title={process?.process}
+              key={process?.process?.process_name}
+              title={process?.process?.process_name}
               value={process?.ng}
-              isActive={processSelected === process?.process}
+              isActive={processSelected === process?.process?.process_name}
               onClick={() => {
-                if (processSelected === process?.process) {
+                if (processSelected === process?.process?.process_name) {
                   setProcessSelected("ALL");
                 }
-                if (processSelected !== process?.process) {
-                  setProcessSelected(process?.process);
+                if (processSelected !== process?.process?.process_name) {
+                  setProcessSelected(process?.process?.process_name);
                 }
               }}
-              color={["#EF476F", "#F78C6B", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#C8A8E9"][i]}
+              color={process?.process?.process_color}
             />
           ))}
         </div>
@@ -292,18 +292,18 @@ export const DashboardPage: FC = () => {
                     <YAxis />
                     <XAxis dataKey="time_slot" tickLine={true} tickMargin={10} axisLine={false} />
                     <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                    {PROCESS_LIST?.map((process, i) => (
-                      <>
-                        {(processSelected === "ALL" || processSelected === process) && (
+                    {processList?.map((process, i) => (
+                      <Fragment key={i}>
+                        {(processSelected === "ALL" || processSelected === process?.process_name) && (
                           <Bar
-                            key={process}
-                            dataKey={process}
-                            fill={["#EF476F", "#F78C6B", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#C8A8E9"][i]}
+                            key={process?.process_name}
+                            dataKey={process?.process_name}
+                            fill={process?.process_color}
                             radius={1}
                             stackId="ng"
                           />
                         )}
-                      </>
+                      </Fragment>
                     ))}
                   </BarChart>
                 </ChartContainer>

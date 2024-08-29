@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GET_NOW_TIME_SLOT, GET_TIME_SLOTS } from "@/helpers";
 import { Base64Helper } from "@/helpers/base64.helper";
-import { PROCESS_LIST } from "@/helpers/common.helper";
 import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
@@ -31,7 +30,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
   const { mutateCreateDefect, mutateUpdateDefect } = useDefect();
-  const { partList, ngCauseList } = useAtomStore();
+  const { partList, ngCauseList, processList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDefect>({
     defects_log_id: data?.defects_log_id || "",
     datetime: data?.datetime || "",
@@ -39,7 +38,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
     time_slot: data?.time_slot || GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
     process: data?.process || "",
     part_code: data?.part_code || "",
-    ng_id: data?.ng_id || "",
+    case_id: data?.case_id || "",
     ng_quantity: data?.ng_quantity || null,
     machine_name: data?.machine_name || null,
     rework_quantity: data?.rework_quantity || null,
@@ -84,7 +83,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
       time_slot: "",
       process: "",
       part_code: "",
-      ng_id: "",
+      case_id: "",
       ng_quantity: null,
       machine_name: null,
       rework_quantity: null,
@@ -173,9 +172,9 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               label="กระบวนการผลิต / Process"
               name="process"
               placeholder="เลือกกระบวนการผลิต"
-              options={PROCESS_LIST?.map((process) => ({
-                label: process,
-                value: process,
+              options={processList?.map((process) => ({
+                label: process?.process_name,
+                value: process?.process_id,
               }))}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -321,34 +320,34 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
             <div>
               {/* <SelectForm
                 label="สาเหตุ / Cause"
-                name="ng_id"
+                name="case_id"
                 placeholder="เลือกสาเหตุ"
                 options={ngCauseList?.map((ng) => ({
                   label: ng.case_name,
-                  value: ng.ng_id,
+                  value: ng.case_id,
                 }))}
                 disabled={!values?.process}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values?.ng_id}
-                error={errors.ng_id}
+                value={values?.case_id}
+                error={errors.case_id}
               /> */}
               <ComboBoxResponsive
                 label="สาเหตุ / Cause"
                 options={ngCauseList?.map((ng) => ({
                   label: ng.case_name,
-                  value: ng.ng_id,
+                  value: ng.case_id,
                 }))}
-                value={values?.ng_id ?? ""}
+                value={values?.case_id ?? ""}
                 onChange={(value) => {
                   handleChange({
                     target: {
-                      name: "ng_id",
+                      name: "case_id",
                       value,
                     },
                   });
                 }}
-                error={errors?.ng_id}
+                error={errors?.case_id}
                 labelFilter="ค้นหาสาเหตุ / Search Cause"
                 emptyLabel="เลือกสาเหตุ"
               />

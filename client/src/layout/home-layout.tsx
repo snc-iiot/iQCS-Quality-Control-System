@@ -8,7 +8,13 @@ const HomeLayout: FC = () => {
   return (
     <AuthLayout>
       <div className={"relative flex h-[100dvh] w-full flex-col antialiased"}>
-        <Header title="Toolbox On Cloud" subtitle="บันทึกข้อมูลของเสีย" icon="mapPin" color="blue" isAvatar={false} />
+        <Header
+          title="Quality Control System"
+          subtitle="บันทึกข้อมูลของเสีย"
+          icon="mapPin"
+          color="blue"
+          isAvatar={false}
+        />
         <div className="relative flex-1 overflow-hidden">
           <Outlet />
         </div>

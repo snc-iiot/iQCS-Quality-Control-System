@@ -31,7 +31,7 @@ const Header: FC<Props> = ({ isAvatar = false }) => {
       <div className={cn("flex items-center", isAvatar ? "justify-between" : "")}>
         <img src="https://ipss.sncformer.com/assets/images/logo.webp" alt="logo" className="mr-1 h-auto w-[6rem]" />
         <div className="flex flex-col border-l px-2">
-          <h1 className="text-lg font-bold text-line-green">Toolbox On Cloud</h1>
+          <h1 className="text-lg font-bold text-line-green">Quality Control System</h1>
           <h1 className="text-xs">SNC Former Company Limited and subsidiaries</h1>
         </div>
       </div>

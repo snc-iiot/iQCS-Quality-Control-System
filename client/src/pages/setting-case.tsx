@@ -9,7 +9,7 @@ export const SettingCausePage = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4">
       <Header
-        title="Toolbox On Cloud"
+        title="Quality Control System"
         subtitle="บันทึกข้อมูลของเสีย"
         icon="mapPin"
         color="blue"
