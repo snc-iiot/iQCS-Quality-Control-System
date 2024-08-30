@@ -13,9 +13,16 @@ interface CreateUpdateMachineProps {
   className?: string;
   data?: Partial<TCreateUpdateMachine>;
   onClose?: () => void;
+  isPreview?: boolean;
 }
 
-export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisible, className, data, onClose }) => {
+export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({
+  isTitleVisible,
+  className,
+  data,
+  onClose,
+  isPreview = false,
+}) => {
   const { mutateCreateMachine, mutateUpdateMachine } = useMachine();
   const [initialValues, setInitialValues] = useState<TCreateUpdateMachine>({
     machine_id: data?.machine_id ?? "",
@@ -105,6 +112,7 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.machine_name}
               required
+              readOnly={isPreview}
             />
             <InputForm
               id="machine_no"
@@ -116,6 +124,7 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.machine_no}
               required
+              readOnly={isPreview}
             />
             <InputForm
               id="location"
@@ -126,6 +135,7 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               value={values.location}
               onChange={handleChange}
               onBlur={handleBlur}
+              readOnly={isPreview}
             />
             <TextAreaForm
               id="description"
@@ -137,15 +147,18 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.description}
               labelOptional="(Optional)"
+              readOnly={isPreview}
             />
-            <div className="flex justify-end gap-4">
-              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
-                บันทึก
-              </Button>
-              <Button variant="secondary" className="w-full" type="reset" onClick={handleReset}>
-                ล้างข้อมูล / Reset
-              </Button>
-            </div>
+            {!isPreview && (
+              <div className="flex justify-end gap-4">
+                <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
+                  บันทึก
+                </Button>
+                <Button variant="secondary" className="w-full" type="reset" onClick={handleReset}>
+                  ล้างข้อมูล / Reset
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </FormField>

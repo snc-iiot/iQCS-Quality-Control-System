@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdatePart } from "@/components/form";
+import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
 import { CheckboxForm } from "@/components/ui-pattern/form-field/check-box-form";
 import {
   AlertDialog,
@@ -56,6 +57,10 @@ export const PartPage: FC = () => {
   );
 
   const { mutateDeletePart } = usePart();
+
+  const ActionWithAuth = ActionWithAuthHOC(() => (
+    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+  ));
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -138,7 +143,7 @@ export const PartPage: FC = () => {
                             Edit
                           </button>
                           <AlertDialog>
-                            <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+                            <ActionWithAuth />
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>

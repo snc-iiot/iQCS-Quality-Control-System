@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { EUserRole } from "@/constants/auth";
 import { LocalStorageManager } from "@/helpers/local-storage-manger";
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -20,21 +21,29 @@ export abstract class APIService {
     this.setupInterceptors();
   }
 
+  getUserRole(): EUserRole {
+    const user = this.localStorageManager.getItem("TOOLBOX_USER");
+    return user ? user.role : EUserRole.GUEST;
+  }
+
+  setUserRole(role: EUserRole): void {
+    this.localStorageManager.setItem("TOOLBOX_USER", {
+      ...this.localStorageManager.getItem("TOOLBOX_USER"),
+      role,
+    });
+  }
+
   private getAccessToken(): string | null {
     return this.localStorageManager.getItem("TOOLBOX_ACCESS_TOKEN") || null;
-  }
-
-  getUser(): string | null {
-    return this.localStorageManager.getItem("TOOLBOX_USER") || null;
-  }
-
-  setUser(user: string): void {
-    this.localStorageManager.setItem("TOOLBOX_USER", user);
   }
 
   private getDefaultHeaders(): Record<string, string> {
     const token = this.getAccessToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getAccessToken();
   }
 
   setAccessToken(token: string): void {
@@ -43,7 +52,6 @@ export abstract class APIService {
 
   removeAccessToken(): void {
     this.localStorageManager.removeItem("TOOLBOX_ACCESS_TOKEN");
-    this.localStorageManager.removeItem("TOOLBOX_USER");
   }
 
   private setupInterceptors(): void {

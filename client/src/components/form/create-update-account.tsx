@@ -13,9 +13,16 @@ interface CreateUpdateAccountProps {
   className?: string;
   data?: Partial<TCreateUpdateAccount>;
   onClose?: () => void;
+  isPreview?: boolean;
 }
 
-export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisible, className, data, onClose }) => {
+export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({
+  isTitleVisible,
+  className,
+  data,
+  onClose,
+  isPreview = false,
+}) => {
   const { mutateCreateAccount, mutateUpdateAccount } = useAccount();
   const [initialValues, setInitialValues] = useState<TCreateUpdateAccount>({
     operator_id: data?.operator_id || "",
@@ -96,6 +103,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.operator_name}
               required
+              readOnly={isPreview}
             />
             <InputForm
               id="employee_id"
@@ -107,6 +115,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.employee_id}
               required
+              readOnly={isPreview}
             />
             <InputForm
               id="position"
@@ -118,6 +127,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.position}
               labelOptional="(Optional)"
+              readOnly={isPreview}
             />
             <InputForm
               id="responsibility"
@@ -129,6 +139,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.responsibility}
               labelOptional="(Optional)"
+              readOnly={isPreview}
             />
             <TextAreaForm
               id="remark"
@@ -140,15 +151,18 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onBlur={handleBlur}
               error={errors.remark}
               labelOptional="(Optional)"
+              readOnly={isPreview}
             />
-            <div className="flex justify-end gap-4">
-              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
-                บันทึก
-              </Button>
-              <Button variant="secondary" className="w-full" type="reset" onClick={handleReset}>
-                ล้างข้อมูล / Reset
-              </Button>
-            </div>
+            {!isPreview && (
+              <div className="flex justify-end gap-4">
+                <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
+                  บันทึก
+                </Button>
+                <Button variant="secondary" className="w-full" type="reset" onClick={handleReset}>
+                  ล้างข้อมูล / Reset
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </FormField>

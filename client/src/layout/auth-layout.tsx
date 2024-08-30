@@ -1,7 +1,9 @@
+import { AuthService } from "@/services/auth.service";
 import { useDocument, useNGCause, usePart, useProcess } from "@/services/hooks";
 import { useAccount } from "@/services/hooks/use-account";
 import { useMachine } from "@/services/hooks/use-machine";
 import { FC, ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 
 type Props = {
   children: ReactNode;
@@ -9,6 +11,8 @@ type Props = {
 
 export const AuthLayout: FC<Props> = ({ children }) => {
   const { useGetParts } = usePart();
+  const authService = new AuthService();
+
   const { useGetProcess } = useProcess();
   const { useGetDocuments } = useDocument();
   const { useGetNGCauses } = useNGCause();
@@ -21,6 +25,10 @@ export const AuthLayout: FC<Props> = ({ children }) => {
   useGetNGCauses();
   useGetMachines();
   useGetAccounts();
+
+  if (!authService.isLoggedIn()) {
+    return <Navigate to="/login" />;
+  }
 
   return <>{children}</>;
 };

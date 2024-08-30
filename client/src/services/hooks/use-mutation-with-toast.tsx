@@ -5,19 +5,23 @@ import Swal from "sweetalert2";
 export const useMutationWithToast = <TData,>(
   action: (data: TData) => Promise<TResponse<unknown>>,
   loadingMessage: string,
-  revalidateKey?: string[]
+  revalidateKey?: string[],
+  isShowSuccessToast = true
 ) => {
   const queryClient = useQueryClient();
 
   const mutationFn = async (data: TData) => {
     // Show loading Swal
-    Swal.fire({
-      title: loadingMessage,
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+
+    if (isShowSuccessToast) {
+      Swal.fire({
+        title: loadingMessage,
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    }
 
     try {
       const res = await action(data);
@@ -25,12 +29,29 @@ export const useMutationWithToast = <TData,>(
       Swal.close();
 
       // Show result Swal
-      Swal.fire({
-        title: res?.message,
-        icon: res?.status,
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      // Swal.fire({
+      //   title: res?.message,
+      //   icon: res?.status,
+      //   timer: 2000,
+      //   showConfirmButton: false,
+      // });
+      if (isShowSuccessToast) {
+        Swal.fire({
+          title: res?.message,
+          icon: res?.status,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      } else {
+        if (res?.status !== "success") {
+          Swal.fire({
+            title: res?.message,
+            icon: res?.status,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      }
 
       if (revalidateKey) {
         queryClient?.invalidateQueries({

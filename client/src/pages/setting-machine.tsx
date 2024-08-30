@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateMachine } from "@/components/form";
+import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,7 @@ export const SettingMachinePage: FC = () => {
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState<boolean>(false);
+  const [isPreview, setIsPreview] = useState<boolean>(false);
   const { machineList } = useAtomStore();
   const [updateMachine, setUpdateMachine] = useState<TCreateUpdateMachine | null>(null);
 
@@ -68,6 +70,10 @@ export const SettingMachinePage: FC = () => {
       machine.description?.toLowerCase()?.includes(search?.toLowerCase())
     );
   });
+
+  const ActionWithAuth = ActionWithAuthHOC(() => (
+    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+  ));
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -114,6 +120,34 @@ export const SettingMachinePage: FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog
+        open={isPreview}
+        onOpenChange={(isOpen) => {
+          setIsPreview(isOpen);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>ข้อมูลเครื่องจักร / Machine Information</DialogTitle>
+            <DialogDescription>
+              รายละเอียดข้อมูลเครื่องจักรที่เลือก / Detail of Machine that you selected
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            <CreateUpdateMachine
+              data={{
+                machine_id: updateMachine?.machine_id,
+                machine_name: updateMachine?.machine_name,
+                machine_no: updateMachine?.machine_no,
+                description: updateMachine?.description,
+                location: updateMachine?.location,
+              }}
+              onClose={() => setIsPreview(false)}
+              isPreview
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
       <main className="flex h-full w-full flex-col gap-2">
         <PageHeader title="ตั้งค่า เครื่องจักร / Machine setting" description="ตั้งค่าชื่อ Operator " />
         <div className="flex w-full justify-between">
@@ -144,6 +178,21 @@ export const SettingMachinePage: FC = () => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <button
+                        className="hover:underline"
+                        onClick={() => {
+                          setUpdateMachine({
+                            machine_id: machine.machine_id,
+                            machine_name: machine.machine_name,
+                            machine_no: machine.machine_no,
+                            description: machine.description,
+                            location: machine.location,
+                          });
+                          setIsPreview(true);
+                        }}
+                      >
+                        More Detail
+                      </button>
+                      <button
                         className="text-blue-500 hover:underline"
                         onClick={() => {
                           setUpdateMachine({
@@ -159,7 +208,7 @@ export const SettingMachinePage: FC = () => {
                         Edit
                       </button>
                       <AlertDialog>
-                        <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+                        <ActionWithAuth />
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>

@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateCause } from "@/components/form/create-update-cause";
+import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,10 @@ export const CausePage: FC = () => {
     []
   );
 
+  const ActionWithAuth = ActionWithAuthHOC(() => (
+    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+  ));
+
   const ngCauseMapped = useMemo(() => {
     return ngCauseList
       ?.filter((ngCause) => {
@@ -88,8 +93,8 @@ export const CausePage: FC = () => {
               Edit
             </button>
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button className="text-red-500 hover:underline">Delete</button>
+              <AlertDialogTrigger>
+                <ActionWithAuth />
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>

@@ -1,11 +1,11 @@
 import { GET_PROCESS } from "@/lib/constants";
-import { TCreateUpdateProcess, TProcess } from "@/types";
+import { TCreateUpdateProcess, TProcess, TProcessesOrder } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { ProcessService } from "../process.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
 
 export const useProcess = () => {
-  const { getProcess, createProcess, updateProcess, deleteProcess } = new ProcessService();
+  const { getProcess, createProcess, updateProcess, deleteProcess, patchProcessesOrder } = new ProcessService();
 
   const useGetProcess = () => {
     return useQuery({
@@ -33,10 +33,18 @@ export const useProcess = () => {
     [GET_PROCESS]
   );
 
+  const { mutateAsync: mutatePatchProcessesOrder } = useMutationWithToast(
+    async (data: TProcessesOrder) => await patchProcessesOrder(data),
+    "Processes order updated successfully",
+    [GET_PROCESS],
+    false
+  );
+
   return {
     useGetProcess,
     mutateCreateProcess,
     mutateUpdateProcess,
     mutateDeleteProcess,
+    mutatePatchProcessesOrder,
   };
 };

@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateAccount } from "@/components/form";
+import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,7 @@ export const AccountSettingPage: FC = () => {
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isPreview, setIsPreview] = useState<boolean>(false);
   const [accountSelected, setAccountSelected] = useState<TCreateUpdateAccount | null>(null);
 
   const { accountList } = useAtomStore();
@@ -69,6 +71,10 @@ export const AccountSettingPage: FC = () => {
   const filteredAccountList = accountList?.filter((account) => {
     return account.operator_name?.toLowerCase()?.includes(search?.toLowerCase());
   });
+
+  const ActionWithAuth = ActionWithAuthHOC(() => (
+    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+  ));
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -114,7 +120,35 @@ export const AccountSettingPage: FC = () => {
           </div>
         </DialogContent>
       </Dialog>
-
+      <Dialog
+        open={isPreview}
+        onOpenChange={(isOpen) => {
+          setIsPreview(isOpen);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>ข้อมูล Operator / Operator Information</DialogTitle>
+            <DialogDescription>
+              รายละเอียดข้อมูล Operator ที่เลือก / Detail of Operator that you selected
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            <CreateUpdateAccount
+              data={{
+                operator_id: accountSelected?.operator_id,
+                operator_name: accountSelected?.operator_name,
+                employee_id: accountSelected?.employee_id,
+                position: accountSelected?.position,
+                responsibility: accountSelected?.responsibility,
+                remarks: accountSelected?.remarks,
+              }}
+              isPreview
+              onClose={() => setIsPreview(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
       <main className="flex h-full w-full flex-col gap-2">
         <PageHeader title="ตั้งค่า Operator name / Operator name setting" description="ตั้งค่าชื่อ Operator " />
         <div className="flex w-full justify-between">
@@ -156,6 +190,22 @@ export const AccountSettingPage: FC = () => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <button
+                        className="hover:underline"
+                        onClick={() => {
+                          setAccountSelected({
+                            operator_id: operator?.operator_id,
+                            employee_id: operator?.employee_id,
+                            operator_name: operator?.operator_name,
+                            position: operator?.position,
+                            responsibility: operator?.responsibility,
+                            remarks: operator?.remarks,
+                          });
+                          setIsPreview(true);
+                        }}
+                      >
+                        More Detail
+                      </button>
+                      <button
                         className="text-blue-500 hover:underline"
                         onClick={() => {
                           setAccountSelected({
@@ -172,7 +222,7 @@ export const AccountSettingPage: FC = () => {
                         Edit
                       </button>
                       <AlertDialog>
-                        <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
+                        <ActionWithAuth />
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>

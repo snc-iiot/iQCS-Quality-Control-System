@@ -1,3 +1,4 @@
+import { EUserRole } from "@/constants/auth";
 import { API_BASE_URL } from "@/helpers/common.helper";
 import { TAuth, TChangePassword, TRequestSignIn, TResponse } from "@/types";
 import { AxiosError } from "axios";
@@ -13,6 +14,15 @@ export class AuthService extends APIService {
       const { data } = await this.post<TResponse<TAuth[]>>(`/users/login`, req);
       if (data.status === "success") {
         this.setAccessToken(data.data?.[0]?.token);
+        this?.setUserRole(
+          data.data?.[0]?.role
+            ? data.data?.[0]?.role === "ADMIN"
+              ? EUserRole.ADMIN
+              : data.data?.[0]?.role === "USER"
+                ? EUserRole.USER
+                : EUserRole.GUEST
+            : EUserRole.GUEST
+        );
       }
       return data;
     } catch (error) {
