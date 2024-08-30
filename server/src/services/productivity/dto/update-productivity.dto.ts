@@ -7,7 +7,11 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateProductivityDto {
+export class UpdateProductivityDto {
+  @IsUUID()
+  @IsNotEmpty()
+  prod_log_id: string;
+
   @IsDateString()
   @IsNotEmpty()
   datetime: string;
