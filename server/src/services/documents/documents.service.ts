@@ -20,9 +20,12 @@ export class DocumentsService {
       const record = {
         document_name: input.document_name,
         document_description: input.document_description ?? '',
-        effective_date: input.effective_date ?? null,
-        expire_date: input.expire_date ?? null,
-        file: 'https://sncservices.sncformer.com/data/ivrs/v1/docs/pdf/IdgeDLtU-i1724032381/rE7feYodnyABIIz81RbOMbCXV6YWwbfy40XN5o67xJotbvu_odz91n-3cpn66wGNc70gk10Hr-vEjfo12Ap29lW0XgRF6VBA8lUB-FI-STMTS2.pdf',
+        effective_date: !Boolean(input.effective_date)
+          ? null
+          : input.effective_date,
+        expire_date: !Boolean(input.expire_date) ? null : input.expire_date,
+        source_file:
+          'https://sncservices.sncformer.com/data/ivrs/v1/docs/pdf/IdgeDLtU-i1724032381/rE7feYodnyABIIz81RbOMbCXV6YWwbfy40XN5o67xJotbvu_odz91n-3cpn66wGNc70gk10Hr-vEjfo12Ap29lW0XgRF6VBA8lUB-FI-STMTS2.pdf',
         creator_id: decoded.user_id,
         plant_code: decoded.plant_code,
       };
@@ -49,9 +52,12 @@ export class DocumentsService {
       const record = {
         document_name: input.document_name,
         document_description: input.document_description ?? '',
-        effective_date: input.effective_date ?? null,
-        expire_date: input.expire_date ?? null,
-        file: 'https://sncservices.sncformer.com/data/ivrs/v1/docs/pdf/IdgeDLtU-i1724032381/rE7feYodnyABIIz81RbOMbCXV6YWwbfy40XN5o67xJotbvu_odz91n-3cpn66wGNc70gk10Hr-vEjfo12Ap29lW0XgRF6VBA8lUB-FI-STMTS2.pdf',
+        effective_date: !Boolean(input.effective_date)
+          ? null
+          : input.effective_date,
+        expire_date: !Boolean(input.expire_date) ? null : input.expire_date,
+        source_file:
+          'https://sncservices.sncformer.com/data/ivrs/v1/docs/pdf/IdgeDLtU-i1724032381/rE7feYodnyABIIz81RbOMbCXV6YWwbfy40XN5o67xJotbvu_odz91n-3cpn66wGNc70gk10Hr-vEjfo12Ap29lW0XgRF6VBA8lUB-FI-STMTS2.pdf',
       };
       const updated = await this.documentRepository.update(
         { document_id: input.document_id },

@@ -71,7 +71,7 @@ export class NgCaseService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      console.log(decoded);
+      // console.log(decoded);
       const results = await this.ngCaseRepository.find({
         where: {
           plant_code: decoded.plant_code,

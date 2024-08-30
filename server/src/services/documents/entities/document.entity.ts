@@ -18,13 +18,13 @@ export class Document {
   document_description: string;
 
   @Column()
-  effective_date: Date;
+  effective_date: string;
 
   @Column()
-  expire_date: Date;
+  expire_date: string;
 
   @Column()
-  file: string;
+  source_file: string;
 
   @Column()
   plant_code: string;
