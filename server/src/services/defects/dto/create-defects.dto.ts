@@ -1,19 +1,15 @@
 import {
   IsString,
   IsNotEmpty,
-  IsDateString,
   // Matches,
+  IsDateString,
   IsIn,
   IsUUID,
   IsNumber,
   Min,
 } from 'class-validator';
 
-export class UpdateDefectsDto {
-  @IsUUID()
-  @IsNotEmpty()
-  defects_log_id: string;
-
+export class CreateDefectsDto {
   @IsDateString()
   @IsNotEmpty()
   // @Matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, {
@@ -23,35 +19,34 @@ export class UpdateDefectsDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsIn([
-    'CUTTING',
-    'BENDING',
-    'PRESS',
-    'SPOT',
-    'PAINTING',
-    'PRE-ASSEMBLY',
-    'ASSEMBLY',
-  ])
-  process: string;
-
-  @IsString()
-  @IsNotEmpty()
-  part_code: string;
+  @IsIn(['P', 'S'])
+  defects_type: string;
 
   @IsUUID()
   @IsNotEmpty()
-  ng_id: string;
+  process_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  part_id: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  case_id: string;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
   ng_quantity: number;
 
-  machine_name: string;
+  machine_id: string;
+  operator_id: string;
+  production_quantity: number;
   rework_quantity: number;
-  rework_cost_per_unit: number;
   scrap_quantity: number;
-  scrap_cost_per_unit: number;
+  claim_supplier_quantity: number;
+  scrap_approval_sheet_no: string;
+  car_no: string;
   image: string;
   solve_problem: string;
   remarks: string;

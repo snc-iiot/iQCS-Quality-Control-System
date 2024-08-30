@@ -15,16 +15,25 @@ export class DefectsLogging {
   datetime: string;
 
   @Column()
-  process: string;
-
-  @Column()
-  machine_name: string;
-
-  @Column()
-  part_code: string;
+  defects_type: string;
 
   @Column({ type: 'uuid' })
-  ng_id: string;
+  process_id: string;
+
+  @Column({ type: 'uuid' })
+  machine_id: string;
+
+  @Column({ type: 'uuid' })
+  operator_id: string;
+
+  @Column({ type: 'uuid' })
+  part_id: string;
+
+  @Column({ type: 'uuid' })
+  case_id: string;
+
+  @Column()
+  production_quantity: number;
 
   @Column()
   ng_quantity: number;
@@ -33,13 +42,16 @@ export class DefectsLogging {
   rework_quantity: number;
 
   @Column()
-  rework_cost_per_unit: number;
-
-  @Column()
   scrap_quantity: number;
 
   @Column()
-  scrap_cost_per_unit: number;
+  claim_supplier_quantity: number;
+
+  @Column()
+  scrap_approval_sheet_no: string;
+
+  @Column()
+  car_no: string;
 
   @Column()
   image: string;
@@ -50,8 +62,11 @@ export class DefectsLogging {
   @Column()
   remarks: string;
 
+  @Column()
+  plant_code: string;
+
   @Column({ type: 'uuid' })
-  inspector_id: string;
+  creator_id: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'now()' })
   created_at: Date;

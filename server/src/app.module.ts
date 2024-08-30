@@ -89,15 +89,15 @@ export class AppModule implements NestModule {
 
     consumer
       .apply(JwtMiddleware)
-      .exclude(
-        '/defects-logging/raw-data-by-datetime-range',
-        '/defects-logging/summary-by-datetime-range',
-        '/defects-logging/summary-by-date',
-        '/defects-logging/graph-summary-by-date',
-        '/defects-logging/top-rank-by-date',
-        '/defects-logging/graph-summary-by-date-range',
-        '/defects-logging/top-rank-by-date-range',
-      )
+      // .exclude(
+      //   '/defects-logging/raw-data-by-datetime-range',
+      //   '/defects-logging/summary-by-datetime-range',
+      //   '/defects-logging/summary-by-date',
+      //   '/defects-logging/graph-summary-by-date',
+      //   '/defects-logging/top-rank-by-date',
+      //   '/defects-logging/graph-summary-by-date-range',
+      //   '/defects-logging/top-rank-by-date-range',
+      // )
       .forRoutes({
         path: '/defects-logging*',
         method: RequestMethod.ALL,

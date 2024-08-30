@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DefectsLogging } from './entities';
+import { Process } from 'src/services/processes/entities';
 import { Part } from 'src/services/parts/entities';
 import { TServiceResponse } from 'src/types';
 import {
@@ -10,7 +11,7 @@ import {
   FindByDateDto,
   FindTopRankDto,
   FindByDatetimeRangeDto,
-  DeleteDefectsDto,
+  FindDefectsDto,
   FindByDateRangeDto,
   FindTopRankDateRangeDto,
 } from './dto';
@@ -25,6 +26,8 @@ export class DefectService {
     private readonly defectsLoggingRepository: Repository<DefectsLogging>,
     @InjectRepository(Part)
     private readonly partRepository: Repository<Part>,
+    @InjectRepository(Process)
+    private readonly processRepository: Repository<Process>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -45,37 +48,43 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       const checkPartExists = await this.partRepository.findOne({
-        where: { part_code: input.part_code },
+        where: { part_id: input.part_id, plant_code: decoded.plant_code },
       });
 
       if (!checkPartExists)
         return {
           status: 'error',
           statusCode: 400,
-          message: 'Part Code not found',
+          message: 'Part not found',
           data: [],
         };
 
       const record = {
         datetime: input.datetime,
-        process: input.process,
-        machine_name: input.machine_name ?? '',
-        part_code: input.part_code,
-        ng_id: input.ng_id,
+        defects_type: input.defects_type,
+        process_id: input.process_id,
+        part_id: input.part_id,
+        case_id: input.case_id,
         ng_quantity: input.ng_quantity,
+        //! Not required
+        machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
+        operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
+        production_quantity: input.production_quantity ?? 0,
         rework_quantity: input.rework_quantity ?? 0,
-        rework_cost_per_unit: input.rework_cost_per_unit ?? 0,
         scrap_quantity: input.scrap_quantity ?? 0,
-        scrap_cost_per_unit: input.scrap_cost_per_unit ?? 0,
+        claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
+        scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
+        car_no: input.car_no ?? '',
+        image: null,
         solve_problem: input.solve_problem ?? '',
         remarks: input.remarks ?? '',
-        inspector_id: decoded.user_id,
-        image: null,
+        creator_id: decoded.user_id,
+        plant_code: decoded.plant_code,
       };
 
       // /*
       if (input.image !== '' && input.image !== null) {
-        const filename = `${input.ng_id}_${this.randomString(8)}_${Date.now()}.png`;
+        const filename = `${input.case_id}_${this.randomString(8)}_${Date.now()}.png`;
         const remotePath = `/CoDE_Data/toolbox/docs/v1/${filename}`;
         const isUploaded = await FtpUploadFileFromBase64(
           // input.image,
@@ -110,6 +119,7 @@ export class DefectService {
 
   async findRawDataByDatetimeRange(
     input: FindByDatetimeRangeDto,
+    decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
@@ -132,32 +142,30 @@ export class DefectService {
       // datetime.setHours(datetime.getHours() - 7);
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: input.start_datetime,
           end_datetime: input.end_datetime,
         })
-        .leftJoin('tb_ng_cases', 't2', 't1.ng_id = t2.ng_id')
-        .leftJoin('tb_users', 't3', 't1.inspector_id = t3.user_id')
-        .leftJoin('tb_part_material', 't4', 't1.part_code = t4.part_code')
+        .leftJoin('tb_ng_cases', 't2', 't1.case_id = t2.case_id')
+        .leftJoin('tb_users', 't3', 't1.creator_id = t3.user_id')
+        .leftJoin('tb_part_material', 't4', 't1.part_id = t4.part_id')
         .select(
           `t1.*
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
-          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t2.case_name, t2.description AS ng_description, t3.name AS inspector_name, t4.part_name`,
+          ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name`,
         )
         .orderBy('t1.created_at', 'DESC')
         .getRawMany();
 
-      // const results = await this.DefectsLoggingRepository.query(
-      //   'SELECT * FROM tb_defects_logging WHERE datetime = $1',
-      //   [input.datetime],
-      // );
-
-      const data = results.map((item) => ({
-        ...item,
-        rework_cost_per_unit: Number(item.rework_cost_per_unit),
-        scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
-      }));
+      // const data = results.map((item) => ({
+      //   ...item,
+      //   rework_cost_per_unit: Number(item.rework_cost_per_unit),
+      //   scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
+      // }));
 
       // //! Check Cache
       // await this.cacheManager.set(cacheKey, data, cacheTTL);
@@ -167,8 +175,8 @@ export class DefectService {
         status: 'success',
         statusCode: 200,
         message: 'Defects raw data by datetime range',
-        data: data,
-        // data: results,
+        // data: data,
+        data: results,
         // data: [input],
       };
     } catch (error) {
@@ -183,37 +191,42 @@ export class DefectService {
 
   async summaryByDatetimeRange(
     input: FindByDatetimeRangeDto,
+    decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: input.start_datetime,
           end_datetime: input.end_datetime,
         })
-        .leftJoin('tb_ng_cases', 't2', 't1.ng_id = t2.ng_id')
+        .leftJoin('tb_ng_cases', 't2', 't1.case_id = t2.case_id')
+        .leftJoin('tb_processes', 't3', 't1.process_id = t3.process_id')
         .select(
           `t1.datetime
-          ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
-          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t1.process, t1.ng_id, t2.case_name, t2.description AS ng_description`,
+          ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI')) as time_slot
+          ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,t1.process_id,t3.process_name,t1.case_id,t2.case_name,t2.description AS ng_description`,
         )
         .addSelect('SUM(COALESCE(t1.ng_quantity,0)::int)', 'ng_quantity')
         .addSelect(
           'SUM(COALESCE(t1.rework_quantity,0)::int)',
           'rework_quantity',
         )
-        .addSelect(
-          'SUM(COALESCE(t1.rework_cost_per_unit,0))',
-          'rework_cost_per_unit',
-        )
+        // .addSelect(
+        //   'SUM(COALESCE(t1.rework_cost_per_unit,0))',
+        //   'rework_cost_per_unit',
+        // )
         .addSelect('SUM(COALESCE(t1.scrap_quantity,0)::int)', 'scrap_quantity')
-        .addSelect(
-          'SUM(COALESCE(t1.scrap_cost_per_unit,0))',
-          'scrap_cost_per_unit',
-        )
+        // .addSelect(
+        //   'SUM(COALESCE(t1.scrap_cost_per_unit,0))',
+        //   'scrap_cost_per_unit',
+        // )
         .groupBy(
-          `t1.datetime, t1.process, t1.ng_id, t2.case_name, t2.description`,
+          `t1.datetime,t1.process_id,t3.process_name,t1.case_id,t2.case_name,t2.description`,
           // `t1.datetime,concat(to_char(t1.datetime, 'HH:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH:MI')), t1.process, t1.ng_id, t2.case_name, t2.description`,
         )
         .getRawMany();
@@ -227,9 +240,9 @@ export class DefectService {
         ...item,
         ng_quantity: Number(item.ng_quantity),
         rework_quantity: Number(item.rework_quantity),
-        rework_cost_per_unit: Number(item.rework_cost_per_unit),
+        // rework_cost_per_unit: Number(item.rework_cost_per_unit),
         scrap_quantity: Number(item.scrap_quantity),
-        scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
+        // scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
       }));
 
       return {
@@ -250,7 +263,10 @@ export class DefectService {
     }
   }
 
-  async summaryByDate(input: FindByDateDto): Promise<TServiceResponse> {
+  async summaryByDate(
+    input: FindByDateDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
       const startDatetime = new Date(`${input.date}T01:00:00Z`);
       const endDatetime = new Date(`${input.date}T01:00:00Z`);
@@ -271,24 +287,28 @@ export class DefectService {
       // /*
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
         })
-        .leftJoin('tb_users', 't3', 't1.inspector_id = t3.user_id')
+        .leftJoin('tb_users', 't3', 't1.creator_id = t3.user_id')
+        .leftJoin('tb_processes', 't4', 't1.process_id = t4.process_id')
         .select(
           `t1.datetime
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
-          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t1.process,t3.name as inspector_name
-,sum(t1.ng_quantity) over (partition by t1.datetime,t1.process) as ng_quantity
-,sum(coalesce(t1.rework_quantity, 0)) over (partition by t1.datetime,t1.process) as rework_quantity
-,sum(coalesce(t1.rework_cost_per_unit, 0)) over (partition by t1.datetime,t1.process) as rework_cost_per_unit
-,sum(coalesce(t1.scrap_quantity, 0)) over (partition by t1.datetime,t1.process) as scrap_quantity
-,sum(coalesce(t1.scrap_cost_per_unit, 0)) over (partition by t1.datetime,t1.process) as scrap_cost_per_unit
-,first_value(t1.inspector_id) over (partition by t1.datetime,t1.process order by t1.created_at) as inspector_id`,
+          ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,t1.process_id,t4.process_name,t3.name as creator_name
+,sum(t1.ng_quantity) over (partition by t1.datetime,t1.process_id) as ng_quantity
+,sum(coalesce(t1.rework_quantity, 0)) over (partition by t1.datetime,t1.process_id) as rework_quantity
+,sum(coalesce(t1.scrap_quantity, 0)) over (partition by t1.datetime,t1.process_id) as scrap_quantity`,
         )
         .getRawMany();
+
+      //! ,first_value(t1.inspector_id) over (partition by t1.datetime,t1.process_id order by t1.created_at) as inspector_id
+
       // */
       // const results = await this.DefectsLoggingRepository.query(
       //   'SELECT * FROM tb_defects_logging WHERE datetime = $1',
@@ -297,39 +317,43 @@ export class DefectService {
 
       const summary = results.reduce((acc, cur) => {
         const allProcessAndDate = acc.map(
-          (item) => `${item.process}_${item.datetime}`,
+          (item) => `${item.process_id}_${item.datetime}`,
         );
-        if (!allProcessAndDate.includes(`${cur.process}_${cur.datetime}`)) {
+        if (!allProcessAndDate.includes(`${cur.process_id}_${cur.datetime}`)) {
           return [
             ...acc,
             {
               datetime: cur.datetime,
               time_slot: cur.time_slot,
               shift: cur.shift,
-              process: cur.process,
+              process_id: cur.process_id,
+              process_name: cur.process_name,
               ng_quantity: Number(cur.ng_quantity),
               rework_quantity: Number(cur.rework_quantity),
-              rework_cost_per_unit: Number(cur.rework_cost_per_unit),
+              // rework_cost_per_unit: Number(cur.rework_cost_per_unit),
               scrap_quantity: Number(cur.scrap_quantity),
-              scrap_cost_per_unit: Number(cur.scrap_cost_per_unit),
-              inspector_id: cur.inspector_id,
-              inspector_name: cur.inspector_name,
+              // scrap_cost_per_unit: Number(cur.scrap_cost_per_unit),
+              creator_id: cur.creator_id,
+              creator_name: cur.creator_name,
             },
           ];
         }
 
         return acc.map((item) => {
-          if (item.process === cur.process && item.datetime === cur.datetime) {
+          if (
+            item.process_id === cur.process_id &&
+            item.datetime === cur.datetime
+          ) {
             return {
               ...item,
               ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
               rework_quantity:
                 item.rework_quantity + Number(cur.rework_quantity),
-              rework_cost_per_unit:
-                item.rework_cost_per_unit + Number(cur.rework_cost_per_unit),
+              // rework_cost_per_unit:
+              //   item.rework_cost_per_unit + Number(cur.rework_cost_per_unit),
               scrap_quantity: item.scrap_quantity + Number(cur.scrap_quantity),
-              scrap_cost_per_unit:
-                item.scrap_cost_per_unit + Number(cur.scrap_cost_per_unit),
+              // scrap_cost_per_unit:
+              //   item.scrap_cost_per_unit + Number(cur.scrap_cost_per_unit),
             };
           }
 
@@ -355,22 +379,25 @@ export class DefectService {
     }
   }
 
-  async graphSummaryByDate(input: FindByDateDto): Promise<TServiceResponse> {
+  async graphSummaryByDate(
+    input: FindByDateDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
-      //! Check Cache
-      const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date_${input.date}`;
-      // console.log(cacheKey);
-      const cacheTTL = 30 * 1000; // 30 seconds
-      const cacheValue = await this.cacheManager.get(cacheKey);
-      if (cacheValue !== undefined) {
-        return {
-          status: 'success',
-          statusCode: 200,
-          message: 'Data (Cache)',
-          data: cacheValue as any[],
-        };
-      }
-      //! ./Check Cache
+      // //! Check Cache
+      // const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date_${input.date}`;
+      // // console.log(cacheKey);
+      // const cacheTTL = 30 * 1000; // 30 seconds
+      // const cacheValue = await this.cacheManager.get(cacheKey);
+      // if (cacheValue !== undefined) {
+      //   return {
+      //     status: 'success',
+      //     statusCode: 200,
+      //     message: 'Data (Cache)',
+      //     data: cacheValue as any[],
+      //   };
+      // }
+      // //! ./Check Cache
 
       const startDatetime = new Date(`${input.date}T01:00:00Z`);
       const endDatetime = new Date(`${input.date}T01:00:00Z`);
@@ -391,39 +418,47 @@ export class DefectService {
       // /*
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
         })
+        .leftJoin('tb_processes', 't2', 't1.process_id = t2.process_id')
         .select(
           `t1.datetime
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
-          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t1.process
-          ,sum(t1.ng_quantity) over (partition by t1.datetime,t1.process) as ng_quantity`,
+          ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,t1.process_id,t2.process_name
+          ,sum(t1.ng_quantity) over (partition by t1.datetime,t1.process_id) as ng_quantity`,
         )
         .orderBy('t1.datetime', 'ASC')
         .getRawMany();
 
       const summary = results.reduce((acc, cur) => {
         const allProcessAndDate = acc.map(
-          (item) => `${item.process}_${item.datetime}`,
+          (item) => `${item.process_id}_${item.datetime}`,
         );
-        if (!allProcessAndDate.includes(`${cur.process}_${cur.datetime}`)) {
+        if (!allProcessAndDate.includes(`${cur.process_id}_${cur.datetime}`)) {
           return [
             ...acc,
             {
               datetime: cur.datetime,
               time_slot: cur.time_slot,
               shift: cur.shift,
-              process: cur.process,
+              process_id: cur.process_id,
+              process_name: cur.process_name,
               ng_quantity: Number(cur.ng_quantity),
             },
           ];
         }
 
         return acc.map((item) => {
-          if (item.process === cur.process && item.datetime === cur.datetime) {
+          if (
+            item.process_id === cur.process_id &&
+            item.datetime === cur.datetime
+          ) {
             return {
               ...item,
               ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
@@ -434,15 +469,11 @@ export class DefectService {
         });
       }, []);
 
-      const processes = [
-        'CUTTING',
-        'BENDING',
-        'PRESS',
-        'SPOT',
-        'PAINTING',
-        'PRE-ASSEMBLY',
-        'ASSEMBLY',
-      ];
+      // : { process_id: string; process_name: string }[]
+      const allProcesses = await this.processRepository.find({
+        where: { plant_code: decoded.plant_code },
+        select: ['process_id', 'process_name'],
+      });
 
       const startAt = new Date(`${input.date}T01:00:00Z`);
       // const endAt = new Date(`${input.date}T00:00:00Z`);
@@ -455,7 +486,7 @@ export class DefectService {
           timeSlot.setHours(timeSlot.getHours() + 7);
         timestamp.setHours(timestamp.getHours() + i);
         timeSlot.setHours(timeSlot.getHours() + i);
-        for (const process of processes) {
+        for (const processItem of allProcesses) {
           const timeSlotString = `${timeSlot.getHours().toString().padStart(2, '0')}:00 - ${(timeSlot.getHours() + 1).toString().padStart(2, '0')}:00`;
           data.push({
             datetime: timestamp,
@@ -464,19 +495,21 @@ export class DefectService {
               timeSlot.getHours() >= 8 && timeSlot.getHours() < 20
                 ? 'DAY'
                 : 'NIGHT',
-            process: process,
+            process_id: processItem.process_id,
+            process_name: processItem.process_name,
             ng_quantity:
               summary.find(
                 (item) =>
-                  item.process === process && item.time_slot === timeSlotString,
+                  item.process_id === processItem.process_id &&
+                  item.time_slot === timeSlotString,
               )?.ng_quantity ?? 0,
           });
         }
       }
 
-      //! Check Cache
-      await this.cacheManager.set(cacheKey, data, cacheTTL);
-      //! ./Check Cache
+      // //! Check Cache
+      // await this.cacheManager.set(cacheKey, data, cacheTTL);
+      // //! ./Check Cache
 
       return {
         status: 'success',
@@ -484,6 +517,7 @@ export class DefectService {
         message: 'Defects graph summary by date',
         // data: [startAt, endAt],
         data: data,
+        // data: data.filter((item) => item.ng_quantity != 0),
         // data: summary,
         // data: [input],
       };
@@ -499,22 +533,23 @@ export class DefectService {
 
   async graphSummaryByDateRange(
     input: FindByDateRangeDto,
+    decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      //! Check Cache
-      const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}`;
-      // console.log(cacheKey);
-      const cacheTTL = 30 * 1000; // 30 seconds
-      const cacheValue = await this.cacheManager.get(cacheKey);
-      if (cacheValue !== undefined) {
-        return {
-          status: 'success',
-          statusCode: 200,
-          message: 'Data (Cache)',
-          data: cacheValue as any[],
-        };
-      }
-      //! ./Check Cache
+      // //! Check Cache
+      // const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}`;
+      // // console.log(cacheKey);
+      // const cacheTTL = 30 * 1000; // 30 seconds
+      // const cacheValue = await this.cacheManager.get(cacheKey);
+      // if (cacheValue !== undefined) {
+      //   return {
+      //     status: 'success',
+      //     statusCode: 200,
+      //     message: 'Data (Cache)',
+      //     data: cacheValue as any[],
+      //   };
+      // }
+      // //! ./Check Cache
 
       const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
       const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
@@ -536,18 +571,22 @@ export class DefectService {
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
         })
+        .leftJoin('tb_processes', 't2', 't1.process_id = t2.process_id')
         .select(
-          `t1.datetime,t1.process
+          `t1.datetime,t1.process_id,t2.process_name
           ,to_char(t1.datetime, 'YYYY-MM-DD') as date
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
-          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
           ,sum(t1.ng_quantity) as ng_quantity`,
         )
-        .groupBy('t1.datetime,t1.process')
+        .groupBy('t1.datetime,t1.process_id,t2.process_name')
         .orderBy('t1.datetime', 'ASC')
         .getRawMany();
 
@@ -560,11 +599,11 @@ export class DefectService {
 
       const summary = results.reduce((acc, cur) => {
         const allProcessAndDate = acc.map(
-          (item) => `${item.process}_${new Date(item.datetime).getTime()}`,
+          (item) => `${item.process_id}_${new Date(item.datetime).getTime()}`,
         );
         if (
           !allProcessAndDate.includes(
-            `${cur.process}_${new Date(cur.datetime).getTime()}`,
+            `${cur.process_id}_${new Date(cur.datetime).getTime()}`,
           )
         ) {
           return [
@@ -574,7 +613,8 @@ export class DefectService {
               date: cur.date,
               time_slot: cur.time_slot,
               shift: cur.shift,
-              process: cur.process,
+              process_id: cur.process_id,
+              process_name: cur.process_name,
               ng_quantity: Number(cur.ng_quantity),
             },
           ];
@@ -582,7 +622,7 @@ export class DefectService {
 
         return acc.map((item) => {
           if (
-            item.process === cur.process &&
+            item.process_id === cur.process_id &&
             new Date(item.datetime).getTime() ===
               new Date(cur.datetime).getTime()
           ) {
@@ -603,15 +643,11 @@ export class DefectService {
       //   data: summary,
       // };
 
-      const processes = [
-        'CUTTING',
-        'BENDING',
-        'PRESS',
-        'SPOT',
-        'PAINTING',
-        'PRE-ASSEMBLY',
-        'ASSEMBLY',
-      ];
+      // : { process_id: string; process_name: string }[]
+      const allProcesses = await this.processRepository.find({
+        where: { plant_code: decoded.plant_code },
+        select: ['process_id', 'process_name'],
+      });
 
       const startAt = new Date(`${input.start_date}T01:00:00Z`);
       // const endAt = new Date(`${input.end_date}T00:00:00Z`);
@@ -627,7 +663,7 @@ export class DefectService {
         timestamp.setHours(timestamp.getHours() + i);
         const dateString = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
         timeSlot.setHours(timeSlot.getHours() + i);
-        for (const process of processes) {
+        for (const processItem of allProcesses) {
           const timeSlotString = `${timeSlot.getHours().toString().padStart(2, '0')}:00 - ${(timeSlot.getHours() + 1).toString().padStart(2, '0')}:00`;
           data.push({
             datetime: timestamp,
@@ -636,12 +672,13 @@ export class DefectService {
               timeSlot.getHours() >= 8 && timeSlot.getHours() < 20
                 ? 'DAY'
                 : 'NIGHT',
-            process: process,
+            process_id: processItem.process_id,
+            process_name: processItem.process_name,
             ng_quantity:
               summary.find(
                 (item) =>
                   // item.process === process && item.time_slot === timeSlotString,
-                  item.process === process &&
+                  item.process_id === processItem.process_id &&
                   item.date === dateString &&
                   item.time_slot === timeSlotString,
               )?.ng_quantity ?? 0,
@@ -650,9 +687,9 @@ export class DefectService {
         if (timestamp.getTime() >= endDatetime.getTime()) break;
       }
 
-      //! Check Cache
-      await this.cacheManager.set(cacheKey, data, cacheTTL);
-      //! ./Check Cache
+      // //! Check Cache
+      // await this.cacheManager.set(cacheKey, data, cacheTTL);
+      // //! ./Check Cache
 
       return {
         status: 'success',
@@ -673,7 +710,10 @@ export class DefectService {
     }
   }
 
-  async findTopRankByDate(input: FindTopRankDto): Promise<TServiceResponse> {
+  async findTopRankByDate(
+    input: FindTopRankDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
       let startDatetime: Date;
       let endDatetime: Date;
@@ -690,30 +730,33 @@ export class DefectService {
         endDatetime.setHours(endDatetime.getHours() + 24);
       }
 
-      const processes = [
-        'CUTTING',
-        'BENDING',
-        'PRESS',
-        'SPOT',
-        'PAINTING',
-        'PRE-ASSEMBLY',
-        'ASSEMBLY',
-      ];
+      // : { process_id: string; process_name: string }[]
+      const allProcesses = await this.processRepository.find({
+        where: { plant_code: decoded.plant_code },
+        select: ['process_id', 'process_name'],
+      });
 
       const filterProcess =
-        input.process === 'ALL' ? processes : [input.process];
+        input.process_id === 'ALL'
+          ? allProcesses.map((item) => item.process_id)
+          : [input.process_id];
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.process in (:...process)', { process: filterProcess })
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.process_id in (:...processes)', {
+          processes: filterProcess,
+        })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
         })
-        .leftJoin('tb_ng_cases', 't2', 't1.ng_id = t2.ng_id')
-        .select('t1.ng_id,t2.case_name')
+        .leftJoin('tb_ng_cases', 't2', 't1.case_id = t2.case_id')
+        .select('t1.case_id,t2.case_name')
         .addSelect('SUM(t1.ng_quantity)::int as ng_quantity')
-        .groupBy('t1.ng_id,t2.case_name')
+        .groupBy('t1.case_id,t2.case_name')
         .orderBy('ng_quantity', 'DESC')
         // .orderBy('case_name', 'ASC')
         .take(10)
@@ -737,6 +780,7 @@ export class DefectService {
 
   async findTopRankByDateRange(
     input: FindTopRankDateRangeDto,
+    decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       const startDatetime = new Date(`${input.start_date}T01:00:00Z`);
@@ -757,18 +801,16 @@ export class DefectService {
         if (timestamp.getTime() >= endDatetime.getTime()) break;
       }
 
-      const processes = [
-        'CUTTING',
-        'BENDING',
-        'PRESS',
-        'SPOT',
-        'PAINTING',
-        'PRE-ASSEMBLY',
-        'ASSEMBLY',
-      ];
+      // : { process_id: string; process_name: string }[]
+      const allProcesses = await this.processRepository.find({
+        where: { plant_code: decoded.plant_code },
+        select: ['process_id', 'process_name'],
+      });
 
       const filterProcess =
-        input.process === 'ALL' ? processes : [input.process];
+        input.process_id === 'ALL'
+          ? allProcesses.map((item) => item.process_id)
+          : [input.process_id];
 
       const filterShift =
         input.shift === 'DAY'
@@ -779,16 +821,19 @@ export class DefectService {
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .where('t1.process in (:...process)', { process: filterProcess })
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.process_id in (:...process)', { process: filterProcess })
         .andWhere('t1.datetime in (:...datetime)', { datetime: filterShift })
         // .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
         //   start_datetime: startDatetime,
         //   end_datetime: endDatetime,
         // })
-        .leftJoin('tb_ng_cases', 't2', 't1.ng_id = t2.ng_id')
-        .select('t1.ng_id,t2.case_name')
+        .leftJoin('tb_ng_cases', 't2', 't1.case_id = t2.case_id')
+        .select('t1.case_id,t2.case_name')
         .addSelect('SUM(t1.ng_quantity)::int as ng_quantity')
-        .groupBy('t1.ng_id,t2.case_name')
+        .groupBy('t1.case_id,t2.case_name')
         .orderBy('ng_quantity', 'DESC')
         // .orderBy('case_name', 'ASC')
         .take(10)
@@ -816,7 +861,7 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       const checkPartExists = await this.partRepository.findOne({
-        where: { part_code: input.part_code },
+        where: { part_id: input.part_id, plant_code: decoded.plant_code },
       });
 
       if (!checkPartExists)
@@ -829,19 +874,23 @@ export class DefectService {
 
       const record = {
         datetime: input.datetime,
-        process: input.process,
-        machine_name: input.machine_name ?? '',
-        part_code: input.part_code,
-        ng_id: input.ng_id,
+        defects_type: input.defects_type,
+        process_id: input.process_id,
+        part_id: input.part_id,
+        case_id: input.case_id,
         ng_quantity: input.ng_quantity,
+        //! Not required
+        machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
+        operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
+        production_quantity: input.production_quantity ?? 0,
         rework_quantity: input.rework_quantity ?? 0,
-        rework_cost_per_unit: input.rework_cost_per_unit ?? 0,
         scrap_quantity: input.scrap_quantity ?? 0,
-        scrap_cost_per_unit: input.scrap_cost_per_unit ?? 0,
+        claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
+        scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
+        car_no: input.car_no ?? '',
+        image: null,
         solve_problem: input.solve_problem ?? '',
         remarks: input.remarks ?? '',
-        inspector_id: decoded.user_id,
-        image: null,
       };
 
       // /*
@@ -850,7 +899,7 @@ export class DefectService {
         input.image != 'DELETE' &&
         input.image !== null
       ) {
-        const filename = `${input.ng_id}_${this.randomString(8)}_${Date.now()}.png`;
+        const filename = `${input.case_id}_${this.randomString(8)}_${Date.now()}.png`;
         const remotePath = `/CoDE_Data/toolbox/docs/v1/${filename}`;
         const isUploaded = await FtpUploadFileFromBase64(
           // input.image,
@@ -865,7 +914,8 @@ export class DefectService {
       }
       // */
 
-      if (record.image === null && input.image != 'DELETE') delete record.image;
+      // if (record.image === null && input.image != 'DELETE') delete record.image;
+      if (record.image === null) delete record.image;
       const updated = await this.defectsLoggingRepository.update(
         { defects_log_id: input.defects_log_id },
         record,
@@ -888,7 +938,7 @@ export class DefectService {
     }
   }
 
-  async delete(input: DeleteDefectsDto): Promise<TServiceResponse> {
+  async delete(input: FindDefectsDto): Promise<TServiceResponse> {
     try {
       /*
       if (input.image !== '' && input.image !== null) {

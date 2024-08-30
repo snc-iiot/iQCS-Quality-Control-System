@@ -23,17 +23,7 @@ export class FindTopRankDateRangeDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsIn([
-    'ALL',
-    'CUTTING',
-    'BENDING',
-    'PRESS',
-    'SPOT',
-    'PAINTING',
-    'PRE-ASSEMBLY',
-    'ASSEMBLY',
-  ])
-  process: string;
+  process_id: string;
 
   @IsString()
   @IsNotEmpty()
