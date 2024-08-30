@@ -14,20 +14,26 @@ export class ProductivityLogging {
   @Column({ type: 'timestamp' })
   datetime: string;
 
-  @Column()
-  processes: string;
+  @Column({ type: 'uuid' })
+  process_id: string;
 
-  @Column()
-  machine_name: string;
+  @Column({ type: 'uuid' })
+  machine_id: string;
 
-  @Column()
-  part_code: string;
+  @Column({ type: 'uuid' })
+  operator_id: string;
+
+  @Column({ type: 'uuid' })
+  part_id: string;
 
   @Column()
   quantity: number;
 
   @Column()
   remarks: string;
+
+  @Column()
+  plant_code: string;
 
   @Column({ type: 'uuid' })
   creator_id: string;
