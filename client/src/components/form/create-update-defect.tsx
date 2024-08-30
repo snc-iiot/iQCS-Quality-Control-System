@@ -1,3 +1,4 @@
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GET_NOW_TIME_SLOT, GET_TIME_SLOTS } from "@/helpers";
 import { Base64Helper } from "@/helpers/base64.helper";
@@ -30,23 +31,29 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
   const { mutateCreateDefect, mutateUpdateDefect } = useDefect();
-  const { partList, ngCauseList, processList } = useAtomStore();
+  const { partList, ngCauseList, processList, machineList, accountList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDefect>({
     defects_log_id: data?.defects_log_id || "",
     datetime: data?.datetime || "",
     date: data?.date ?? renderFormattedPayloadDate(new Date()) ?? "",
     time_slot: data?.time_slot || GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
-    process: data?.process || "",
-    part_code: data?.part_code || "",
+    process_id: data?.process_id || "",
+    part_id: data?.part_id || "",
     case_id: data?.case_id || "",
     ng_quantity: data?.ng_quantity || null,
-    machine_name: data?.machine_name || null,
+    defects_type: data?.defects_type || "S",
+
+    // Optional
+    machine_id: data?.machine_id || "",
+    operator_id: data?.operator_id || "",
+    production_quantity: data?.production_quantity || null,
     rework_quantity: data?.rework_quantity || null,
-    rework_cost_per_unit: data?.rework_cost_per_unit || null,
     scrap_quantity: data?.scrap_quantity || null,
-    scrap_cost_per_unit: data?.scrap_cost_per_unit || null,
-    image: data?.image || null,
-    solve_problem: data?.solve_problem || null,
+    claim_supplier_quantity: data?.claim_supplier_quantity || null,
+    scrap_approval_sheet_no: data?.scrap_approval_sheet_no || "",
+    car_no: data?.car_no || "",
+    image: data?.image || "",
+    solve_problem: data?.solve_problem || "",
     remarks: data?.remarks || "",
   });
   const [isDeleteImage, setIsDeleteImage] = useState<boolean>(false);
@@ -78,20 +85,27 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
   // Helper function to reset the form values
   const resetFormValues = () => {
     setInitialValues({
+      defects_log_id: "",
       datetime: "",
-      date: "",
-      time_slot: "",
-      process: "",
-      part_code: "",
+      date: renderFormattedPayloadDate(new Date()) ?? "",
+      time_slot: GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
+      defects_type: "S",
+      process_id: "",
+      part_id: "",
       case_id: "",
       ng_quantity: null,
-      machine_name: null,
+
+      // Optional
+      machine_id: "",
+      operator_id: "",
+      production_quantity: null,
       rework_quantity: null,
-      rework_cost_per_unit: null,
       scrap_quantity: null,
-      scrap_cost_per_unit: null,
-      image: null,
-      solve_problem: null,
+      claim_supplier_quantity: null,
+      scrap_approval_sheet_no: "",
+      car_no: "",
+      image: "",
+      solve_problem: "",
       remarks: "",
     });
   };
@@ -156,6 +170,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               onBlur={handleBlur}
               value={values?.date ?? ""}
               error={errors.date}
+              required
             />
             <SelectForm
               label="ช่วงเวลา / Time"
@@ -167,6 +182,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               onBlur={handleBlur}
               value={values?.time_slot ?? ""}
               error={errors.time_slot}
+              required
             />
             <SelectForm
               label="กระบวนการผลิต / Process"
@@ -180,46 +196,9 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               onBlur={handleBlur}
               value={values?.process ?? ""}
               error={errors.process}
-            />
-            <InputForm
-              label="ชื่อเครื่องจักร / Machine Name"
-              name="machine_name"
-              placeholder="โปรดระบุชื่อเครื่อง"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.machine_name ?? ""}
-              error={errors.machine_name}
-              labelOptional="(Optional)"
+              required
             />
             <div>
-              {/* <SelectForm
-                label="Part No."
-                name="part_code"
-                placeholder="เลือก Part No."
-                options={partList
-                  ?.filter((part) => {
-                    // filter part code ที่ ซ้ำกันออก
-                    let partCodeList = partList.map(
-                      (part) => part.part_code
-                    );
-                    return (
-                      partCodeList.indexOf(
-                        part.part_code
-                      ) ===
-                      partCodeList.lastIndexOf(
-                        part.part_code
-                      )
-                    );
-                  })
-                  ?.map((part) => ({
-                    label: `${part.part_code} - ${part.part_name}`,
-                    value: part.part_code,
-                  }))}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values?.part_code}
-                error={errors.part_code}
-              /> */}
               <ComboBoxResponsive
                 label="Part No."
                 options={partList?.map((part) => ({
@@ -238,6 +217,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 error={errors?.part_code}
                 labelFilter="ค้นหา Part No. / Search Part No."
                 emptyLabel="เลือก Part No."
+                required
               />
               <Button
                 variant="link"
@@ -248,90 +228,21 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 เพิ่ม Part / Add part
               </Button>
             </div>
-
-            <InputForm
-              label="จำนวน NG / NG Q'ty"
-              name="ng_quantity"
-              placeholder="โปรดระบุจำนวน NG"
-              type="number"
-              inputMode="numeric"
+            <SelectForm
+              label="ประเภทของ NG / NG Type"
+              name="defects_type"
+              placeholder="เลือกประเภทของ NG"
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.ng_quantity ?? ""}
-              error={errors.ng_quantity}
+              value={values?.defects_type}
+              error={errors.defects_type}
+              options={[
+                { label: "Shop", value: "S" },
+                { label: "Part", value: "P" },
+              ]}
+              required
             />
-
-            <InputForm
-              label="จำนวน Reworked / Reworked Q'ty"
-              name="rework_quantity"
-              placeholder="โปรดระบุจำนวน Reworked"
-              type="number"
-              inputMode="numeric"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.rework_quantity ?? ""}
-              error={errors.rework_quantity}
-              labelOptional="(Optional)"
-            />
-
-            <InputForm
-              label="จำนวน Scarp / Scarp Q'ty"
-              name="scrap_quantity"
-              placeholder="โปรดระบุจำนวน Scarp"
-              type="number"
-              inputMode="numeric"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.scrap_quantity ?? ""}
-              error={errors.scrap_quantity}
-              labelOptional="(Optional)"
-            />
-            {values?.rework_quantity && (
-              <InputForm
-                label="Rework Cost/Unit (USD)"
-                name="rework_cost_per_unit"
-                placeholder="โปรดระบุราคา Reworked"
-                labelOptional="(Optional)"
-                type="number"
-                inputMode="decimal"
-                step={0.01}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values?.rework_cost_per_unit}
-                error={errors.rework_cost_per_unit}
-              />
-            )}
-
-            {values?.scrap_quantity && (
-              <InputForm
-                label="Scarp Cost/Unit (USD)"
-                name="scrap_cost_per_unit"
-                placeholder="โปรดระบุราคา Scarp"
-                labelOptional="(Optional)"
-                type="number"
-                inputMode="decimal"
-                step={0.01}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values?.scrap_cost_per_unit ?? ""}
-                error={errors.scrap_cost_per_unit}
-              />
-            )}
             <div>
-              {/* <SelectForm
-                label="สาเหตุ / Cause"
-                name="case_id"
-                placeholder="เลือกสาเหตุ"
-                options={ngCauseList?.map((ng) => ({
-                  label: ng.case_name,
-                  value: ng.case_id,
-                }))}
-                disabled={!values?.process}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values?.case_id}
-                error={errors.case_id}
-              /> */}
               <ComboBoxResponsive
                 label="สาเหตุ / Cause"
                 options={ngCauseList?.map((ng) => ({
@@ -350,6 +261,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 error={errors?.case_id}
                 labelFilter="ค้นหาสาเหตุ / Search Cause"
                 emptyLabel="เลือกสาเหตุ"
+                required
               />
               <Button
                 variant="link"
@@ -360,79 +272,205 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 เพิ่ม Cause / Add Cause
               </Button>
             </div>
-            <TextAreaForm
-              label="วิธีแก้ไขปัญหา / Solve Problem"
-              name="solve_problem"
-              placeholder="โปรดระบุวิธีแก้ไขปัญหา"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.solve_problem ?? ""}
-              error={errors.solve_problem}
-              labelOptional="(Optional)"
-            />
-            <TextAreaForm
-              label="หมายเหตุ / Remark"
-              name="remarks"
-              placeholder="โปรดระบุหมายเหตุ"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.remarks ?? ""}
-              error={errors.remarks}
-              labelOptional="(Optional)"
-            />
 
-            <div className="space-y-2">
-              <label htmlFor="file" className="text-sm font-semibold">
-                รูปภาพ / Image <span className="text-xs text-gray-400">(Optional)</span>
-              </label>
-              {data?.image && (
+            <InputForm
+              label="จำนวน NG / NG Q'ty"
+              name="ng_quantity"
+              placeholder="โปรดระบุจำนวน NG"
+              type="number"
+              inputMode="numeric"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.ng_quantity ?? ""}
+              error={errors.ng_quantity}
+              required
+            />
+            <Collapsible>
+              <CollapsibleTrigger>
                 <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="delete_image"
-                    checked={isDeleteImage}
-                    onCheckedChange={(checked) => {
-                      const isChecked = checked == true;
-                      setIsDeleteImage(isChecked);
-                    }}
-                  />
-                  <label htmlFor="delete_image" className="text-sm text-red-500">
-                    ลบรูปภาพที่มีอยู่ / Remove Image
-                  </label>
-                </div>
-              )}
-              <div {...getRootProps()} className="flex flex-col gap-2">
-                <input {...getInputProps()} />
-                <div className="flex gap-2">
-                  {acceptedFiles.map((file) => (
-                    <div key={file.name} className="flex items-center gap-2">
-                      <span>{file.name}</span>
-                      <span>{file.size / 1000} KB</span>
-                    </div>
-                  ))}
-                </div>
-                <Button variant="secondary" type="button">
-                  {data && data.image ? "เปลี่ยนรูปภาพ / Change Image" : "เลือกรูปภาพ / Choose Image"}
-                </Button>
-                {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
-              </div>
-              {initialValues?.image && (
-                <div className="space-y-2">
-                  <img src={initialValues?.image ?? ""} alt="image" className="h-48 w-full rounded-md object-cover" />
-                  <button
-                    type="button"
-                    className="text-sm text-red-500 hover:underline"
-                    onClick={() => {
-                      setInitialValues((prevValues) => ({
-                        ...prevValues,
-                        image: null,
-                      }));
-                    }}
+                  <span className="text-sm font-semibold">ข้อมูลเพิ่มเติม / Additional Information</span>
+                  <svg
+                    className="h-4 w-4 text-muted-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    ลบรูปภาพ / Remove Image
-                  </button>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
-              )}
-            </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-5 pt-5">
+                  <InputForm
+                    label="จำนวน Reworked / Reworked Q'ty"
+                    name="rework_quantity"
+                    placeholder="โปรดระบุจำนวน Reworked"
+                    type="number"
+                    inputMode="numeric"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.rework_quantity ?? ""}
+                    error={errors.rework_quantity}
+                    labelOptional="(Optional)"
+                  />
+                  <InputForm
+                    label="จำนวน Scarp / Scarp Q'ty"
+                    name="scrap_quantity"
+                    placeholder="โปรดระบุจำนวน Scarp"
+                    type="number"
+                    inputMode="numeric"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.scrap_quantity ?? ""}
+                    error={errors.scrap_quantity}
+                    labelOptional="(Optional)"
+                  />
+                  {values?.rework_quantity && (
+                    <InputForm
+                      label="Rework Cost/Unit (USD)"
+                      name="rework_cost_per_unit"
+                      placeholder="โปรดระบุราคา Reworked"
+                      labelOptional="(Optional)"
+                      type="number"
+                      inputMode="decimal"
+                      step={0.01}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.rework_cost_per_unit}
+                      error={errors.rework_cost_per_unit}
+                    />
+                  )}
+                  {values?.scrap_quantity && (
+                    <InputForm
+                      label="Scarp Cost/Unit (USD)"
+                      name="scrap_cost_per_unit"
+                      placeholder="โปรดระบุราคา Scarp"
+                      labelOptional="(Optional)"
+                      type="number"
+                      inputMode="decimal"
+                      step={0.01}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.scrap_cost_per_unit ?? ""}
+                      error={errors.scrap_cost_per_unit}
+                    />
+                  )}
+                  <div className="space-y-2">
+                    <ComboBoxResponsive
+                      label="ชื่อเครื่องจักร / Machine Name"
+                      options={machineList?.map((machine) => ({
+                        label: machine.machine_name,
+                        value: machine.machine_id,
+                      }))}
+                      value={values?.machine_id ?? ""}
+                      onChange={(value) => {
+                        handleChange({
+                          target: {
+                            name: "machine_id",
+                            value,
+                          },
+                        });
+                      }}
+                      error={errors?.machine_id}
+                      labelFilter="ค้นหาชื่อเครื่องจักร / Search Machine Name"
+                      emptyLabel="เลือกชื่อเครื่องจักร"
+                      required
+                    />
+                  </div>
+                  <SelectForm
+                    label="ชื่อพนักงาน / Operator Name"
+                    name="operator_id"
+                    placeholder="เลือกชื่อพนักงาน"
+                    options={accountList?.map((account) => ({
+                      label: account?.operator_name,
+                      value: account?.operator_id,
+                    }))}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.operator_id}
+                    error={errors.operator_id}
+                    labelOptional="(Optional)"
+                  />
+                  <TextAreaForm
+                    label="วิธีแก้ไขปัญหา / Solve Problem"
+                    name="solve_problem"
+                    placeholder="โปรดระบุวิธีแก้ไขปัญหา"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.solve_problem ?? ""}
+                    error={errors.solve_problem}
+                    labelOptional="(Optional)"
+                  />
+                  <TextAreaForm
+                    label="หมายเหตุ / Remark"
+                    name="remarks"
+                    placeholder="โปรดระบุหมายเหตุ"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.remarks ?? ""}
+                    error={errors.remarks}
+                    labelOptional="(Optional)"
+                  />
+                  <div className="space-y-2">
+                    <label htmlFor="file" className="text-sm font-semibold">
+                      รูปภาพ / Image <span className="text-xs text-gray-400">(Optional)</span>
+                    </label>
+                    {data?.image && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="delete_image"
+                          checked={isDeleteImage}
+                          onCheckedChange={(checked) => {
+                            const isChecked = checked == true;
+                            setIsDeleteImage(isChecked);
+                          }}
+                        />
+                        <label htmlFor="delete_image" className="text-sm text-red-500">
+                          ลบรูปภาพที่มีอยู่ / Remove Image
+                        </label>
+                      </div>
+                    )}
+                    <div {...getRootProps()} className="flex flex-col gap-2">
+                      <input {...getInputProps()} />
+                      <div className="flex gap-2">
+                        {acceptedFiles.map((file) => (
+                          <div key={file.name} className="flex items-center gap-2">
+                            <span>{file.name}</span>
+                            <span>{file.size / 1000} KB</span>
+                          </div>
+                        ))}
+                      </div>
+                      <Button variant="secondary" type="button">
+                        {data && data.image ? "เปลี่ยนรูปภาพ / Change Image" : "เลือกรูปภาพ / Choose Image"}
+                      </Button>
+                      {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
+                    </div>
+                    {initialValues?.image && (
+                      <div className="space-y-2">
+                        <img
+                          src={initialValues?.image ?? ""}
+                          alt="image"
+                          className="h-48 w-full rounded-md object-cover"
+                        />
+                        <button
+                          type="button"
+                          className="text-sm text-red-500 hover:underline"
+                          onClick={() => {
+                            setInitialValues((prevValues) => ({
+                              ...prevValues,
+                              image: null,
+                            }));
+                          }}
+                        >
+                          ลบรูปภาพ / Remove Image
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
             <div className="flex w-full gap-2">
               <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
                 บันทึก / Save

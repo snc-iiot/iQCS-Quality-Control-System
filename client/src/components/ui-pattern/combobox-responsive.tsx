@@ -5,6 +5,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { FC, useState } from "react";
+import { Required } from "../common/required";
 import { Button } from "../ui/button";
 
 interface ComboBoxResponsiveProps {
@@ -16,6 +17,7 @@ interface ComboBoxResponsiveProps {
   onChange: (value: string) => void;
   className?: string;
   error?: string;
+  required?: boolean;
 }
 
 export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
@@ -26,6 +28,7 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
   onChange,
   label,
   error,
+  required,
 }) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [open, setOpen] = useState(false);
@@ -37,7 +40,10 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
   if (isDesktop) {
     return (
       <div className="space-y-2">
-        <p className="text-sm font-semibold">{label}</p>
+        <p className="text-sm font-semibold">
+          {label} &nbsp;
+          {required && <Required />}
+        </p>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className={cn("w-full justify-between font-normal")}>

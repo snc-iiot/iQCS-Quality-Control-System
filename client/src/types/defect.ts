@@ -3,17 +3,23 @@ export type TCreateUpdateDefect = {
   datetime: string;
   date?: string;
   time_slot?: string;
-  process: string;
-  part_code: string;
+  defects_type: "S" | "P";
+  process_id: string;
+  part_id: string;
   case_id: string;
   ng_quantity: number | null;
-  machine_name: string | null;
-  rework_quantity: number | null;
-  rework_cost_per_unit: number | null;
-  scrap_quantity: number | null;
-  scrap_cost_per_unit: number | null;
+
+  // Optional
+  machine_id?: string;
+  operator_id?: string;
+  production_quantity?: number | null;
+  rework_quantity?: number | null;
+  scrap_quantity?: number | null;
+  claim_supplier_quantity?: number | null;
+  scrap_approval_sheet_no: string;
+  car_no?: string;
   image: string | null;
-  solve_problem: string | null;
+  solve_problem: string;
   remarks: string;
 };
 

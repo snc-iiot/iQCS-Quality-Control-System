@@ -3,8 +3,9 @@ import * as Yup from "yup";
 export const validationDefectSchema = Yup.object({
   date: Yup.string().required("โปรดระบุวันที่"),
   time_slot: Yup.string().required("โปรดระบุช่วงเวลา"),
-  process: Yup.string().required("โปรดระบุ Process"),
-  part_code: Yup.string().required("โปรดระบุ Part Code"),
+  process_id: Yup.string().required("โปรดระบุ Process"),
+  defects_type: Yup.string().required("โปรดระบุประเภทของ NG").oneOf(["S", "P"]),
+  part_id: Yup.string().required("โปรดระบุ Part"),
   case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
   ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(1),
 });

@@ -3,8 +3,6 @@ export const API_BASE_URL = "http://10.1.8.175:3000/api";
 // export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/toolbox/prd/v1";
 // export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/iqcs/dev/v1";
 
-export const PROCESS_LIST = ["CUTTING", "BENDING", "PRESS", "SPOT", "PAINTING", "PRE-ASSEMBLY", "ASSEMBLY"];
-
 export const calculateDateTime = (date: string, time: string) => {
   const [startTime, endTime] = time.split(" - ");
   const [startHour, startMinute] = startTime?.split(":");
@@ -20,3 +18,14 @@ export const calculateDateTime = (date: string, time: string) => {
     end: endDate?.toISOString(),
   };
 };
+
+export const DEFECT_TYPE = [
+  {
+    label: "Shop",
+    value: "S",
+  },
+  {
+    label: "Part",
+    value: "P",
+  },
+];
