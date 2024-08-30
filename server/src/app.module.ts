@@ -88,5 +88,10 @@ export class AppModule implements NestModule {
       path: '/parts*',
       method: RequestMethod.ALL,
     });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/productivity-logging*',
+      method: RequestMethod.ALL,
+    });
   }
 }

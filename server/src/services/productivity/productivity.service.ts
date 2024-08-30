@@ -23,6 +23,15 @@ export class ProductivityService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
+      if (!decoded || !decoded.user_id) {
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Invalid token payload: user_id is missing',
+          data: [],
+        };
+      }
+
       const checkPartExists = await this.PartRepository.findOne({
         where: { part_code: input.part_code },
       });
