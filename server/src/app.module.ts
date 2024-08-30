@@ -112,4 +112,5 @@ export class AppModule implements NestModule {
       path: '/productivity-logging*',
       method: RequestMethod.ALL,
     });
+  }
 }
