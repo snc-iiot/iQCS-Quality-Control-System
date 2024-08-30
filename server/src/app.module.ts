@@ -16,6 +16,7 @@ import { PartsModule } from './services/parts/parts.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MachinesModule } from './services/machines/machines.module';
 import { ProcessesModule } from './services/processes/processes.module';
+import { ProductivityModule } from './services/productivity/productivity.module';
 import { OperatorsModule } from './services/operators/operators.module';
 import { DocumentsModule } from './services/documents/documents.module';
 
@@ -38,6 +39,7 @@ import { DocumentsModule } from './services/documents/documents.module';
     DefectModule,
     PartsModule,
     MachinesModule,
+    ProductivityModule,
     ProcessesModule,
     OperatorsModule,
     DocumentsModule,
@@ -100,5 +102,15 @@ export class AppModule implements NestModule {
         path: '/defects-logging*',
         method: RequestMethod.ALL,
       });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/parts*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/productivity-logging*',
+      method: RequestMethod.ALL,
+    });
   }
 }

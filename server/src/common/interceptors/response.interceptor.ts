@@ -4,42 +4,38 @@ import {
   ExecutionContext,
   CallHandler,
   HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-// import { catchError, map } from 'rxjs/operators';
-import { catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    return next
-      .handle()
-      .pipe(
-        catchError((err: HttpException) =>
-          throwError(() => this.errorHandler(err, context)),
-        ),
-      );
-  }
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next.handle().pipe(
+      map((data) => ({
+        statusCode: context.switchToHttp().getResponse().statusCode,
+        message: 'Request was successful',
+        data,
+      })),
+      catchError((exception) => {
+        let response;
+        let statusCode;
 
-  errorHandler(exception: HttpException, context: ExecutionContext) {
-    const ctx = context.switchToHttp();
-    const response = ctx.getResponse();
-    //     const request = ctx.getRequest();
+        if (exception instanceof HttpException) {
+          response = exception.getResponse();
+          statusCode = exception.getStatus();
+        } else {
+          response = { message: 'Internal server error' };
+          statusCode = 500;
+        }
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    response.status(status).json({
-      //  status: false,
-      status: 'error',
-      statusCode: status,
-      //  path: request.url,
-      message: exception.message,
-      //  result: exception,
-      data: [exception.getResponse()],
-    });
+        return throwError(() => ({
+          statusCode: statusCode,
+          message:
+            typeof response === 'string' ? response : response['message'],
+          error: response['error'] || 'Error',
+        }));
+      }),
+    );
   }
 }

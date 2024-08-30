@@ -22,6 +22,22 @@ export class ProcessesService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
+      const processExists = await this.processRepository.find({
+        where: {
+          process_name: input.process_name,
+          plant_code: decoded.plant_code,
+        },
+      });
+
+      if (processExists.length > 0) {
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Process already exists',
+          data: [],
+        };
+      }
+
       const record = {
         process_name: input.process_name,
         process_description: input.process_description ?? '',
