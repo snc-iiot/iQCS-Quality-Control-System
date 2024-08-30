@@ -1,6 +1,11 @@
 export type TCreateUpdateDocument = {
   document_name: string;
-  document: string;
+  document_data: string;
+
+  //! Not required
+  document_description?: string;
+  effective_date?: string;
+  expire_date?: string;
 };
 
 export type TDocument = {

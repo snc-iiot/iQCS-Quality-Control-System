@@ -1,7 +1,9 @@
+import { Base64Helper } from "@/helpers/base64.helper";
 import { cn } from "@/lib/utils";
 import { useDocument } from "@/services/hooks";
 import { TCreateUpdateDocument } from "@/types";
 import { FC, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import * as Yup from "yup";
 import { PageHeader } from "../common/page-header";
 import { Required } from "../common/required";
@@ -17,16 +19,54 @@ interface CreateUpdateDocumentProps {
 }
 
 export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVisible, className, data, onClose }) => {
+  const base64Helper = new Base64Helper();
   const { mutateCreateDocument, mutateUpdateDocument } = useDocument();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDocument>({
-    document_name: data?.document_name || "",
-    document: data?.document || "",
+    document_name: data?.document_name ?? "",
+    document_data: data?.document_data ?? "",
+    document_description: data?.document_description ?? "",
+    effective_date: data?.effective_date ?? "",
+    expire_date: data?.expire_date ?? "",
   });
+
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
 
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
     document_name: Yup.string().required("โปรดระบุชื่อ เอกสาร"),
-    document: Yup.string().required("โปรดอัพโหลดเอกสาร"),
+    document_data: Yup.string().required("โปรดอัพโหลดเอกสาร"),
+  });
+
+  console.log(acceptedFiles);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "application/pdf": [],
+      "application/msword": [],
+      "application/csv": [],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
+    },
+    maxSize: 5242880, // 5MB
+    maxFiles: 1,
+    onDrop: (files) => {
+      const file = files[0];
+      base64Helper
+        ?.getBase64(file)
+        ?.then((base64) => {
+          console.log(base64);
+
+          setInitialValues((prevValues) => ({
+            ...prevValues,
+            image: base64,
+          }));
+          setAcceptedFiles([]); // Clear acceptedFiles
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      setAcceptedFiles(files); // Update acceptedFiles state
+    },
   });
 
   // Define the submit handler
@@ -55,7 +95,10 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
     if (data) {
       setInitialValues({
         document_name: data.document_name ?? "",
-        document: data.document ?? "",
+        document_data: data.document_data ?? "",
+        document_description: data.document_description ?? "",
+        effective_date: data.effective_date ?? "",
+        expire_date: data.expire_date ?? "",
       });
     }
   }, [data]);
@@ -81,7 +124,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
       <FormField
         id="part-form"
         validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+        onSubmit={(e) => console.log(e)}
         initialValues={initialValues}
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
@@ -95,16 +138,21 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
               onBlur={handleBlur}
               error={errors.document_name}
             />
-            <InputForm
-              type="file"
-              label="Document"
-              placeholder="โปรดระบุชื่อ เอกสาร"
-              name="document"
-              value={values.document}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={errors.document}
-            />
+
+            <div className=" flex flex-col gap-2">
+              <label className=" text-sm font-semibold">Document</label>
+
+              <div {...getRootProps()} className="flex flex-col gap-2  ">
+                <input {...getInputProps()} />
+
+                <Button variant="secondary" type="button">
+                  {data && values.document ? "เปลี่ยนรูปภาพ / Change Image" : "เลือกรูปภาพ / Choose Image"}
+                </Button>
+                {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
+              </div>
+
+              <p className=" text-xs text-red-600">{errors.document_name}</p>
+            </div>
 
             <div className="flex w-full gap-2">
               <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>

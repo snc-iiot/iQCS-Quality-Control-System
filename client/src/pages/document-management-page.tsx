@@ -87,6 +87,7 @@ const DocumentManagementPage = () => {
                   src="https://images.template.net/wp-content/uploads/2017/01/17001629/Sample-Word-Document-Template.jpg"
                   alt="file"
                 />
+                {/* <iframe src="https://snc-services.sncformer.com/snconeway/PDF%20File/CALENDAR%202024.pdf" /> */}
               </div>
               <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
                 <div className="h-6 w-6 rounded-full">
