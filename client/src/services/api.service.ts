@@ -9,8 +9,6 @@ export abstract class APIService {
   protected baseURL: string;
   protected axiosInstance: AxiosInstance;
 
-  localStorageManager = LocalStorageManager;
-
   constructor(baseURL: string) {
     this.baseURL = baseURL;
     this.axiosInstance = axios.create({
@@ -22,19 +20,15 @@ export abstract class APIService {
   }
 
   getUserRole(): EUserRole {
-    const user = this.localStorageManager.getItem("TOOLBOX_USER");
-    return user ? user.role : EUserRole.GUEST;
+    return LocalStorageManager.getItem("TOOLBOX_ROLE") || EUserRole.USER;
   }
 
   setUserRole(role: EUserRole): void {
-    this.localStorageManager.setItem("TOOLBOX_USER", {
-      ...this.localStorageManager.getItem("TOOLBOX_USER"),
-      role,
-    });
+    LocalStorageManager.setItem("TOOLBOX_ROLE", role);
   }
 
   private getAccessToken(): string | null {
-    return this.localStorageManager.getItem("TOOLBOX_ACCESS_TOKEN") || null;
+    return LocalStorageManager.getItem("TOOLBOX_ACCESS_TOKEN") || null;
   }
 
   private getDefaultHeaders(): Record<string, string> {
@@ -47,11 +41,11 @@ export abstract class APIService {
   }
 
   setAccessToken(token: string): void {
-    this.localStorageManager.setItem("TOOLBOX_ACCESS_TOKEN", token);
+    LocalStorageManager.setItem("TOOLBOX_ACCESS_TOKEN", token);
   }
 
   removeAccessToken(): void {
-    this.localStorageManager.removeItem("TOOLBOX_ACCESS_TOKEN");
+    LocalStorageManager.removeItem("TOOLBOX_ACCESS_TOKEN");
   }
 
   private setupInterceptors(): void {
