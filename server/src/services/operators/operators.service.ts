@@ -1,34 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NgCases } from './entities';
-import { TJwtPayload, TServiceResponse } from 'src/types';
-import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
+import { Operator } from './entities';
+import { TServiceResponse, TJwtPayload } from 'src/types';
+import { CreateOperatorDto, UpdateOperatorDto, FindOperatorDto } from './dto';
 
 @Injectable()
-export class NgCaseService {
+export class OperatorsService {
   constructor(
-    @InjectRepository(NgCases)
-    private readonly ngCaseRepository: Repository<NgCases>,
+    @InjectRepository(Operator)
+    private readonly operatorRepository: Repository<Operator>,
   ) {}
 
   async create(
-    input: CreateNgCaseDto,
+    input: CreateOperatorDto,
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       const record = {
-        case_name: input.case_name,
-        description: input.description ?? '',
-        processes: input.processes,
+        employee_id: input.employee_id ?? '',
+        operator_name: input.operator_name,
+        position: input.position ?? '',
+        responsibility: input.responsibility ?? '',
+        remarks: input.remarks ?? '',
         plant_code: decoded.plant_code,
       };
-      const created = await this.ngCaseRepository.save(record);
+      const created = await this.operatorRepository.save(record);
 
       return {
         status: 'success',
         statusCode: 201,
-        message: 'Ng case created successfully',
+        message: 'Operator created successfully',
         data: [created],
       };
     } catch (error) {
@@ -41,22 +43,24 @@ export class NgCaseService {
     }
   }
 
-  async update(input: UpdateNgCaseDto): Promise<TServiceResponse> {
+  async update(input: UpdateOperatorDto): Promise<TServiceResponse> {
     try {
       const record = {
-        case_name: input.case_name,
-        description: input.description ?? '',
-        processes: input.processes,
+        employee_id: input.employee_id ?? '',
+        operator_name: input.operator_name,
+        position: input.position ?? '',
+        responsibility: input.responsibility ?? '',
+        remarks: input.remarks ?? '',
       };
-      const updated = await this.ngCaseRepository.update(
-        { case_id: input.case_id },
+      const updated = await this.operatorRepository.update(
+        { operator_id: input.operator_id },
         record,
       );
 
       return {
         status: 'success',
         statusCode: 201,
-        message: 'Ng case updated successfully',
+        message: 'Operator updated successfully',
         data: [updated],
       };
     } catch (error) {
@@ -71,8 +75,7 @@ export class NgCaseService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      // console.log(decoded);
-      const results = await this.ngCaseRepository.find({
+      const results = await this.operatorRepository.find({
         where: {
           plant_code: decoded.plant_code,
         },
@@ -84,7 +87,7 @@ export class NgCaseService {
       return {
         status: 'success',
         statusCode: 200,
-        message: 'All Ng cases',
+        message: 'All Operators',
         data: results,
       };
     } catch (error) {
@@ -97,18 +100,18 @@ export class NgCaseService {
     }
   }
 
-  async findOne(input: FindNgCaseDto): Promise<TServiceResponse> {
+  async findOne(input: FindOperatorDto): Promise<TServiceResponse> {
     try {
-      const results = await this.ngCaseRepository.find({
+      const results = await this.operatorRepository.find({
         where: {
-          case_id: input.case_id,
+          operator_id: input.operator_id,
         },
       });
 
       return {
         status: 'success',
         statusCode: 200,
-        message: 'Get NG case',
+        message: 'Get Operator',
         data: results,
       };
     } catch (error) {
@@ -121,16 +124,16 @@ export class NgCaseService {
     }
   }
 
-  async delete(input: FindNgCaseDto): Promise<TServiceResponse> {
+  async delete(input: FindOperatorDto): Promise<TServiceResponse> {
     try {
-      const deleted = await this.ngCaseRepository.delete({
-        case_id: input.case_id,
+      const deleted = await this.operatorRepository.delete({
+        operator_id: input.operator_id,
       });
 
       return {
         status: 'success',
         statusCode: 200,
-        message: 'Ng case deleted successfully',
+        message: 'Operator deleted successfully',
         data: [deleted],
       };
     } catch (error) {

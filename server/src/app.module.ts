@@ -17,6 +17,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { MachinesModule } from './services/machines/machines.module';
 import { ProcessesModule } from './services/processes/processes.module';
 import { ProductivityModule } from './services/productivity/productivity.module';
+import { OperatorsModule } from './services/operators/operators.module';
+import { DocumentsModule } from './services/documents/documents.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { ProductivityModule } from './services/productivity/productivity.module'
     MachinesModule,
     ProductivityModule,
     ProcessesModule,
+    OperatorsModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -68,6 +72,21 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/operators*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/parts*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/documents*',
+      method: RequestMethod.ALL,
+    });
+
     consumer
       .apply(JwtMiddleware)
       .exclude(
@@ -93,5 +112,4 @@ export class AppModule implements NestModule {
       path: '/productivity-logging*',
       method: RequestMethod.ALL,
     });
-  }
 }
