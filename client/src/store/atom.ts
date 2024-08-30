@@ -1,8 +1,10 @@
 import {
+  TAccount,
   TDefect,
   TDefectSummary,
   TDocument,
   TGraphSummary,
+  TMachine,
   TNGCause,
   TPart,
   TPlant,
@@ -25,3 +27,6 @@ export const topDefectAtom = atom<TTopDefect[]>([]);
 
 export const productivityAtom = atom<TProductivity[]>([]);
 export const productivitySummaryAtom = atom<TProductivitySummary[]>([]);
+
+export const machineAtom = atom<TMachine[]>([]);
+export const accountAtom = atom<TAccount[]>([]);

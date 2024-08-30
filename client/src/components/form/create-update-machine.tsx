@@ -18,16 +18,16 @@ interface CreateUpdateMachineProps {
 export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisible, className, data, onClose }) => {
   const { mutateCreateMachine, mutateUpdateMachine } = useMachine();
   const [initialValues, setInitialValues] = useState<TCreateUpdateMachine>({
-    machine_id: data?.machine_id || "",
-    machine_name: data?.machine_name || "",
-    machine_no: data?.machine_no || "",
-    description: data?.description || "",
+    machine_id: data?.machine_id ?? "",
+    machine_name: data?.machine_name ?? "",
+    machine_no: data?.machine_no ?? "",
+    description: data?.description ?? "",
+    location: data?.location ?? "",
   });
 
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
     machine_name: Yup.string().required("โปรดระบุชื่อเครื่องจักร"),
-    machine_no: Yup.string().required("โปรดระบุหมายเลขเครื่องจักร"),
   });
 
   // Define the submit handler
@@ -66,6 +66,7 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
         machine_name: data?.machine_name ?? "",
         machine_no: data?.machine_no ?? "",
         description: data?.description ?? "",
+        location: data?.location ?? "",
       });
     }
   }, [data]);
@@ -116,6 +117,16 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               error={errors.machine_no}
               required
             />
+            <InputForm
+              id="location"
+              name="location"
+              label="สถานที่ตั้ง"
+              labelOptional="(Optional)"
+              placeholder="ระบุสถานที่ตั้งเครื่องจักร"
+              value={values.location}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
             <TextAreaForm
               id="description"
               name="description"
@@ -125,6 +136,7 @@ export const CreateUpdateMachine: FC<CreateUpdateMachineProps> = ({ isTitleVisib
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.description}
+              labelOptional="(Optional)"
             />
             <div className="flex justify-end gap-4">
               <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>

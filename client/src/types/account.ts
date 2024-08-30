@@ -1,13 +1,19 @@
 export type TCreateUpdateAccount = {
-  account_id?: string;
-  name: string;
-  remark: string;
+  operator_id?: string;
+  operator_name: string;
+  employee_id: string | null;
+  position: string | null;
+  responsibility: string | null;
+  remarks: string | null;
 };
 
 export type TAccount = {
-  account_id: string;
-  name: string;
-  remark: string;
+  operator_id: string;
+  operator_name: string;
+  employee_id: string | null;
+  position: string | null;
+  responsibility: string | null;
+  remarks: string | null;
   created_at: string;
   updated_at: string;
 };

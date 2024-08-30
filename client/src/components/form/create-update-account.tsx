@@ -18,14 +18,18 @@ interface CreateUpdateAccountProps {
 export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisible, className, data, onClose }) => {
   const { mutateCreateAccount, mutateUpdateAccount } = useAccount();
   const [initialValues, setInitialValues] = useState<TCreateUpdateAccount>({
-    account_id: data?.account_id || "",
-    name: data?.name || "",
-    remark: data?.remark || "",
+    operator_id: data?.operator_id || "",
+    operator_name: data?.operator_name || "",
+    employee_id: data?.employee_id || "",
+    position: data?.position || "",
+    responsibility: data?.responsibility || "",
+    remarks: data?.remarks || "",
   });
 
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("โปรดระบุชื่อ - นามสกุล"),
+    operator_name: Yup.string().required("โปรดระบุชื่อ - นามสกุล"),
+    employee_id: Yup.string().required("โปรดระบุรหัสพนักงาน"),
   });
 
   // Define the submit handler
@@ -61,9 +65,12 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
   useEffect(() => {
     if (data) {
       setInitialValues({
-        account_id: data.account_id ?? "",
-        name: data.name ?? "",
-        remark: data.remark ?? "",
+        operator_id: data?.operator_id || "",
+        operator_name: data?.operator_name || "",
+        employee_id: data?.employee_id || "",
+        position: data?.position || "",
+        responsibility: data?.responsibility || "",
+        remarks: data?.remarks || "",
       });
     }
   }, [data]);
@@ -80,15 +87,48 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
           <div className="space-y-5">
             <InputForm
-              id="name"
-              name="name"
+              id="operator_name"
+              name="operator_name"
               label="ชื่อ - นามสกุล / Name - Surname"
               placeholder="ระบุชื่อ - นามสกุล (ไม่ต้องระบบคำนำหน้าชื่อ)"
-              value={values.name}
+              value={values.operator_name}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={errors.name}
+              error={errors.operator_name}
               required
+            />
+            <InputForm
+              id="employee_id"
+              name="employee_id"
+              label="รหัสพนักงาน / Employee ID"
+              placeholder="ระบุรหัสพนักงาน"
+              value={values.employee_id}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.employee_id}
+              required
+            />
+            <InputForm
+              id="position"
+              name="position"
+              label="ตำแหน่ง / Position"
+              placeholder="ระบุตำแหน่ง"
+              value={values.position}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.position}
+              labelOptional="(Optional)"
+            />
+            <InputForm
+              id="responsibility"
+              name="responsibility"
+              label="หน้าที่ / Responsibility"
+              placeholder="ระบุหน้าที่"
+              value={values.responsibility}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.responsibility}
+              labelOptional="(Optional)"
             />
             <TextAreaForm
               id="remark"
@@ -99,6 +139,7 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({ isTitleVisib
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.remark}
+              labelOptional="(Optional)"
             />
             <div className="flex justify-end gap-4">
               <Button type="submit" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>

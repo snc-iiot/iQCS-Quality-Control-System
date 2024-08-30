@@ -1,9 +1,11 @@
 import { useAtom } from "jotai";
 import {
+  accountAtom,
   defectAtom,
   defectSummaryAtom,
   documentAtom,
   graphSummaryAtom,
+  machineAtom,
   ngCauseAtom,
   partAtom,
   plantsAtom,
@@ -29,6 +31,9 @@ export const useAtomStore = () => {
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
   const [productivitySummaryList, setProductivitySummaryList] = useAtom(productivitySummaryAtom);
 
+  const [machineList, setMachineList] = useAtom(machineAtom);
+  const [accountList, setAccountList] = useAtom(accountAtom);
+
   return {
     plantList,
     setPlantList,
@@ -52,5 +57,9 @@ export const useAtomStore = () => {
     setProductivityList,
     productivitySummaryList,
     setProductivitySummaryList,
+    machineList,
+    setMachineList,
+    accountList,
+    setAccountList,
   };
 };
