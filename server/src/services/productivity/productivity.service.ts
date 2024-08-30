@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { ProductivityLogging } from './entities';
 import { Part } from 'src/services/parts/entities';
 import { TServiceResponse } from 'src/types';
-import { CreateProductivityDto } from './dto/';
 import { TJwtPayload } from 'src/types';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import {

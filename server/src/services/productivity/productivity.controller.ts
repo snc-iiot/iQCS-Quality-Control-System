@@ -11,9 +11,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ProductivityService } from './productivity.service';
-import { CreateProductivityDto } from './dto/';
 import { TJwtPayload } from 'src/types';
-
 import {
   CreateProductivityDto,
   UpdateProductivityDto,
