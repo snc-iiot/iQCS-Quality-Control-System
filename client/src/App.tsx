@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   AccountSettingPage,
   CausePage,
+  CostPage,
   DashboardPage,
   HistoryPage,
   HomePage,
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="cause" element={<CausePage />} />
               <Route path="account" element={<AccountSettingPage />} />
               <Route path="machine" element={<SettingMachinePage />} />
+              <Route path="cost" element={<CostPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

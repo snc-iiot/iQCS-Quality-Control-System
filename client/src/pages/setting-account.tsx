@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateAccount } from "@/components/form";
-import { ActionWithAdminHOC } from "@/components/hoc/action-with-admin";
+import { WithAdminHOC } from "@/components/hoc";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,9 +72,7 @@ export const AccountSettingPage: FC = () => {
     return account.operator_name?.toLowerCase()?.includes(search?.toLowerCase());
   });
 
-  const ActionWithAuth = ActionWithAdminHOC(() => (
-    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
-  ));
+  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">

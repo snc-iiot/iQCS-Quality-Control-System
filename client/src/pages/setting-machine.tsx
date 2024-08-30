@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateMachine } from "@/components/form";
-import { ActionWithAdminHOC } from "@/components/hoc/action-with-admin";
+import { WithAdminHOC, WithUserHOC } from "@/components/hoc";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
 import { useMachine } from "@/services/hooks/use-machine";
 import { useAtomStore } from "@/store";
-import { TCreateUpdateMachine } from "@/types";
+import { TCreateUpdateMachine, TMachine } from "@/types";
 import { FC, useState } from "react";
 
 export const SettingMachinePage: FC = () => {
@@ -71,9 +71,27 @@ export const SettingMachinePage: FC = () => {
     );
   });
 
-  const ActionWithAuth = ActionWithAdminHOC(() => (
-    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
-  ));
+  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
+  const ActionWithUser: FC<{ machine: TMachine }> = WithUserHOC((props) => {
+    const { machine } = props as { machine: TMachine };
+    return (
+      <button
+        className="text-blue-500 hover:underline"
+        onClick={() => {
+          setUpdateMachine({
+            machine_id: machine?.machine_id,
+            machine_name: machine?.machine_name,
+            machine_no: machine?.machine_no,
+            description: machine?.description,
+            location: machine?.location,
+          });
+          setIsUpdateDialogOpen(true);
+        }}
+      >
+        Edit
+      </button>
+    );
+  });
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -192,21 +210,7 @@ export const SettingMachinePage: FC = () => {
                       >
                         More Detail
                       </button>
-                      <button
-                        className="text-blue-500 hover:underline"
-                        onClick={() => {
-                          setUpdateMachine({
-                            machine_id: machine.machine_id,
-                            machine_name: machine.machine_name,
-                            machine_no: machine.machine_no,
-                            description: machine.description,
-                            location: machine.location,
-                          });
-                          setIsUpdateDialogOpen(true);
-                        }}
-                      >
-                        Edit
-                      </button>
+                      <ActionWithUser machine={machine} />
                       <AlertDialog>
                         <ActionWithAuth />
                         <AlertDialogContent>

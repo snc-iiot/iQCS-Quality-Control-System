@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateCause } from "@/components/form/create-update-cause";
-import { ActionWithAdminHOC } from "@/components/hoc/action-with-admin";
+import { WithAdminHOC } from "@/components/hoc";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,9 +59,7 @@ export const CausePage: FC = () => {
     []
   );
 
-  const ActionWithAuth = ActionWithAdminHOC(() => (
-    <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
-  ));
+  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
 
   const ngCauseMapped = useMemo(() => {
     return ngCauseList

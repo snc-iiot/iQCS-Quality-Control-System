@@ -52,6 +52,13 @@ const MenuSettingPage: FC = () => {
       description: "เพิ่ม ลบ แก้ไข ชื่อเครื่องจักร",
       disabled: false,
     },
+    {
+      title: "ตั้งค่า % ค่าใช้จ่าย / Cost setting",
+      href: "cost",
+      icon: Settings,
+      description: "ตั้งค่า % ค่าใช้จ่าย",
+      disabled: false,
+    },
   ];
 
   return (
