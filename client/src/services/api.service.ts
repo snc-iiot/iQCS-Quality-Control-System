@@ -2,10 +2,9 @@
 import { EUserRole } from "@/constants/auth";
 import { LocalStorageManager } from "@/helpers/local-storage-manger";
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { useNavigate } from "react-router-dom";
 
 export abstract class APIService {
-  private navigate = useNavigate();
+  // private navigate = useNavigate();
   protected baseURL: string;
   protected axiosInstance: AxiosInstance;
 
@@ -55,7 +54,6 @@ export abstract class APIService {
         if (error.response && error.response.status === 401) {
           console.log("401 error");
           this.removeAccessToken();
-          this.navigate("/login");
         }
         return Promise.reject(error);
       }

@@ -2,9 +2,8 @@ import { EUserRole } from "@/constants/auth";
 import { AuthService } from "@/services/auth.service";
 import { FC } from "react";
 
-const authService = new AuthService();
-
 export const WithUserHOC = (Component: FC) => {
+  const authService = new AuthService();
   const userRole = authService.getUserRole();
 
   return (props: React.ComponentProps<typeof Component>) => {
