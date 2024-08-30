@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ProductivityLogging } from './entities';
 import { Part } from 'src/services/parts/entities';
 import { TServiceResponse } from 'src/types';
-import { CreateProductivityDto } from './dto/';
+import { CreateProductivityDto, FindByDatetimeRangeDto } from './dto/';
 import { TJwtPayload } from 'src/types';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
@@ -61,6 +61,44 @@ export class ProductivityService {
         statusCode: 201,
         message: 'Productivity created successfully',
         data: [created],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async findRawDataByDatetimeRange(
+    input: FindByDatetimeRangeDto,
+  ): Promise<TServiceResponse> {
+    try {
+      const results =
+        await this.ProductivityLoggingRepository.createQueryBuilder('t1')
+          .where('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+            start_datetime: input.start_datetime,
+            end_datetime: input.end_datetime,
+          })
+          .leftJoin('tb_part_material', 't2', 't1.part_code = t2.part_code')
+          .leftJoin('tb_users', 't3', 't1.creator_id = t3.user_id')
+          .select(
+            `t1.*
+          ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
+          ,(case when extract(hour from datetime) >= 8 and extract(hour from datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,t2.part_name,t3.name AS creator_name`,
+          )
+          .orderBy('t1.created_at', 'DESC')
+          .getRawMany();
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Productivity raw data by datetime range',
+        data: results,
+        // data: [input],
       };
     } catch (error) {
       return {

@@ -108,9 +108,16 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: '/productivity-logging*',
-      method: RequestMethod.ALL,
-    });
+    consumer
+      .apply(JwtMiddleware)
+      .exclude(
+        '/productivity-logging/raw-data-by-datetime-range',
+        '/productivity-logging/summary-by-datetime-range',
+        '/productivity-logging/summary-by-date',
+      )
+      .forRoutes({
+        path: '/productivity-logging*',
+        method: RequestMethod.ALL,
+      });
   }
 }

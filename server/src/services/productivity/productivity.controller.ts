@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ProductivityService } from './productivity.service';
-import { CreateProductivityDto } from './dto/';
+import { CreateProductivityDto, FindByDatetimeRangeDto } from './dto/';
 import { TJwtPayload } from 'src/types';
 
 @Controller('productivity-logging')
@@ -25,6 +25,16 @@ export class ProductivityController {
     @Res() res: Response,
   ) {
     const result = await this.productivityService.create(body, req.decoded);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('raw-data-by-datetime-range')
+  async findRawDataByDatetimeRange(
+    @Query() query: FindByDatetimeRangeDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.productivityService.findRawDataByDatetimeRange(query);
     return res.status(result.statusCode).json(result);
   }
 }
