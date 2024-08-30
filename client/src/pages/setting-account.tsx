@@ -15,14 +15,21 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useAccount } from "@/services/hooks/use-account";
+import { useAtomStore } from "@/store";
+import { TCreateUpdateAccount } from "@/types";
 import { FC, useState } from "react";
 
 export const AccountSettingPage: FC = () => {
   const { mutateDeleteAccount } = useAccount();
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [accountSelected, setAccountSelected] = useState<TCreateUpdateAccount | null>(null);
+
+  const { accountList } = useAtomStore();
 
   const HEADER = [
     {
@@ -30,18 +37,38 @@ export const AccountSettingPage: FC = () => {
       key: "no",
     },
     {
+      label: "รหัสพนักงาน / Employee ID",
+      key: "employee_id",
+    },
+    {
       label: "ชื่อ - นามสกุล / Name - Surname",
       key: "name",
     },
     {
-      label: "หมายเหตุ / Remark",
-      key: "remark",
+      label: "ตำแหน่ง / Position",
+      key: "position",
+    },
+    {
+      label: "หน้าที่ / Responsibility",
+      key: "responsibility",
+    },
+    {
+      label: "วันที่สร้าง / Created date",
+      key: "created_date",
+    },
+    {
+      label: "วันที่แก้ไข / Updated date",
+      key: "updated_date",
     },
     {
       label: "Action",
       key: "action",
     },
   ];
+
+  const filteredAccountList = accountList?.filter((account) => {
+    return account.operator_name?.toLowerCase()?.includes(search?.toLowerCase());
+  });
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -61,6 +88,33 @@ export const AccountSettingPage: FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog
+        open={isEdit}
+        onOpenChange={(isOpen) => {
+          setIsEdit(isOpen);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>แก้ไขชื่อ / Edit name</DialogTitle>
+            <DialogDescription>กรุณากรอกชื่อ Operator ที่ต้องการแก้ไข</DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            <CreateUpdateAccount
+              data={{
+                operator_id: accountSelected?.operator_id,
+                operator_name: accountSelected?.operator_name,
+                employee_id: accountSelected?.employee_id,
+                position: accountSelected?.position,
+                responsibility: accountSelected?.responsibility,
+                remarks: accountSelected?.remarks,
+              }}
+              onClose={() => setIsEdit(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <main className="flex h-full w-full flex-col gap-2">
         <PageHeader title="ตั้งค่า Operator name / Operator name setting" description="ตั้งค่าชื่อ Operator " />
         <div className="flex w-full justify-between">
@@ -79,14 +133,44 @@ export const AccountSettingPage: FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {new Array(10).fill(0).map((_, index) => (
-                <TableRow key={index} className="whitespace-nowrap">
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>นาย สมชาย ใจดี</TableCell>
-                  <TableCell>Operator ที่ใช้งานระบบ</TableCell>
+              {filteredAccountList?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={HEADER.length} className="text-center">
+                    ไม่พบข้อมูล / No data found
+                  </TableCell>
+                </TableRow>
+              )}
+              {filteredAccountList?.map((operator, operators_index) => (
+                <TableRow key={operators_index} className="whitespace-nowrap">
+                  <TableCell>{operators_index + 1}</TableCell>
+                  <TableCell>{operator?.employee_id ?? "-"}</TableCell>
+                  <TableCell>{operator?.operator_name}</TableCell>
+                  <TableCell>{operator?.position}</TableCell>
+                  <TableCell>{operator?.responsibility}</TableCell>
+                  <TableCell>
+                    {operator?.created_at ? renderFormattedDateWithTime(new Date(operator?.created_at)) : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {operator?.updated_at ? renderFormattedDateWithTime(new Date(operator?.updated_at)) : "-"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <button className="text-blue-500 hover:underline">Edit</button>
+                      <button
+                        className="text-blue-500 hover:underline"
+                        onClick={() => {
+                          setAccountSelected({
+                            operator_id: operator?.operator_id,
+                            employee_id: operator?.employee_id,
+                            operator_name: operator?.operator_name,
+                            position: operator?.position,
+                            responsibility: operator?.responsibility,
+                            remarks: operator?.remarks,
+                          });
+                          setIsEdit(true);
+                        }}
+                      >
+                        Edit
+                      </button>
                       <AlertDialog>
                         <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
                         <AlertDialogContent>
