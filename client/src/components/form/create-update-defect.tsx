@@ -242,6 +242,30 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               ]}
               required
             />
+            <InputForm
+              label="Production Q'ty"
+              name="production_quantity"
+              placeholder="โปรดระบุจำนวน Claim Supplier"
+              type="number"
+              inputMode="numeric"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.production_quantity ?? ""}
+              error={errors.production_quantity}
+              labelOptional="(Optional)"
+            />
+            <InputForm
+              label="จำนวน NG / NG Q'ty"
+              name="ng_quantity"
+              placeholder="โปรดระบุจำนวน NG"
+              type="number"
+              inputMode="numeric"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.ng_quantity ?? ""}
+              error={errors.ng_quantity}
+              required
+            />
             <div>
               <ComboBoxResponsive
                 label="สาเหตุ / Cause"
@@ -273,18 +297,6 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               </Button>
             </div>
 
-            <InputForm
-              label="จำนวน NG / NG Q'ty"
-              name="ng_quantity"
-              placeholder="โปรดระบุจำนวน NG"
-              type="number"
-              inputMode="numeric"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.ng_quantity ?? ""}
-              error={errors.ng_quantity}
-              required
-            />
             <Collapsible>
               <CollapsibleTrigger>
                 <div className="flex items-center gap-2">
@@ -326,6 +338,39 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                     error={errors.scrap_quantity}
                     labelOptional="(Optional)"
                   />
+                  <InputForm
+                    label="จำนวน Claim Supplier / Claim Supplier Q'ty"
+                    name="claim_supplier_quantity"
+                    placeholder="โปรดระบุจำนวน Claim Supplier"
+                    type="number"
+                    inputMode="numeric"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.claim_supplier_quantity ?? ""}
+                    error={errors.claim_supplier_quantity}
+                    labelOptional="(Optional)"
+                  />
+                  <InputForm
+                    label="เลขที่ใบอนุมัติ Scrap / Scrap Approval Sheet No."
+                    name="scrap_approval_sheet_no"
+                    placeholder="โปรดระบุเลขที่ใบอนุมัติ Scrap"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.scrap_approval_sheet_no ?? ""}
+                    error={errors.scrap_approval_sheet_no}
+                    labelOptional="(Optional)"
+                  />
+                  <InputForm
+                    label="หมายเลข Car / Car No."
+                    name="car_no"
+                    placeholder="โปรดระบุหมายเลข Car"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.car_no ?? ""}
+                    error={errors.car_no}
+                    labelOptional="(Optional)"
+                  />
+
                   {values?.rework_quantity && (
                     <InputForm
                       label="Rework Cost/Unit (USD)"
@@ -359,6 +404,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                   <div className="space-y-2">
                     <ComboBoxResponsive
                       label="ชื่อเครื่องจักร / Machine Name"
+                      labelOptional="(Optional)"
                       options={machineList?.map((machine) => ({
                         label: machine.machine_name,
                         value: machine.machine_id,
@@ -375,23 +421,30 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                       error={errors?.machine_id}
                       labelFilter="ค้นหาชื่อเครื่องจักร / Search Machine Name"
                       emptyLabel="เลือกชื่อเครื่องจักร"
-                      required
                     />
                   </div>
-                  <SelectForm
-                    label="ชื่อพนักงาน / Operator Name"
-                    name="operator_id"
-                    placeholder="เลือกชื่อพนักงาน"
-                    options={accountList?.map((account) => ({
-                      label: account?.operator_name,
-                      value: account?.operator_id,
-                    }))}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values?.operator_id}
-                    error={errors.operator_id}
-                    labelOptional="(Optional)"
-                  />
+                  <div className="space-y-2">
+                    <ComboBoxResponsive
+                      label="ชื่อพนักงาน / Operator Name"
+                      labelOptional="(Optional)"
+                      options={accountList?.map((account) => ({
+                        label: account.operator_name,
+                        value: account.operator_id,
+                      }))}
+                      value={values?.operator_id ?? ""}
+                      onChange={(value) => {
+                        handleChange({
+                          target: {
+                            name: "operator_id",
+                            value,
+                          },
+                        });
+                      }}
+                      error={errors?.operator_id}
+                      labelFilter="ค้นหาชื่อพนักงาน / Search Operator Name"
+                      emptyLabel="เลือกชื่อพนักงาน"
+                    />
+                  </div>
                   <TextAreaForm
                     label="วิธีแก้ไขปัญหา / Solve Problem"
                     name="solve_problem"

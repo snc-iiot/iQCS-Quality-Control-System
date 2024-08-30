@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdatePart } from "@/components/form";
-import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
+import { ActionWithAdminHOC } from "@/components/hoc/action-with-admin";
 import { CheckboxForm } from "@/components/ui-pattern/form-field/check-box-form";
 import {
   AlertDialog,
@@ -58,7 +58,7 @@ export const PartPage: FC = () => {
 
   const { mutateDeletePart } = usePart();
 
-  const ActionWithAuth = ActionWithAuthHOC(() => (
+  const ActionWithAuth = ActionWithAdminHOC(() => (
     <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
   ));
 

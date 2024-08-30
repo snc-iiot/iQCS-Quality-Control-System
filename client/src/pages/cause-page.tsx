@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateCause } from "@/components/form/create-update-cause";
-import { ActionWithAuthHOC } from "@/components/hoc/action-with-auth";
+import { ActionWithAdminHOC } from "@/components/hoc/action-with-admin";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +59,7 @@ export const CausePage: FC = () => {
     []
   );
 
-  const ActionWithAuth = ActionWithAuthHOC(() => (
+  const ActionWithAuth = ActionWithAdminHOC(() => (
     <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>
   ));
 

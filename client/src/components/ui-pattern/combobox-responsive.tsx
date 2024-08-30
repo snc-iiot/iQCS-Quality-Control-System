@@ -18,6 +18,7 @@ interface ComboBoxResponsiveProps {
   className?: string;
   error?: string;
   required?: boolean;
+  labelOptional?: string;
 }
 
 export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
@@ -29,6 +30,7 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
   label,
   error,
   required,
+  labelOptional,
 }) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [open, setOpen] = useState(false);
@@ -42,7 +44,8 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
       <div className="space-y-2">
         <p className="text-sm font-semibold">
           {label} &nbsp;
-          {required && <Required />}
+          {required && <Required />} &nbsp;
+          {labelOptional && <span className="text-xs text-gray-400">{labelOptional}</span>}
         </p>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -78,7 +81,11 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold">{label}</p>
+      <p className="text-sm font-semibold">
+        {label} &nbsp;
+        {required && <Required />} &nbsp;
+        {labelOptional && <span className="text-xs text-gray-400">{labelOptional}</span>}
+      </p>
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild className="w-full">
           <Button variant="outline" className="w-full justify-between font-normal">
