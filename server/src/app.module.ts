@@ -19,6 +19,7 @@ import { ProcessesModule } from './services/processes/processes.module';
 import { ProductivityModule } from './services/productivity/productivity.module';
 import { OperatorsModule } from './services/operators/operators.module';
 import { DocumentsModule } from './services/documents/documents.module';
+import { UpdatePriceModule } from './services/update-price/update-price.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { DocumentsModule } from './services/documents/documents.module';
     ProcessesModule,
     OperatorsModule,
     DocumentsModule,
+    UpdatePriceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -84,6 +86,11 @@ export class AppModule implements NestModule {
 
     consumer.apply(JwtMiddleware).forRoutes({
       path: '/documents*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/update-price*',
       method: RequestMethod.ALL,
     });
 
