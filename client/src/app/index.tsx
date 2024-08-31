@@ -12,12 +12,12 @@ import {
   PartPage,
   ProcessPage,
   SettingMachinePage,
-} from "./pages";
-import DocumentManagementPage from "./pages/document-management-page";
-import LoggingProductivityPage from "./pages/logging-productivity-page";
-import MenuLoggingPage from "./pages/menu-logging-page";
-import MenuManagementPage from "./pages/menu-management-page";
-import MenuSettingPage from "./pages/menu-setting-page";
+} from "../pages";
+import DocumentManagementPage from "../pages/document-management-page";
+import LoggingProductivityPage from "../pages/logging-productivity-page";
+import MenuLoggingPage from "../pages/menu-logging-page";
+import MenuManagementPage from "../pages/menu-management-page";
+import MenuSettingPage from "../pages/menu-setting-page";
 
 const App = () => {
   return (
