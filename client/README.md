@@ -1,86 +1,47 @@
-# React + Vite + TypeScript Template (react-vite-ui)
+# iQCS: Quality Control System
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Dan5py/react-vite-ui/blob/main/LICENSE)
+**Summary**
 
-A React + Vite template powered by shadcn/ui.
+Our Quality Control System software is designed to empower manufacturers and production teams with a comprehensive solution to ensure product excellence. This robust software facilitates meticulous tracking of every step in the production process, from raw material inspection to final product delivery. With features like real-time quality inspection, traceability, document management, and corrective action tracking, the system provides an integrated platform to maintain high standards of quality across your entire production line.
 
-## 🎉 Features
+The intuitive dashboard offers a snapshot of key metrics, enabling quick identification of potential issues and facilitating proactive management. The software’s powerful data analysis tools allow users to generate detailed reports, uncover trends, and make data-driven decisions that drive continuous improvement.
 
-- **React** - A JavaScript library for building user interfaces.
-- **Vite** - A fast, opinionated frontend build tool.
-- **TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
-- **Tailwind CSS** - A utility-first CSS framework.
-- **Tailwind Prettier Plugin** - A Prettier plugin for formatting Tailwind CSS classes.
-- **ESLint** - A pluggable linting utility for JavaScript and TypeScript.
-- **PostCSS** - A tool for transforming CSS with JavaScript.
-- **Autoprefixer** - A PostCSS plugin to parse CSS and add vendor prefixes.
-- **shadcn/ui** - Beautifully designed components that you can copy and paste into your apps.
+---
 
-## ⚙️ Prerequisites
+### **Key Features Include:**
 
-Make sure you have the following installed on your development machine:
+1. **Settings**
 
-- Node.js (version 16 or above)
-- pnpm (package manager)
+   - **Processes Settings:** Create, edit, and delete processes used in the system.
 
-## 🚀 Getting Started
+   - **Part Settings:** Add fields for various processes, set product pricing, and specify customer names.
 
-Follow these steps to get started with the react-vite-ui template:
+   - **Account Settings:** Manage user accounts within the system.
 
-1. Clone the repository:
+   - **Machine Settings:** Create, edit, and delete machine information.
 
-   ```bash
-   git clone https://github.com/dan5py/react-vite-ui.git
-   ```
+   - **Routing Setting:** Arrange process sequences for traceability and dashboard organization.
 
-2. Navigate to the project directory:
+2. **Logging Results**
 
-   ```bash
-   cd react-vite-ui
-   ```
+   - **NG Product:** Filter parts and causes related to different processes, calculate costs for non-conforming products, rework, or scrap, add machine users, and automatically resize images.
 
-3. Install the dependencies:
+3. **Notification**
 
-   ```bash
-   pnpm install
-   ```
+   - **Error Alerts:** Notify users through Line Notify when errors or non-conforming products are detected.
 
-4. Start the development server:
+4. **Document Management**
 
-   ```bash
-   pnpm dev
-   ```
+   - **Quality Document Management:** Upload, download, edit, and search for documents related to quality control, such as certificates and inspection reports.
 
-## 📜 Available Scripts
+5. **Complaint Management**
 
-- pnpm dev - Starts the development server.
-- pnpm build - Builds the production-ready code.
-- pnpm lint - Runs ESLint to analyze and lint the code.
-- pnpm preview - Starts the Vite development server in preview mode.
+   - **Customer Complaint Tracking:** Record and track customer complaints, edit complaint details, filter complaints, and export complaint data for reporting.
 
-## 📂 Project Structure
+6. **Data Analysis**
 
-The project structure follows a standard React application layout:
+   - **Quality Analysis Reporting:** Create and customize graphs and quality analysis reports, save and export reports, and drill down into data for deeper analysis.
 
-```python
-react-vite-ui/
-  ├── node_modules/      # Project dependencies
-  ├── public/            # Public assets
-  ├── src/               # Application source code
-  │   ├── components/    # React components
-  │   │   └── ui/        # shadc/ui components
-  │   ├── styles/        # CSS stylesheets
-  │   ├── lib/           # Utility functions
-  │   ├── App.tsx        # Application entry point
-  │   └── index.tsx      # Main rendering file
-  ├── .eslintrc.json     # ESLint configuration
-  ├── index.html         # HTML entry point
-  ├── postcss.config.js  # PostCSS configuration
-  ├── tailwind.config.js # Tailwind CSS configuration
-  ├── tsconfig.json      # TypeScript configuration
-  └── vite.config.ts     # Vite configuration
-```
+---
 
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](https://choosealicense.com/licenses/mit/) file for details.
+Designed for ease of use and scalability, our Quality Control System software is an essential tool for companies committed to delivering high-quality products and achieving operational excellence. Whether you're a small business or a large enterprise, our software adapts to your needs, helping you maintain compliance, reduce waste, and enhance customer satisfaction.
