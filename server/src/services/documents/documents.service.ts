@@ -6,6 +6,7 @@ import { TServiceResponse, TJwtPayload } from 'src/types';
 import { FtpUploadFileFromBase64 } from 'src/common/utils';
 import { CreateDocumentDto, UpdateDocumentDto, FindDocumentDto } from './dto';
 
+//! https://stackoverflow.com/questions/4212861/what-is-a-correct-mime-type-for-docx-pptx-etc
 @Injectable()
 export class DocumentsService {
   constructor(
