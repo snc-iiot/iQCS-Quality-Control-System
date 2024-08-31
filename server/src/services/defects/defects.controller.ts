@@ -19,6 +19,7 @@ import {
   FindDefectsDto,
   FindByDatetimeRangeDto,
   FindByDateRangeDto,
+  FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
@@ -116,6 +117,19 @@ export class DefectController {
     @Res() res: Response,
   ) {
     const result = await this.defectService.graphSummaryByDateRange(
+      query,
+      req.decoded,
+    );
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('graph-summary-part-by-date-range')
+  async graphSummaryPartDefectsByDateRange(
+    @Query() query: FindByProcessDateRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.graphSummaryPartDefectsByDateRange(
       query,
       req.decoded,
     );

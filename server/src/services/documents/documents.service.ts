@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Document } from './entities';
 import { TServiceResponse, TJwtPayload } from 'src/types';
+import { FtpUploadFileFromBase64 } from 'src/common/utils';
 import { CreateDocumentDto, UpdateDocumentDto, FindDocumentDto } from './dto';
 
 @Injectable()
@@ -17,6 +18,17 @@ export class DocumentsService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
+      // check type file from base64
+      // const base64String = input.document_data;
+      // let fileType = '';
+      // if (base64String.charAt(0) === '/') {
+      //   fileType = 'image';
+      // } else if (base64String.charAt(0) === 'U') {
+      //   fileType = 'video';
+      // } else {
+      //   fileType = 'document';
+      // }
+
       const record = {
         document_name: input.document_name,
         document_description: input.document_description ?? '',
