@@ -14,21 +14,32 @@ export class DocumentsService {
     private readonly documentRepository: Repository<Document>,
   ) {}
 
+  randomString(length: number = 8): string {
+    const chars =
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz_-';
+    let randomstring = '';
+    for (let i = 0; i < length; i++) {
+      const rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
+    return randomstring;
+  }
+
   async create(
     input: CreateDocumentDto,
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       // check type file from base64
-      // const base64String = input.document_data;
-      // let fileType = '';
-      // if (base64String.charAt(0) === '/') {
-      //   fileType = 'image';
-      // } else if (base64String.charAt(0) === 'U') {
-      //   fileType = 'video';
-      // } else {
-      //   fileType = 'document';
-      // }
+      const [mimeType, base64Data] = input.document_data.split(';base64,');
+      const [type, extension] = mimeType.split('/');
+      if (type !== 'application')
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Invalid file type',
+          data: [],
+        };
 
       const record = {
         document_name: input.document_name,
