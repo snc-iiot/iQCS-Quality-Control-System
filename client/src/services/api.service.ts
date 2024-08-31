@@ -19,15 +19,15 @@ export abstract class APIService {
   }
 
   getUserRole(): EUserRole {
-    return LocalStorageManager.getItem("TOOLBOX_ROLE") || EUserRole.USER;
+    return LocalStorageManager.getItem("iQCS_ROLE") || EUserRole.USER;
   }
 
   setUserRole(role: EUserRole): void {
-    LocalStorageManager.setItem("TOOLBOX_ROLE", role);
+    LocalStorageManager.setItem("iQCS_ROLE", role);
   }
 
   private getAccessToken(): string | null {
-    return LocalStorageManager.getItem("TOOLBOX_ACCESS_TOKEN") || null;
+    return LocalStorageManager.getItem("iQCS_ACCESS_TOKEN") || null;
   }
 
   private getDefaultHeaders(): Record<string, string> {
@@ -40,11 +40,11 @@ export abstract class APIService {
   }
 
   setAccessToken(token: string): void {
-    LocalStorageManager.setItem("TOOLBOX_ACCESS_TOKEN", token);
+    LocalStorageManager.setItem("iQCS_ACCESS_TOKEN", token);
   }
 
   removeAccessToken(): void {
-    LocalStorageManager.removeItem("TOOLBOX_ACCESS_TOKEN");
+    LocalStorageManager.removeItem("iQCS_ACCESS_TOKEN");
   }
 
   private setupInterceptors(): void {
