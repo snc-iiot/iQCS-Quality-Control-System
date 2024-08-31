@@ -61,7 +61,7 @@ export const HistoryPage: FC = () => {
   const [historyFilter, setHistoryFilter] = useState<{
     mode: string;
     shift?: "DAY" | "NIGHT";
-    process?: string;
+    process_id?: string;
     start_date_time: string;
     end_date_time: string;
   }>({
@@ -69,16 +69,16 @@ export const HistoryPage: FC = () => {
     start_date_time: renderFormattedPayloadDate(new Date()) ?? "",
     end_date_time: "",
     shift: "DAY",
-    process: "CUTTING",
+    process_id: "",
   });
 
   const excelHelper = new ExcelHelper();
 
   const [allFilter, setAllFilter] = useState<{
-    process: string[];
+    process_id: string[];
     shift: string[];
   }>({
-    process: [],
+    process_id: [],
     shift: [],
   });
 
@@ -250,10 +250,10 @@ export const HistoryPage: FC = () => {
       defectList
         ?.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
         ?.filter((defect) => {
-          if (allFilter?.process?.length === 0) {
+          if (allFilter?.process_id?.length === 0) {
             return true;
           }
-          return allFilter?.process?.includes(defect.process);
+          return allFilter?.process_id?.includes(defect.process_id);
         })
         ?.filter((defect) => {
           if (allFilter?.shift?.length === 0) {
@@ -330,10 +330,10 @@ export const HistoryPage: FC = () => {
       productivityList
         ?.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
         ?.filter((productivity) => {
-          if (allFilter?.process?.length === 0) {
+          if (allFilter?.process_id?.length === 0) {
             return true;
           }
-          return allFilter?.process?.includes(productivity.process);
+          return allFilter?.process_id?.includes(productivity.process_id);
         })
         ?.filter((productivity) => {
           if (allFilter?.shift?.length === 0) {
@@ -451,14 +451,14 @@ export const HistoryPage: FC = () => {
 
   const mapData = () => {
     const groupPartName = Object.keys(
-      groupByField(productivityMapped?.filter((info) => info?.process === historyFilter?.process), "part_name")
+      groupByField(productivityMapped?.filter((info) => info?.process_id === historyFilter?.process_id), "part_name")
     );
     const req: TMapData[] = [];
 
     for (let i = 0; i < groupPartName.length; i++) {
       const groupTimeSlot = groupByField(
         productivityMapped?.filter(
-          (info) => info?.part_name === groupPartName[i] && info?.process === historyFilter?.process
+          (info) => info?.part_name === groupPartName[i] && info?.process_id === historyFilter?.process_id
         ),
         "time_slot"
       );
@@ -488,6 +488,8 @@ export const HistoryPage: FC = () => {
       }, 0) ?? 0
     );
   };
+
+  console.log(historyFilter);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -527,15 +529,10 @@ export const HistoryPage: FC = () => {
                   className="w-full md:w-[14rem]"
                   value={historyFilter?.mode}
                   onChange={(e) => {
-                    const now = new Date();
-                    const hour = now.getHours();
-                    const minute = now.getMinutes();
-                    const nowDateTime = `${now?.toISOString().split("T")[0]}T${hour}:${minute}`;
                     setHistoryFilter({
                       ...historyFilter,
                       mode: e.target.value,
-                      start_date_time: e.target.value === "date_range" ? nowDateTime : "",
-                      end_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                      end_date_time: e.target.value === "period" ? historyFilter?.start_date_time : "",
                     });
                   }}
                 />
@@ -604,11 +601,11 @@ export const HistoryPage: FC = () => {
                     value: info?.process_id,
                   }))}
                   className="w-full md:w-[14rem]"
-                  value={historyFilter?.process}
+                  value={historyFilter?.process_id}
                   onChange={(e) => {
                     setHistoryFilter({
                       ...historyFilter,
-                      process: e.target.value,
+                      process_id: e.target.value,
                     });
                   }}
                 />
@@ -762,15 +759,10 @@ export const HistoryPage: FC = () => {
                   className="w-full md:w-[14rem]"
                   value={historyFilter?.mode}
                   onChange={(e) => {
-                    const now = new Date();
-                    const hour = now.getHours();
-                    const minute = now.getMinutes();
-                    const nowDateTime = `${now?.toISOString().split("T")[0]}T${hour}:${minute}`;
                     setHistoryFilter({
                       ...historyFilter,
-                      mode: e.target.value as "daily" | "date_range",
-                      start_date_time: e.target.value === "date_range" ? nowDateTime : "",
-                      end_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                      mode: e.target.value,
+                      end_date_time: e.target.value === "period" ? historyFilter?.start_date_time : "",
                     });
                   }}
                 />
@@ -853,7 +845,7 @@ export const HistoryPage: FC = () => {
                           onClick={() =>
                             setAllFilter({
                               ...allFilter,
-                              process: [],
+                              process_id: [],
                             })
                           }
                           className="text-xs text-red-500 hover:underline"
@@ -867,22 +859,22 @@ export const HistoryPage: FC = () => {
                             <Checkbox
                               id={process?.process_name}
                               name={process?.process_name}
-                              checked={allFilter?.process?.includes(process?.process_name)}
+                              checked={allFilter?.process_id?.includes(process?.process_id)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: [...allFilter?.process, process?.process_name],
+                                    process_id: [...allFilter?.process_id, process?.process_id],
                                   });
                                 } else {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
+                                    process_id: allFilter?.process_id?.filter((item) => item !== process?.process_id),
                                   });
                                 }
                               }}
                             />
-                            <label htmlFor={process?.process_name} className="text-sm">
+                            <label htmlFor={process?.process_id} className="text-sm">
                               {process?.process_name}
                             </label>
                           </div>
@@ -1020,22 +1012,25 @@ export const HistoryPage: FC = () => {
                       value: "daily",
                     },
                     {
-                      label: "ช่วงวันที่ / Date Range",
-                      value: "date_range",
+                      label: "ช่วงวัน / Period",
+                      value: "period",
+                    },
+                    {
+                      label: "สัปดาห์ / Week",
+                      value: "week",
+                    },
+                    {
+                      label: "รายเดือน / Monthly",
+                      value: "monthly",
                     },
                   ]}
                   className="w-full md:w-[14rem]"
                   value={historyFilter?.mode}
                   onChange={(e) => {
-                    const now = new Date();
-                    const hour = now.getHours();
-                    const minute = now.getMinutes();
-                    const nowDateTime = `${now?.toISOString().split("T")[0]}T${hour}:${minute}`;
                     setHistoryFilter({
                       ...historyFilter,
-                      mode: e.target.value as "daily" | "date_range",
-                      start_date_time: e.target.value === "date_range" ? nowDateTime : "",
-                      end_date_time: e.target.value === "date_range" ? nowDateTime : "",
+                      mode: e.target.value,
+                      end_date_time: e.target.value === "period" ? historyFilter?.start_date_time : "",
                     });
                   }}
                 />
@@ -1115,7 +1110,7 @@ export const HistoryPage: FC = () => {
                           onClick={() =>
                             setAllFilter({
                               ...allFilter,
-                              process: [],
+                              process_id: [],
                             })
                           }
                           className="text-xs text-red-500 hover:underline"
@@ -1129,22 +1124,22 @@ export const HistoryPage: FC = () => {
                             <Checkbox
                               id={process?.process_name}
                               name={process?.process_name}
-                              checked={allFilter?.process?.includes(process?.process_name)}
+                              checked={allFilter?.process_id?.includes(process?.process_id)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: [...allFilter?.process, process?.process_name],
+                                    process_id: [...allFilter?.process_id, process?.process_id],
                                   });
                                 } else {
                                   setAllFilter({
                                     ...allFilter,
-                                    process: allFilter?.process?.filter((item) => item !== process?.process_name),
+                                    process_id: allFilter?.process_id?.filter((item) => item !== process?.process_id),
                                   });
                                 }
                               }}
                             />
-                            <label htmlFor={process?.process_name} className="text-sm">
+                            <label htmlFor={process?.process_id} className="text-sm">
                               {process?.process_name}
                             </label>
                           </div>
@@ -1301,15 +1296,15 @@ export const HistoryPage: FC = () => {
                 datetime: "",
                 date: renderFormattedPayloadDate(selectedDefect?.datetime) ?? "",
                 time_slot: getTimeSlotByDateTimestamp(new Date(selectedDefect?.datetime ?? "")?.getTime())?.value,
-                process: selectedDefect?.process || "",
-                part_code: selectedDefect?.part_code || "",
+                process_id: selectedDefect?.process_id || "",
+                part_id: selectedDefect?.part_id || "",
                 case_id: selectedDefect?.case_id || "",
                 ng_quantity: selectedDefect?.ng_quantity || null,
-                machine_name: selectedDefect?.machine_name || null,
+                machine_id: selectedDefect?.machine_id || "",
                 rework_quantity: selectedDefect?.rework_quantity || null,
-                rework_cost_per_unit: selectedDefect?.rework_cost_per_unit || null,
+                // rework_cost_per_unit: selectedDefect?.rework_cost_per_unit || "",
                 scrap_quantity: selectedDefect?.scrap_quantity || null,
-                scrap_cost_per_unit: selectedDefect?.scrap_cost_per_unit || null,
+                // scrap_cost_per_unit: selectedDefect?.scrap_cost_per_unit || null,
                 image: selectedDefect?.image || "",
                 remarks: selectedDefect?.remarks || "",
               }}
@@ -1338,10 +1333,10 @@ export const HistoryPage: FC = () => {
                 datetime: "",
                 date: renderFormattedPayloadDate(selectedDefect?.datetime) ?? "",
                 time_slot: getTimeSlotByDateTimestamp(new Date(selectedDefect?.datetime ?? "")?.getTime())?.value,
-                process: selectedDefect?.process || "",
-                part_code: selectedDefect?.part_code || "",
-                ng_quantity: selectedDefect?.ng_quantity || null,
-                machine_name: selectedDefect?.machine_name || null,
+                process_id: selectedDefect?.process_id || "",
+                part_id: selectedDefect?.part_id || "",
+                quantity: selectedDefect?.ng_quantity || 0,
+                machine_id: selectedDefect?.machine_id || "",
                 remarks: selectedDefect?.remarks || "",
               }}
             />
@@ -1351,64 +1346,3 @@ export const HistoryPage: FC = () => {
     </div>
   );
 };
-
-//  <TabsContent value="summary" className="h-full">
-//         <div className="flex h-full flex-col gap-2">
-//           <div className="flex flex-wrap items-center gap-2">
-//             <SelectForm
-//               options={[
-//                 {
-//                   label: "รายวัน / Daily",
-//                   value: "daily",
-//                 },
-//                 {
-//                   label: "ช่วงเวลา / Time Slot",
-//                   value: "time_slot",
-//                 },
-//               ]}
-//               value={summaryFilter?.mode}
-//               onChange={(e) => {
-//                 setSummaryFilter({
-//                   ...summaryFilter,
-//                   mode: e.target.value,
-//                   time_slot: getNowTimeSlot()?.value,
-//                 });
-//               }}
-//               className="w-full md:w-[14rem]"
-//             />
-//             <DateInputForm
-//               value={summaryFilter?.date}
-//               onChange={(e) => {
-//                 setSummaryFilter({
-//                   ...summaryFilter,
-//                   date: renderFormattedPayloadDate(e.target.value) ?? "",
-//                 });
-//               }}
-//               className="w-full md:w-[14rem]"
-//             />
-//             {summaryFilter?.mode === "time_slot" && (
-//               <SelectForm
-//                 options={getTimeSlots()}
-//                 value={summaryFilter?.time_slot}
-//                 onChange={(e) => {
-//                   setSummaryFilter({
-//                     ...summaryFilter,
-//                     time_slot: e.target.value,
-//                   });
-//                 }}
-//                 className="w-full md:w-[14rem]"
-//               />
-//             )}
-//           </div>
-//           <div className="flex h-full w-full flex-col overflow-y-auto rounded-md border">
-//             {isPendingSummary ? (
-//               <div className="flex h-full flex-col items-center justify-center gap-1">
-//                 <Spinner />
-//                 <p className="ml-2">Loading...</p>
-//               </div>
-//             ) : (
-//               <DefectSummaryByDate />
-//             )}
-//           </div>
-//         </div>
-//       </TabsContent>

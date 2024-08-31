@@ -47,6 +47,19 @@ export type TDefect = {
   ng_description: string;
   inspector_name: string;
   part_name: string;
+
+  date?: string;
+  defects_type: "S" | "P";
+  process_id: string;
+  part_id: string;
+
+  // Optional
+  machine_id?: string;
+  operator_id?: string;
+  production_quantity?: number | null;
+  claim_supplier_quantity?: number | null;
+  scrap_approval_sheet_no: string;
+  car_no?: string;
 };
 
 export type TDefectSummary = {

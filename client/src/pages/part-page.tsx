@@ -52,8 +52,10 @@ export const PartPage: FC = () => {
     (part) =>
       (part?.part_code?.toLowerCase().includes(search.toLowerCase()) ||
         part?.part_name?.toLowerCase().includes(search.toLowerCase()) ||
-        part?.part_price?.toLowerCase().includes(search.toLowerCase())) &&
-      (fields?.process?.includes(part?.process_name) || fields?.process?.length === 0)
+        String(part?.price)
+          ?.toLowerCase()
+          .includes(search.toLowerCase())) &&
+      (fields?.process?.includes(part?.process_name) || (fields?.process?.length ?? 0) === 0)
   );
 
   const { mutateDeletePart } = usePart();
@@ -124,7 +126,7 @@ export const PartPage: FC = () => {
                       <TableCell>{part?.process_name ?? "TEST"}</TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
-                      <TableCell>{part?.part_price ?? "100"}</TableCell>
+                      <TableCell>{part?.price ?? "100"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>
@@ -140,6 +142,7 @@ export const PartPage: FC = () => {
                           >
                             Edit
                           </button>
+
                           <AlertDialog>
                             <ActionWithAuth />
                             <AlertDialogContent>

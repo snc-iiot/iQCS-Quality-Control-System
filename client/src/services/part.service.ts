@@ -12,7 +12,7 @@ export class PartService extends APIService {
 
   public getParts = async (): Promise<TPart[]> => {
     try {
-      const { data } = await this.get<TResponse<TPart[]>>(`/part-management`);
+      const { data } = await this.get<TResponse<TPart[]>>(`/parts`);
       this.store.setPartList(data?.data);
       return data?.data ?? [];
     } catch (error) {
@@ -23,7 +23,7 @@ export class PartService extends APIService {
 
   public createPart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.post<TResponse<unknown>>("/part-management", data);
+      const response = await this.post<TResponse<unknown>>("/parts", data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -48,7 +48,7 @@ export class PartService extends APIService {
 
   public updatePart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.put<TResponse<unknown>>(`/part-management`, data);
+      const response = await this.put<TResponse<unknown>>(`/parts`, data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -73,7 +73,7 @@ export class PartService extends APIService {
 
   public deletePart = async (part_code: string): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.delete<TResponse<unknown>>(`/part-management?part_code=${part_code}`);
+      const response = await this.delete<TResponse<unknown>>(`/parts?part_id=${part_code}`);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {

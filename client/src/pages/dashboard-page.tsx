@@ -15,6 +15,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ComposedChart,
   Legend,
   Line,
@@ -147,71 +148,53 @@ export const DashboardPage: FC = () => {
     {
       case_name: "เป็นรอย",
       number_of_cases: 1000,
+      color: "#800000",
     },
     {
       case_name: "หัก",
       number_of_cases: 900,
+      color: "#990000",
     },
     {
       case_name: "ขาด",
       number_of_cases: 800,
+      color: "#B20000",
     },
     {
       case_name: "หลุด",
       number_of_cases: 700,
+      color: "#CB0000",
     },
     {
       case_name: "แตก",
       number_of_cases: 600,
+      color: "#E40000",
     },
     {
       case_name: "เป็นรอย1",
       number_of_cases: 500,
+      color: "#FD0000",
     },
     {
       case_name: "หัก1",
       number_of_cases: 400,
+      color: "#FF2B00",
     },
     {
       case_name: "ขาด1",
       number_of_cases: 300,
+      color: "#FF4400",
     },
     {
       case_name: "หลุด1",
       number_of_cases: 200,
+      color: "#FF5500",
     },
     {
       case_name: "แตก1",
       number_of_cases: 100,
+      color: "#FF7F50",
     },
-    // {
-    //   case_name: " ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "  ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "   ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "    ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "     ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "      ",
-    //   number_of_cases: 0,
-    // },
-    // {
-    //   case_name: "       ",
-    //   number_of_cases: 0,
-    // },
   ];
 
   return (
@@ -435,7 +418,11 @@ export const DashboardPage: FC = () => {
                 <XAxis type="number" className="text-[10px]" />
                 <YAxis dataKey="case_name" type="category" scale="band" className="text-xs" />
                 <Tooltip />
-                <Bar dataKey="number_of_cases" name={"Number of cases"} barSize={20} fill="#ff7300" />
+                <Bar dataKey="number_of_cases" name={"Number of cases"} barSize={20}>
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
               </ComposedChart>
             </ChartContainer>
           </div>
