@@ -53,10 +53,10 @@ const MenuSettingPage: FC = () => {
       disabled: false,
     },
     {
-      title: "ตั้งค่า % ค่าใช้จ่าย / Cost setting",
+      title: "ตั้งค่าอัตราส่วนค่าใช้จ่าย / Cost setting",
       href: "cost",
       icon: Settings,
-      description: "ตั้งค่า % ค่าใช้จ่าย",
+      description: "จัดการอัตราส่วนค่าใช้จ่าย",
       disabled: false,
     },
   ];
@@ -72,7 +72,6 @@ const MenuSettingPage: FC = () => {
             <DialogTitle>เปลี่ยนรหัสผ่าน / Change password</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
-
           <ChangePassword onClose={() => setIsDialogOpen(false)} />
         </DialogContent>
       </Dialog>

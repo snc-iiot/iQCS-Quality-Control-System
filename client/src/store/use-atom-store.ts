@@ -9,6 +9,7 @@ import {
   ngCauseAtom,
   partAtom,
   plantsAtom,
+  priceRatioAtom,
   processAtom,
   productivityAtom,
   productivitySummaryAtom,
@@ -33,6 +34,7 @@ export const useAtomStore = () => {
 
   const [machineList, setMachineList] = useAtom(machineAtom);
   const [accountList, setAccountList] = useAtom(accountAtom);
+  const [priceRatioList, setPriceRatioList] = useAtom(priceRatioAtom);
 
   return {
     plantList,
@@ -61,5 +63,7 @@ export const useAtomStore = () => {
     setMachineList,
     accountList,
     setAccountList,
+    priceRatioList,
+    setPriceRatioList,
   };
 };

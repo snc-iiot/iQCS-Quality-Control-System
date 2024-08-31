@@ -2,6 +2,7 @@ import { AuthService } from "@/services/auth.service";
 import { useDocument, useNGCause, usePart, useProcess } from "@/services/hooks";
 import { useAccount } from "@/services/hooks/use-account";
 import { useMachine } from "@/services/hooks/use-machine";
+import { usePriceRatio } from "@/services/hooks/use-price-ratio";
 import { FC, ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -18,6 +19,7 @@ export const AuthLayout: FC<Props> = ({ children }) => {
   const { useGetNGCauses } = useNGCause();
   const { useGetMachines } = useMachine();
   const { useGetAccounts } = useAccount();
+  const { useGetPriceRatios } = usePriceRatio();
 
   useGetParts();
   useGetProcess();
@@ -25,6 +27,7 @@ export const AuthLayout: FC<Props> = ({ children }) => {
   useGetNGCauses();
   useGetMachines();
   useGetAccounts();
+  useGetPriceRatios();
 
   if (!authService.isLoggedIn()) {
     return <Navigate to="/login" />;
