@@ -26,6 +26,12 @@ export class Part {
   @Column({ type: 'jsonb' })
   processes: string[];
 
+  @Column({ type: 'numeric' })
+  price: number;
+
+  @Column({ type: 'jsonb' })
+  customers: string[];
+
   @Column()
   plant_code: string;
 

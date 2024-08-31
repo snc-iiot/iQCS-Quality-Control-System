@@ -43,6 +43,8 @@ export class PartsService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
         processes: input.processes,
+        price: input.price,
+        customers: input.customers ?? [],
         plant_code: decoded.plant_code,
       };
 
@@ -99,6 +101,8 @@ export class PartsService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
         processes: input.processes,
+        price: input.price,
+        customers: input.customers ?? [],
       };
       const updated = await this.partRepository.update(
         { part_id: input.part_id },

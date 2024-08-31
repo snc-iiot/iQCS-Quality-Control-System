@@ -1,6 +1,6 @@
 import { IsNotEmpty, Matches, IsNumber, Min } from 'class-validator';
 
-export class CreatePriceRatioDto {
+export class SavePriceRatioDto {
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {
     message: 'date must be in the format yyyy-mm-dd',
   })
@@ -10,17 +10,17 @@ export class CreatePriceRatioDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
-  ng_ratio: string;
+  ng_ratio: number;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
-  scrap_ratio: string;
+  scrap_ratio: number;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
-  rework_ratio: string;
+  rework_ratio: number;
 
   remarks: string;
 }

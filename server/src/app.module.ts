@@ -20,6 +20,7 @@ import { ProductivityModule } from './services/productivity/productivity.module'
 import { OperatorsModule } from './services/operators/operators.module';
 import { DocumentsModule } from './services/documents/documents.module';
 import { UpdatePriceModule } from './services/update-price/update-price.module';
+import { PriceRatioModule } from './services/price-ratio/price-ratio.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { UpdatePriceModule } from './services/update-price/update-price.module';
     OperatorsModule,
     DocumentsModule,
     UpdatePriceModule,
+    PriceRatioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -91,6 +93,11 @@ export class AppModule implements NestModule {
 
     consumer.apply(JwtMiddleware).forRoutes({
       path: '/update-price*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/price-ratios*',
       method: RequestMethod.ALL,
     });
 

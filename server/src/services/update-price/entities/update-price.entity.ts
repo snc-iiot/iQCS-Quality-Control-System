@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'tb_update_price' })
+@Entity({ name: 'tb_update_prices' })
 export class UpdatePrice {
   @PrimaryColumn('uuid')
   update_price_id: string;
@@ -17,8 +17,17 @@ export class UpdatePrice {
   @Column({ type: 'uuid' })
   part_id: string;
 
-  @Column()
+  @Column({ type: 'numeric' })
   price: number;
+
+  @Column({ type: 'numeric' })
+  ng_price: number;
+
+  @Column({ type: 'numeric' })
+  scrap_price: number;
+
+  @Column({ type: 'numeric' })
+  rework_price: number;
 
   @Column()
   remarks: string;

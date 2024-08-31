@@ -9,21 +9,21 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UpdatePriceService } from './update-price.service';
+import { PriceRatioService } from './price-ratio.service';
 import { TJwtPayload } from 'src/types';
-import { SaveUpdatePriceDto, FindUpdatePriceDto } from './dto';
+import { SavePriceRatioDto, FindPriceRatioDto } from './dto';
 
-@Controller('update-prices')
-export class UpdatePriceController {
-  constructor(private readonly updatePriceService: UpdatePriceService) {}
+@Controller('price-ratios')
+export class PriceRatioController {
+  constructor(private readonly priceRatioService: PriceRatioService) {}
 
   @Post()
   async save(
-    @Body() body: SaveUpdatePriceDto,
+    @Body() body: SavePriceRatioDto,
     @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.updatePriceService.save(body, req.decoded);
+    const result = await this.priceRatioService.save(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
@@ -32,13 +32,13 @@ export class UpdatePriceController {
     @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.updatePriceService.findAll(req.decoded);
+    const result = await this.priceRatioService.findAll(req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
   @Delete()
-  async delete(@Query() query: FindUpdatePriceDto, @Res() res: Response) {
-    const result = await this.updatePriceService.delete(query);
+  async delete(@Query() query: FindPriceRatioDto, @Res() res: Response) {
+    const result = await this.priceRatioService.delete(query);
     return res.status(result.statusCode).json(result);
   }
 }

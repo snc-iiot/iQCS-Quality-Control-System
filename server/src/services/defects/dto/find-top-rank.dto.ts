@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, Matches, IsIn } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Matches,
+  IsIn,
+  Min,
+  IsNumber,
+} from 'class-validator';
 
 export class FindTopRankDto {
   @IsString()
@@ -19,4 +26,9 @@ export class FindTopRankDto {
   @IsNotEmpty()
   @IsIn(['ALL', 'DAY', 'NIGHT'])
   shift: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  ranking: number;
 }

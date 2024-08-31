@@ -3,6 +3,8 @@ import {
   IsNotEmpty,
   IsArray,
   ArrayMinSize,
+  IsNumber,
+  Min,
   // IsUUID,
 } from 'class-validator';
 // import { Type } from 'class-transformer';
@@ -28,6 +30,12 @@ export class CreatePartDto {
   // processes: ProcessDto[];
   processes: string[];
 
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  price: number;
+
   sap_code: string;
   part_description: string;
+  customers: string[];
 }

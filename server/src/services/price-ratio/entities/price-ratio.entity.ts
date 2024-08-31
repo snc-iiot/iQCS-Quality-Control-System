@@ -14,13 +14,13 @@ export class PriceRatio {
   @Column({ type: 'date' })
   effective_date: string;
 
-  @Column()
+  @Column({ type: 'numeric' })
   ng_ratio: number;
 
-  @Column()
+  @Column({ type: 'numeric' })
   scrap_ratio: number;
 
-  @Column()
+  @Column({ type: 'numeric' })
   rework_ratio: number;
 
   @Column()
