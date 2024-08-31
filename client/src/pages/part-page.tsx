@@ -58,8 +58,6 @@ export const PartPage: FC = () => {
       (part?.processes?.some((process) => fields?.process?.includes(process)) || (fields?.process?.length ?? 0) === 0)
   );
 
-  console.log(filteredPart);
-
   const { mutateDeletePart } = usePart();
 
   const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
@@ -87,9 +85,9 @@ export const PartPage: FC = () => {
                     label="Process name"
                     value={fields?.process}
                     onChange={(e) => setFields({ ...fields, process: e })}
-                    options={processList?.map(({ process_name }) => ({
+                    options={processList?.map(({ process_name, process_id }) => ({
                       label: process_name,
-                      value: process_name,
+                      value: process_id,
                     }))}
                   />
                 </div>
