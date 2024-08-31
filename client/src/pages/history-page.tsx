@@ -43,7 +43,7 @@ export const HistoryPage: FC = () => {
   const { useGetRawDefects, mutateDeleteDefect } = useDefect();
   const { useGetRawProductivitys, mutateDeleteProductivity } = useProductivity();
 
-  const { defectList, productivityList, processList } = useAtomStore();
+  const { defectList, productivityList, processList, machineList } = useAtomStore();
   const [isOpenDefectDetail, setIsOpenDefectDetail] = useState<boolean>(false);
   const [isOpenDefectEdit, setIsOpenDefectEdit] = useState<boolean>(false);
   const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
@@ -143,11 +143,11 @@ export const HistoryPage: FC = () => {
           label: "Shift",
           key: "shift",
         },
-        { label: "Process", key: "process" },
-        { label: "Machine Name", key: "machine_name" },
+        { label: "Process", key: "process_id" },
+        { label: "Machine Name", key: "machine_id" },
         { label: "Part Code", key: "part_code" },
         { label: "Part Name", key: "part_name" },
-        { label: "Total Quantity", key: "ng_quantity" },
+        { label: "Ng Quantity", key: "ng_quantity" },
         { label: "Rework Quantity", key: "rework_quantity" },
         { label: "Scrap Quantity", key: "scrap_quantity" },
         {
@@ -263,6 +263,8 @@ export const HistoryPage: FC = () => {
         })
         ?.map((defect) => ({
           ...defect,
+          machine_id: machineList?.find((machine) => machine.machine_id === defect.machine_id)?.machine_name || "",
+          process_id: processList?.find((process) => process.process_id === defect.process_id)?.process_name || "",
           date: renderFormattedDate(new Date(defect.datetime)),
           datetime: getTimeSlotByDateTimestamp(new Date(defect.datetime).getTime())?.label || "",
           created_at: renderFormattedDateWithTime(new Date(defect.created_at)) || "",
