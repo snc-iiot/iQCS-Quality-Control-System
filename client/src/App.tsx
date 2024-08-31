@@ -28,21 +28,17 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
-
             <Route path="/logging">
               <Route index element={<MenuLoggingPage />} />
               <Route path="productivity" element={<LoggingProductivityPage />} />
               <Route path="ng-product" element={<HomePage />} />
             </Route>
-
             <Route path="/history" element={<HistoryPage />} />
-
             <Route path="/management">
               <Route index element={<MenuManagementPage />} />
               <Route path="document" element={<DocumentManagementPage />} />
               <Route path="complaint" element={<PartPage />} />
             </Route>
-
             <Route path="/settings" element={<SettingWrapper />}>
               <Route index element={<MenuSettingPage />} />
               <Route path="process" element={<ProcessPage />} />
