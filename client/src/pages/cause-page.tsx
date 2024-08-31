@@ -136,7 +136,7 @@ export const CausePage: FC = () => {
           </div>
         </div>
         <div className="flex h-full flex-col gap-2">
-          <div className="flex h-0 w-full flex-grow flex-col overflow-y-auto rounded-md border">
+          <div className="vertical-scrollbar scrollbar-sm flex h-0 w-full flex-grow flex-col overflow-y-auto rounded-md border">
             <Table className="relative h-full w-full border-collapse">
               <TableHeader className="sticky top-0 z-10 bg-secondary">
                 <TableRow className="whitespace-nowrap">
