@@ -146,6 +146,7 @@ export const HistoryPage: FC = () => {
         { label: "Machine Name", key: "machine_id" },
         { label: "Part Code", key: "part_code" },
         { label: "Part Name", key: "part_name" },
+        { label: "Production Quantity", key: "production_quantity" },
         { label: "Ng Quantity", key: "ng_quantity" },
         { label: "Rework Quantity", key: "rework_quantity" },
         { label: "Scrap Quantity", key: "scrap_quantity" },

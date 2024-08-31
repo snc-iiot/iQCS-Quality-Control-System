@@ -89,18 +89,6 @@ export const GET_TIME_SLOTS = (date: string | undefined, isShowAllDay: boolean =
   };
 
   return isShowAllDay ? [allDay, ...timeSlots] : timeSlots;
-
-  // const demo = [];
-
-  // for (let i = 0; i < 24; i++) {
-  //   const timeSlot = new Date(`${date}T01:00:00.000Z`);
-  //   timeSlot.setHours(timeSlot.getHours() + i);
-  //   demo.push({
-  //     value: timeSlot?.toISOString(),
-  //     time: timeSlot.getTime(),
-  //   });
-  // }
-  // return demo;
 };
 
 export const GET_NOW_TIME_SLOT = (date: string | undefined): TimeSlot => {

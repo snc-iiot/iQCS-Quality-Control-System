@@ -1,76 +1,69 @@
-export const groupBy = (array: any[], key: string) => {
-  const innerKey = key.split("."); // split the key by dot
+type GroupedItems<T> = Record<string, T[]>;
+
+// Utility function to safely access nested properties
+const getNestedValue = (obj: any, key: string): any => key.split(".").reduce((acc, part) => acc?.[part], obj);
+
+// Group an array by a specified key (supports nested keys)
+export const groupBy = <T>(array: T[], key: string): GroupedItems<T> => {
   return array.reduce((result, currentValue) => {
-    const key = innerKey.reduce((obj, i) => obj?.[i], currentValue) ?? "None"; // get the value of the inner key
-    (result[key] = result[key] || []).push(currentValue);
+    const groupKey = getNestedValue(currentValue, key) ?? "None";
+    (result[groupKey] = result[groupKey] || []).push(currentValue);
     return result;
-  }, {});
+  }, {} as GroupedItems<T>);
 };
 
-export const orderArrayBy = (orgArray: any[], key: string, ordering: "ascending" | "descending" = "ascending") => {
-  if (!orgArray || !Array.isArray(orgArray) || orgArray.length === 0) return [];
+// Order an array by a specified key (supports nested keys and ordering direction)
+export const orderArrayBy = <T>(array: T[], key: string, ordering: "ascending" | "descending" = "ascending"): T[] => {
+  if (!array?.length) return [];
 
-  const array = [...orgArray];
+  const adjustedKey = key.startsWith("-") ? key.slice(1) : key;
+  const sortOrder = key.startsWith("-") ? "descending" : ordering;
 
-  if (key[0] === "-") {
-    ordering = "descending";
-    key = key.slice(1);
-  }
+  return [...array].sort((a, b) => {
+    const keyA = getNestedValue(a, adjustedKey);
+    const keyB = getNestedValue(b, adjustedKey);
 
-  const innerKey = key.split("."); // split the key by dot
-
-  return array.sort((a, b) => {
-    const keyA = innerKey.reduce((obj, i) => obj[i], a); // get the value of the inner key
-    const keyB = innerKey.reduce((obj, i) => obj[i], b); // get the value of the inner key
-    if (keyA < keyB) {
-      return ordering === "ascending" ? -1 : 1;
-    }
-    if (keyA > keyB) {
-      return ordering === "ascending" ? 1 : -1;
-    }
+    if (keyA < keyB) return sortOrder === "ascending" ? -1 : 1;
+    if (keyA > keyB) return sortOrder === "ascending" ? 1 : -1;
     return 0;
   });
 };
 
-export const checkDuplicates = (array: any[]) => new Set(array).size !== array.length;
+// Check if an array contains duplicate values
+export const checkDuplicates = (array: any[]): boolean => new Set(array).size !== array.length;
 
+// Find the string with the most characters in an array of strings
 export const findStringWithMostCharacters = (strings: string[]): string => {
-  if (!strings || strings.length === 0) return "";
-
-  return strings.reduce((longestString, currentString) =>
-    currentString.length > longestString.length ? currentString : longestString
-  );
+  if (!strings?.length) return "";
+  return strings.reduce((longest, current) => (current.length > longest.length ? current : longest));
 };
 
+// Check if two arrays contain the same elements (ignores order)
 export const checkIfArraysHaveSameElements = (arr1: any[] | null, arr2: any[] | null): boolean => {
-  if (!arr1 || !arr2) return false;
-  if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
-  if (arr1.length === 0 && arr2.length === 0) return true;
-
-  return arr1.length === arr2.length && arr1.every((e) => arr2.includes(e));
+  if (!arr1 || !arr2 || arr1.length !== arr2.length) return false;
+  return arr1.every((element) => arr2.includes(element));
 };
 
-type GroupedItems<T> = { [key: string]: T[] };
-
+// Group an array by a specific field (key of the object)
 export const groupByField = <T>(array: T[], field: keyof T): GroupedItems<T> =>
-  array.reduce((grouped: GroupedItems<T>, item: T) => {
+  array.reduce((grouped, item) => {
     const key = String(item[field]);
     grouped[key] = (grouped[key] || []).concat(item);
     return grouped;
-  }, {});
+  }, {} as GroupedItems<T>);
 
-export const sortByField = (array: any[], field: string): any[] =>
-  array.sort((a, b) => (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0));
+// Sort an array by a specific field
+export const sortByField = <T>(array: T[], field: keyof T): T[] =>
+  [...array].sort((a, b) => (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0));
 
+// Order grouped data by a specific field
 export const orderGroupedDataByField = <T>(groupedData: GroupedItems<T>, orderBy: keyof T): GroupedItems<T> => {
-  for (const key in groupedData) {
-    if (groupedData.hasOwnProperty(key)) {
-      groupedData[key] = groupedData[key].sort((a, b) => {
-        if (a[orderBy] < b[orderBy]) return -1;
-        if (a[orderBy] > b[orderBy]) return 1;
-        return 0;
-      });
-    }
-  }
+  Object.keys(groupedData).forEach((key) => {
+    groupedData[key] = groupedData[key].sort((a, b) => {
+      if (a[orderBy] < b[orderBy]) return -1;
+      if (a[orderBy] > b[orderBy]) return 1;
+      return 0;
+    });
+  });
   return groupedData;
 };
