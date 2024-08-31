@@ -8,6 +8,7 @@ import {
   TNGCause,
   TPart,
   TPlant,
+  TPriceRatio,
   TProcess,
   TProductivity,
   TProductivitySummary,
@@ -24,9 +25,8 @@ export const defectAtom = atom<TDefect[]>([]);
 export const defectSummaryAtom = atom<TDefectSummary[]>([]);
 export const graphSummaryAtom = atom<TGraphSummary[]>([]);
 export const topDefectAtom = atom<TTopDefect[]>([]);
-
 export const productivityAtom = atom<TProductivity[]>([]);
 export const productivitySummaryAtom = atom<TProductivitySummary[]>([]);
-
 export const machineAtom = atom<TMachine[]>([]);
 export const accountAtom = atom<TAccount[]>([]);
+export const priceRatioAtom = atom<TPriceRatio[]>([]);
