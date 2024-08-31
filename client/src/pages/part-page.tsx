@@ -52,8 +52,10 @@ export const PartPage: FC = () => {
     (part) =>
       (part?.part_code?.toLowerCase().includes(search.toLowerCase()) ||
         part?.part_name?.toLowerCase().includes(search.toLowerCase()) ||
-        part?.part_price?.toLowerCase().includes(search.toLowerCase())) &&
-      (fields?.process?.includes(part?.process_name) || fields?.process?.length === 0)
+        String(part?.price)
+          ?.toLowerCase()
+          .includes(search.toLowerCase())) &&
+      (part?.processes?.some((process) => fields?.process?.includes(process)) || (fields?.process?.length ?? 0) === 0)
   );
 
   const { mutateDeletePart } = usePart();
@@ -83,9 +85,9 @@ export const PartPage: FC = () => {
                     label="Process name"
                     value={fields?.process}
                     onChange={(e) => setFields({ ...fields, process: e })}
-                    options={processList?.map(({ process_name }) => ({
+                    options={processList?.map(({ process_name, process_id }) => ({
                       label: process_name,
-                      value: process_name,
+                      value: process_id,
                     }))}
                   />
                 </div>
@@ -121,10 +123,14 @@ export const PartPage: FC = () => {
                   {filteredPart?.map((part, index) => (
                     <TableRow className="whitespace-nowrap" key={index}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{part?.process_name ?? "TEST"}</TableCell>
+                      <TableCell>
+                        {part?.processes
+                          ?.map((item) => processList?.find(({ process_id }) => process_id === item)?.process_name)
+                          ?.join(", ") ?? "TEST"}
+                      </TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
-                      <TableCell>{part?.part_price ?? "100"}</TableCell>
+                      <TableCell>{part?.price ?? "100"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>
@@ -140,6 +146,7 @@ export const PartPage: FC = () => {
                           >
                             Edit
                           </button>
+
                           <AlertDialog>
                             <ActionWithAuth />
                             <AlertDialogContent>
@@ -153,7 +160,7 @@ export const PartPage: FC = () => {
                                 <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={async () => {
-                                    const res = await mutateDeletePart(part?.part_code);
+                                    const res = await mutateDeletePart(part?.part_id);
                                     console.log(res);
                                   }}
                                 >

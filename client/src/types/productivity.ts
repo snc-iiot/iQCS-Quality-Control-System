@@ -28,6 +28,7 @@ export type TProductivity = {
   prod_log_id: string;
   datetime: string;
   process: string;
+  process_id: string;
   machine_name: string;
   part_code: string;
   quantity: number;
