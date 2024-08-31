@@ -55,8 +55,10 @@ export const PartPage: FC = () => {
         String(part?.price)
           ?.toLowerCase()
           .includes(search.toLowerCase())) &&
-      (fields?.process?.includes(part?.process_name) || (fields?.process?.length ?? 0) === 0)
+      (part?.processes?.some((process) => fields?.process?.includes(process)) || (fields?.process?.length ?? 0) === 0)
   );
+
+  console.log(filteredPart);
 
   const { mutateDeletePart } = usePart();
 
@@ -123,7 +125,11 @@ export const PartPage: FC = () => {
                   {filteredPart?.map((part, index) => (
                     <TableRow className="whitespace-nowrap" key={index}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{part?.process_name ?? "TEST"}</TableCell>
+                      <TableCell>
+                        {part?.processes
+                          ?.map((item) => processList?.find(({ process_id }) => process_id === item)?.process_name)
+                          ?.join(", ") ?? "TEST"}
+                      </TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
                       <TableCell>{part?.price ?? "100"}</TableCell>
