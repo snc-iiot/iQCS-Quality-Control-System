@@ -16,7 +16,7 @@ const MenuManagementPage: FC = () => {
       href: "complaint",
       icon: FolderKanban,
       description: "ติดตามและจัดการเรื่องร้องเรียนจากผู้ใช้",
-      disabled: false,
+      disabled: true,
     },
   ];
 

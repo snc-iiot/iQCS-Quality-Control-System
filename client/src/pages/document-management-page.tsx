@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
+import { renderFormattedDate } from "@/helpers/date-time.helper";
 import { useAtomStore } from "@/store";
 import { ArrowDownToLine, Copy, Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,8 @@ const DocumentManagementPage = () => {
       part?.document_name?.toLowerCase().includes(search.toLowerCase()) ||
       part?.inspector_name?.toLowerCase().includes(search.toLowerCase())
   );
+
+  console.log(documentList);
 
   return (
     <>
@@ -47,7 +50,7 @@ const DocumentManagementPage = () => {
           </div>
         )}
         <div className="grid max-h-full grid-cols-1 gap-2 overflow-auto py-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filteredDocument?.map(({ document_name, inspector_name, updated_at }, i) => (
+          {filteredDocument?.map(({ document_name, inspector_name, updated_at, source_file }, i) => (
             <div
               key={i}
               className="flex h-[16rem] w-full cursor-pointer flex-col gap-1 overflow-clip rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
@@ -81,13 +84,9 @@ const DocumentManagementPage = () => {
                   }
                 />
               </div>
-              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white">
-                <img
-                  className="w-full"
-                  src="https://images.template.net/wp-content/uploads/2017/01/17001629/Sample-Word-Document-Template.jpg"
-                  alt="file"
-                />
-                {/* <iframe src="https://snc-services.sncformer.com/snconeway/PDF%20File/CALENDAR%202024.pdf" /> */}
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white">
+                <iframe src={source_file} />
+                <div className="absolute left-0 top-0 h-full w-full" />
               </div>
               <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
                 <div className="h-6 w-6 rounded-full">
@@ -100,8 +99,7 @@ const DocumentManagementPage = () => {
                 <div className="flex flex-1 items-center gap-1 overflow-hidden">
                   <p className="truncate text-xs font-medium">{inspector_name}</p>
                   <div className="mt-1 min-h-[4px] min-w-[4px] rounded-full bg-black" />
-                  <p className="whitespace-nowrap text-xs font-medium">{updated_at}</p>
-                  {/* <p className="whitespace-nowrap text-xs font-medium">Ang 21, 2024</p> */}
+                  <p className="whitespace-nowrap text-xs font-medium">{renderFormattedDate(updated_at)}</p>
                 </div>
               </div>
             </div>

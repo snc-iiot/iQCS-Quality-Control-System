@@ -1,17 +1,27 @@
 export type TCreateUpdateProductivity = {
   prod_log_id?: string;
-  datetime: string; //? "2024-08-07T01:00:00Z";
-  process: string;
-  part_code: string;
-  quantity: number | null;
+  // datetime: string; //? "2024-08-07T01:00:00Z";
+  // process: string;
+  // part_code: string;
+  // quantity: number | null;
 
-  //! Not required // "", 0, null, undefined
-  machine_name?: null | string;
-  ng_quantity?: number | null;
-  remarks?: string | null;
+  // //! Not required // "", 0, null, undefined
+  // machine_name?: null | string;
+  // ng_quantity?: number | null;
+  // remarks?: string | null;
 
   date?: string;
   time_slot?: string | null;
+
+  datetime: string;
+  process_id: string;
+  part_id: string;
+  quantity: number;
+
+  //! Not required // "", 0, null, undefined
+  machine_id: string;
+  operator_id: string;
+  remarks: string;
 };
 
 export type TProductivity = {

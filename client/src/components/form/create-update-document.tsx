@@ -2,13 +2,14 @@ import { Base64Helper } from "@/helpers/base64.helper";
 import { cn } from "@/lib/utils";
 import { useDocument } from "@/services/hooks";
 import { TCreateUpdateDocument } from "@/types";
+import { FileText, X } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import * as Yup from "yup";
 import { PageHeader } from "../common/page-header";
 import { Required } from "../common/required";
 import { FormField } from "../ui-pattern";
-import { InputForm } from "../ui-pattern/form-field/input-form";
+import { DateInputForm, InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
 import { Button } from "../ui/button";
 
 interface CreateUpdateDocumentProps {
@@ -29,15 +30,9 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
     expire_date: data?.expire_date ?? "",
   });
 
-  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
-
-  // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
     document_name: Yup.string().required("โปรดระบุชื่อ เอกสาร"),
-    document_data: Yup.string().required("โปรดอัพโหลดเอกสาร"),
   });
-
-  console.log(acceptedFiles);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -52,30 +47,32 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
     onDrop: (files) => {
       const file = files[0];
       base64Helper
-        ?.getBase64(file)
-        ?.then((base64) => {
-          console.log(base64);
-
+        .getBase64(file)
+        .then((base64) => {
           setInitialValues((prevValues) => ({
             ...prevValues,
-            image: base64,
+            document_data: base64,
           }));
-          setAcceptedFiles([]); // Clear acceptedFiles
         })
         .catch((error) => {
+          setInitialValues((prevValues) => ({
+            ...prevValues,
+            document_data: "",
+          }));
           console.error(error);
         });
-      setAcceptedFiles(files); // Update acceptedFiles state
     },
   });
 
   // Define the submit handler
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
+
+    const Values = { ...values, document_data: initialValues?.document_data };
     if (data) {
       const res = await mutateUpdateDocument({
         ...data,
-        ...values,
+        ...Values,
       });
       setSubmitting(res?.status == "success" ? false : true);
       if (res?.status == "success") {
@@ -83,7 +80,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
       }
     }
     if (!data) {
-      const res = await mutateCreateDocument(values);
+      const res = await mutateCreateDocument(Values);
       setSubmitting(res?.status == "success" ? false : true);
       if (res?.status == "success") {
         onClose && onClose();
@@ -124,7 +121,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
       <FormField
         id="part-form"
         validationSchema={validationSchema}
-        onSubmit={(e) => console.log(e)}
+        onSubmit={handleSubmit}
         initialValues={initialValues}
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
@@ -137,22 +134,66 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.document_name}
+              required
             />
 
-            <div className=" flex flex-col gap-2">
-              <label className=" text-sm font-semibold">Document</label>
-
-              <div {...getRootProps()} className="flex flex-col gap-2  ">
-                <input {...getInputProps()} />
-
-                <Button variant="secondary" type="button">
-                  {data && values.document ? "เปลี่ยนรูปภาพ / Change Image" : "เลือกรูปภาพ / Choose Image"}
-                </Button>
-                {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <label className="text-sm font-semibold">Document</label>
+                <p className="text-red-500">*</p>
               </div>
 
-              <p className=" text-xs text-red-600">{errors.document_name}</p>
+              {initialValues?.document_data ? (
+                <div className="relative w-min">
+                  <FileText size={60} />
+                  <X
+                    className="absolute right-[-4px] top-[-4px] cursor-pointer rounded-full border-2 border-gray-200 text-gray-200 hover:border-red-500 hover:text-red-500"
+                    size={20}
+                    onClick={() => setInitialValues({ ...initialValues, document_data: "" })}
+                  />
+                </div>
+              ) : (
+                <div {...getRootProps()} className="flex flex-col gap-2 ">
+                  <input {...getInputProps()} />
+
+                  <Button variant="secondary" type="button">
+                    เลือกเอกสาร / Choose Document
+                  </Button>
+                </div>
+              )}
+
+              <p className=" text-xs text-red-600">{errors.document_data}</p>
             </div>
+
+            <TextAreaForm
+              label="Document description"
+              placeholder="ระบุคำอธิบายเอกสาร"
+              name="document_description"
+              value={values.document_description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.document_description}
+            />
+
+            <DateInputForm
+              label="วันที่มีผลบังคับใช้ / Effective date"
+              name="effective_date"
+              onPointerDown={(e) => e.stopPropagation()}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.effective_date ?? ""}
+              error={errors.effective_date}
+            />
+
+            <DateInputForm
+              label="วันหมดอายุ / Expiry date"
+              name="expire_date"
+              onPointerDown={(e) => e.stopPropagation()}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values?.expire_date ?? ""}
+              error={errors.expire_date}
+            />
 
             <div className="flex w-full gap-2">
               <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>

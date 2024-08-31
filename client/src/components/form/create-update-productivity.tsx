@@ -31,16 +31,16 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
   const { mutateCreateProductivity, mutateUpdateProductivity } = useProductivity();
-  const { partList, processList } = useAtomStore();
+  const { partList, processList, machineList, accountList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateUpdateProductivity>({
     datetime: data?.datetime || "",
     date: data?.date ?? renderFormattedPayloadDate(new Date()) ?? "",
     time_slot: data?.time_slot || GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
-    process: data?.process || "",
-    part_code: data?.part_code || "",
-    quantity: data?.quantity || null,
-    ng_quantity: data?.ng_quantity || null,
-    machine_name: data?.machine_name || null,
+    process_id: data?.process_id || "",
+    part_id: data?.part_id || "",
+    quantity: data?.quantity || 0,
+    machine_id: data?.machine_id || "",
+    operator_id: data?.operator_id || "",
     remarks: data?.remarks || "",
   });
   const resetRef = useRef<HTMLButtonElement>(null);
@@ -51,14 +51,15 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
       datetime: "",
       date: "",
       time_slot: "",
-      process: "",
-      part_code: "",
+      process_id: "",
+      part_id: "",
       quantity: 0,
-      ng_quantity: null,
-      machine_name: null,
+      machine_id: "",
+      operator_id: "",
       remarks: "",
     });
   };
+
   // Define the submit handler
   const handleSubmit = async (values: TCreateUpdateProductivity, { setSubmitting }: any) => {
     try {
@@ -117,21 +118,22 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
               onBlur={handleBlur}
               value={values?.date ?? ""}
               error={errors.date}
+              required
             />
             <SelectForm
               label="ช่วงเวลา / Time"
               name="time_slot"
-              // options={getTimeSlots()}
               options={GET_TIME_SLOTS(values?.date)}
               placeholder="เลือกช่วงเวลา"
               onChange={handleChange}
               onBlur={handleBlur}
               value={values?.time_slot ?? ""}
               error={errors.time_slot}
+              required
             />
             <SelectForm
               label="กระบวนการผลิต / Process"
-              name="process"
+              name="process_id"
               placeholder="เลือกกระบวนการผลิต"
               options={processList?.map((process) => ({
                 label: process?.process_name,
@@ -139,8 +141,9 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
               }))}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.process ?? ""}
-              error={errors.process}
+              value={values?.process_id ?? ""}
+              error={errors.process_id}
+              required
             />
 
             <div>
@@ -148,20 +151,21 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
                 label="Part No."
                 options={partList?.map((part) => ({
                   label: `${part.part_code} - ${part.part_name}`,
-                  value: part.part_code,
+                  value: part.part_id,
                 }))}
-                value={values?.part_code ?? ""}
+                value={values?.part_id ?? ""}
                 onChange={(value) => {
                   handleChange({
                     target: {
-                      name: "part_code",
+                      name: "part_id",
                       value,
                     },
                   });
                 }}
-                error={errors?.part_code}
+                error={errors?.part_id}
                 labelFilter="ค้นหา Part No. / Search Part No."
                 emptyLabel="เลือก Part No."
+                required
               />
               <Button
                 variant="link"
@@ -185,28 +189,32 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
               error={errors.quantity}
             />
 
-            <InputForm
-              label="ชื่อเครื่องจักร / Machine Name"
-              name="machine_name"
-              placeholder="โปรดระบุชื่อเครื่อง"
+            <SelectForm
+              label="เครื่องจักร / Machine"
+              name="machine_id"
+              placeholder="เลือกเครื่องจักร"
+              options={machineList?.map((machine) => ({
+                label: machine?.machine_name,
+                value: machine?.machine_id,
+              }))}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.machine_name ?? ""}
-              error={errors.machine_name}
-              labelOptional="(Optional)"
+              value={values?.machine_id ?? ""}
+              error={errors.machine_id}
             />
 
-            <InputForm
-              label="จำนวน NG / NG Q'ty"
-              name="ng_quantity"
-              placeholder="โปรดระบุจำนวน NG"
-              type="number"
-              inputMode="numeric"
+            <SelectForm
+              label="ผู้ดำเนินงาน / Operator"
+              name="operator_id"
+              placeholder="เลือกผู้ดำเนินงาน"
+              options={accountList?.map((operator) => ({
+                label: operator?.operator_name,
+                value: operator?.operator_id,
+              }))}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.ng_quantity ?? ""}
-              error={errors.ng_quantity}
-              labelOptional="(Optional)"
+              value={values?.operator_id ?? ""}
+              error={errors.operator_id}
             />
 
             <InputForm

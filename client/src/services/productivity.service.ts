@@ -60,9 +60,9 @@ export class ProductivityService extends APIService {
     }
   };
 
-  public deleteProductivity = async (id: string): Promise<TResponse<unknown>> => {
+  public deleteProductivity = async (prod_log_id: string): Promise<TResponse<unknown>> => {
     try {
-      const { data: res } = await this.delete<TResponse<unknown>>(`/productivity-logging/${id}`);
+      const { data: res } = await this.delete<TResponse<unknown>>(`/productivity-logging/?prod_log_id=${prod_log_id}`);
       return res;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -107,7 +107,7 @@ export class ProductivityService extends APIService {
     const { start: start_datetime, end: end_datetime } = calculateDateTime(req?.date, req?.time_slot);
 
     if (req.mode === "daily") {
-      return `/productivity-logging/summary-by-date=${req?.date}`;
+      return `/productivity-logging/summary-by-date?date=${req?.date}`;
     } else {
       return `/productivity-logging/summary-by-datetime-range?start_datetime=${start_datetime}&end_datetime=${end_datetime}`;
     }

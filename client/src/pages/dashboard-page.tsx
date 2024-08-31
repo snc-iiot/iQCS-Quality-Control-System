@@ -10,7 +10,19 @@ import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TGraphSummary } from "@/types";
 import { FC, Fragment, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export const DashboardPage: FC = () => {
   const [selected, setSelected] = useState({
@@ -128,6 +140,80 @@ export const DashboardPage: FC = () => {
     shiftSelected
   );
 
+  console.log("start_date", selected?.start_date);
+  console.log("end_date", selected?.end_date);
+
+  const data = [
+    {
+      case_name: "เป็นรอย",
+      number_of_cases: 1000,
+    },
+    {
+      case_name: "หัก",
+      number_of_cases: 900,
+    },
+    {
+      case_name: "ขาด",
+      number_of_cases: 800,
+    },
+    {
+      case_name: "หลุด",
+      number_of_cases: 700,
+    },
+    {
+      case_name: "แตก",
+      number_of_cases: 600,
+    },
+    {
+      case_name: "เป็นรอย1",
+      number_of_cases: 500,
+    },
+    {
+      case_name: "หัก1",
+      number_of_cases: 400,
+    },
+    {
+      case_name: "ขาด1",
+      number_of_cases: 300,
+    },
+    {
+      case_name: "หลุด1",
+      number_of_cases: 200,
+    },
+    {
+      case_name: "แตก1",
+      number_of_cases: 100,
+    },
+    // {
+    //   case_name: " ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "  ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "   ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "    ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "     ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "      ",
+    //   number_of_cases: 0,
+    // },
+    // {
+    //   case_name: "       ",
+    //   number_of_cases: 0,
+    // },
+  ];
+
   return (
     <div className="flex h-full w-full flex-col gap-2 overflow-auto p-2 md:overflow-hidden">
       <div className="flex h-min w-full flex-col items-center gap-1 md:flex-row">
@@ -196,12 +282,16 @@ export const DashboardPage: FC = () => {
                 value: "daily",
               },
               {
-                label: "ระยะเวลา / Period",
+                label: "ช่วงวัน / Period",
                 value: "period",
               },
               {
                 label: "สัปดาห์ / Week",
                 value: "week",
+              },
+              {
+                label: "รายเดือน / Monthly",
+                value: "monthly",
               },
             ]}
             className="w-[10rem]"
@@ -225,24 +315,39 @@ export const DashboardPage: FC = () => {
               type="week"
             />
           )}
-          {selected?.type !== "week" && (
-            <>
-              <Input
-                className="block w-full md:w-[14rem] lg:w-[10rem]"
-                value={selected?.start_date}
-                onChange={(e) => setSelected({ ...selected, start_date: e.target.value })}
-                type="date"
-              />
 
-              <Input
-                className="block w-full md:w-[14rem] lg:w-[10rem]"
-                value={selected?.end_date}
-                onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
-                type="date"
-                disabled={selected?.type !== "period"}
-                min={selected?.start_date}
-              />
-            </>
+          {(selected?.type === "daily" || selected?.type === "period" || selected?.type === "monthly") && (
+            <Input
+              className="block w-full md:w-[14rem] lg:w-[10rem]"
+              value={selected?.start_date?.slice(0, selected?.type === "monthly" ? 7 : 10)}
+              onChange={(e) => {
+                const start_date = e.target.value + (selected?.type === "monthly" ? "-01" : "");
+                let end_date = selected?.end_date;
+
+                if (selected?.type === "monthly") {
+                  const [year, month] = start_date.split("-");
+                  const endOfMonth = new Date(Number(year), Number(month), 0);
+                  end_date = `${year}-${month}-${endOfMonth.getDate()}`;
+                }
+
+                setSelected({
+                  ...selected,
+                  start_date,
+                  end_date,
+                });
+              }}
+              type={selected?.type === "monthly" ? "month" : "date"}
+            />
+          )}
+
+          {selected?.type === "period" && (
+            <Input
+              className="block w-full md:w-[14rem] lg:w-[10rem]"
+              value={selected?.end_date}
+              onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
+              type="date"
+              min={selected?.start_date}
+            />
           )}
         </div>
       </div>
@@ -314,6 +419,25 @@ export const DashboardPage: FC = () => {
                 <p className="text-xs">กำลังโหลดข้อมูล / Loading data...</p>
               </div>
             )}
+            <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+              <ComposedChart
+                layout="vertical"
+                accessibilityLayer
+                data={data}
+                margin={{
+                  top: 20,
+                  right: 10,
+                  bottom: 20,
+                  left: -10,
+                }}
+              >
+                <CartesianGrid stroke="#f5f5f5" />
+                <XAxis type="number" className="text-[10px]" />
+                <YAxis dataKey="case_name" type="category" scale="band" className="text-xs" />
+                <Tooltip />
+                <Bar dataKey="number_of_cases" name={"Number of cases"} barSize={20} fill="#ff7300" />
+              </ComposedChart>
+            </ChartContainer>
           </div>
 
           <div className="col-span-2 flex h-full w-full flex-col gap-2 rounded-md border p-2 shadow">

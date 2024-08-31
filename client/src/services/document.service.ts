@@ -12,7 +12,7 @@ export class DocumentService extends APIService {
 
   public getDocuments = async (): Promise<TDocument[]> => {
     try {
-      const { data } = await this.get<TResponse<TDocument[]>>(`/document-management`);
+      const { data } = await this.get<TResponse<TDocument[]>>(`/documents`);
       this.store.setDocumentList(data?.data);
       return data?.data ?? [];
     } catch (error) {
@@ -23,7 +23,7 @@ export class DocumentService extends APIService {
 
   public createDocument = async (data: TCreateUpdateDocument): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.post<TResponse<unknown>>("/document-management", data);
+      const response = await this.post<TResponse<unknown>>("/documents", data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -48,7 +48,7 @@ export class DocumentService extends APIService {
 
   public updateDocument = async (data: TCreateUpdateDocument): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.put<TResponse<unknown>>(`/document-management`, data);
+      const response = await this.put<TResponse<unknown>>(`/documents`, data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -73,7 +73,7 @@ export class DocumentService extends APIService {
 
   public deleteDocument = async (document_id: string): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.delete<TResponse<unknown>>(`/document-management?document_id=${document_id}`);
+      const response = await this.delete<TResponse<unknown>>(`documents?document_id=${document_id}`);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {

@@ -42,11 +42,10 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
   if (isDesktop) {
     return (
       <div className="space-y-2">
-        <p className="text-sm font-semibold">
-          {label} &nbsp;
-          {required && <Required />} &nbsp;
-          {labelOptional && <span className="text-xs text-gray-400">{labelOptional}</span>}
-        </p>
+        <div className="flex gap-2">
+          <p className="text-sm font-semibold">{label}</p>
+          {required && <p className="text-sm font-semibold text-red-500">*</p>}
+        </div>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className={cn("w-full justify-between font-normal")}>
