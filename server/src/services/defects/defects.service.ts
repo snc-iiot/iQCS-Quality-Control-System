@@ -662,8 +662,11 @@ export class DefectService {
           timeSlot.setHours(timeSlot.getHours() + 7);
         }
         timestamp.setHours(timestamp.getHours() + i);
-        const dateString = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
         timeSlot.setHours(timeSlot.getHours() + i);
+        const dateString1 = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+        const dateString2 = `${timeSlot.getFullYear()}-${(timeSlot.getMonth() + 1).toString().padStart(2, '0')}-${timeSlot.getDate().toString().padStart(2, '0')}`;
+        const dateString =
+          process.platform !== 'win32' ? dateString2 : dateString1;
         for (const processItem of allProcesses) {
           const timeSlotString = `${timeSlot.getHours().toString().padStart(2, '0')}:00 - ${(timeSlot.getHours() + 1).toString().padStart(2, '0')}:00`;
           data.push({
