@@ -1,5 +1,4 @@
 import { DefectDetail } from "@/components/common/defect-detail";
-// import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateDefect, CreateUpdateProductivity } from "@/components/form";
 import { DateInputForm } from "@/components/ui-pattern/form-field/input-form";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
@@ -43,7 +42,7 @@ export const HistoryPage: FC = () => {
   const { useGetRawDefects, mutateDeleteDefect } = useDefect();
   const { useGetRawProductivitys, mutateDeleteProductivity } = useProductivity();
 
-  const { defectList, productivityList, processList } = useAtomStore();
+  const { defectList, productivityList, processList, machineList } = useAtomStore();
   const [isOpenDefectDetail, setIsOpenDefectDetail] = useState<boolean>(false);
   const [isOpenDefectEdit, setIsOpenDefectEdit] = useState<boolean>(false);
   const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
@@ -120,7 +119,6 @@ export const HistoryPage: FC = () => {
       start_date_time = covertToUTC(historyFilter?.start_date_time);
       end_date_time = covertToUTC(historyFilter?.end_date_time);
     }
-
     return { start_date_time, end_date_time };
   };
 
@@ -143,11 +141,16 @@ export const HistoryPage: FC = () => {
           label: "Shift",
           key: "shift",
         },
-        { label: "Process", key: "process" },
-        { label: "Machine Name", key: "machine_name" },
+        { label: "Process", key: "process_id" },
+        { label: "Machine Name", key: "machine_id" },
+        {
+          label: "Operator Name",
+          key: "operator_name",
+        },
         { label: "Part Code", key: "part_code" },
         { label: "Part Name", key: "part_name" },
-        { label: "Total Quantity", key: "ng_quantity" },
+        { label: "Production Quantity", key: "production_quantity" },
+        { label: "Ng Quantity", key: "ng_quantity" },
         { label: "Rework Quantity", key: "rework_quantity" },
         { label: "Scrap Quantity", key: "scrap_quantity" },
         {
@@ -263,6 +266,8 @@ export const HistoryPage: FC = () => {
         })
         ?.map((defect) => ({
           ...defect,
+          machine_id: machineList?.find((machine) => machine.machine_id === defect.machine_id)?.machine_name || "",
+          process_id: processList?.find((process) => process.process_id === defect.process_id)?.process_name || "",
           date: renderFormattedDate(new Date(defect.datetime)),
           datetime: getTimeSlotByDateTimestamp(new Date(defect.datetime).getTime())?.label || "",
           created_at: renderFormattedDateWithTime(new Date(defect.created_at)) || "",
@@ -494,16 +499,11 @@ export const HistoryPage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        {/* <PageHeader
-          title="ประวัติการบันทึก / History"
-          description="รายการประวัติการบันทึก / History list"
-        /> */}
         <Tabs defaultValue="summary" className="flex h-full flex-col">
           <TabsList className="max-w-max">
             <TabsTrigger value="summary">ประวัติการบันทึกยอดการผลิต / History</TabsTrigger>
             <TabsTrigger value="raw-data">ประวัติการบันทึก / History</TabsTrigger>
           </TabsList>
-
           <TabsContent value="summary" className="h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -733,7 +733,6 @@ export const HistoryPage: FC = () => {
               )}
             </div>
           </TabsContent>
-
           <TabsContent value="summary" className="hidden h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -1001,7 +1000,6 @@ export const HistoryPage: FC = () => {
               )}
             </div>
           </TabsContent>
-
           <TabsContent value="raw-data" className="h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -1320,9 +1318,7 @@ export const HistoryPage: FC = () => {
                 ng_quantity: selectedDefect?.ng_quantity || null,
                 machine_id: selectedDefect?.machine_id || "",
                 rework_quantity: selectedDefect?.rework_quantity || null,
-                // rework_cost_per_unit: selectedDefect?.rework_cost_per_unit || "",
                 scrap_quantity: selectedDefect?.scrap_quantity || null,
-                // scrap_cost_per_unit: selectedDefect?.scrap_cost_per_unit || null,
                 image: selectedDefect?.image || "",
                 remarks: selectedDefect?.remarks || "",
               }}

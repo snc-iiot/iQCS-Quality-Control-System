@@ -64,10 +64,10 @@ export const SettingMachinePage: FC = () => {
 
   const filteredMachineList = machineList?.filter((machine) => {
     return (
-      machine.machine_name?.toLowerCase()?.includes(search?.toLowerCase()) ||
-      machine.machine_no?.toLowerCase()?.includes(search?.toLowerCase()) ||
-      machine.location?.toLowerCase()?.includes(search?.toLowerCase()) ||
-      machine.description?.toLowerCase()?.includes(search?.toLowerCase())
+      machine?.machine_name?.toLowerCase()?.includes(search?.toLowerCase()) ||
+      machine?.machine_no?.toLowerCase()?.includes(search?.toLowerCase()) ||
+      machine?.location?.toLowerCase()?.includes(search?.toLowerCase()) ||
+      machine?.description?.toLowerCase()?.includes(search?.toLowerCase())
     );
   });
 

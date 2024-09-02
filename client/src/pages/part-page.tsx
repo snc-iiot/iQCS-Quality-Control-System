@@ -33,7 +33,6 @@ const HEADER = [
   "Part Description",
   "Created Date",
   "Updated Date",
-  "Created By",
   "Action",
 ];
 
@@ -130,11 +129,10 @@ export const PartPage: FC = () => {
                       </TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
-                      <TableCell>{part?.price ?? "100"}</TableCell>
+                      <TableCell>{part?.price ?? "0.00"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>
-                      <TableCell>User Name</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button

@@ -120,9 +120,6 @@ export class ProductivityService extends APIService {
   }) => {
     try {
       const { data: res } = await this.get<TResponse<TProductivitySummary[]>>(this.buildUrl(req));
-      /* The line `// this.store.setDefectSummaryList(res?.data || []);` is a comment in the code. It
-      seems like it is a placeholder or a reminder for setting the `defectSummaryList` in the store
-      with the data received from the API response `res?.data`. */
       this.store.setProductivitySummaryList(res?.data || []);
       return res?.data || [];
     } catch (error) {

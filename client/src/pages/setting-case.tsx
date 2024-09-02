@@ -1,9 +1,5 @@
-//rafce tap tap
-
 import Header from "@/components/common/header";
 import { TableCauseNg } from "@/components/common/table-cause-ng";
-
-// import { SettingNGForm } from "@/components/form/setting-ng-form";
 
 export const SettingCausePage = () => {
   return (
@@ -16,7 +12,6 @@ export const SettingCausePage = () => {
         isAvatar={false}
         isShowInput={false}
       />
-
       <div>
         <TableCauseNg />
       </div>

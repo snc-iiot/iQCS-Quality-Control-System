@@ -24,22 +24,6 @@ export const menuItems = [
     href: "/settings",
     icon: "settings",
   },
-
-  // {
-  //   title: "แชทบอท",
-  //   href: "/chatbot",
-  //   icon: "messageSquare",
-  // },
-  // {
-  //   title: "บริการ",
-  //   href: "/services",
-  //   icon: "combine",
-  // },
-  // {
-  //   title: "การแจ้งเตือน",
-  //   href: "/notifications",
-  //   icon: "bell",
-  // },
   {
     title: "ออกจากระบบ",
     href: "/log-out",
