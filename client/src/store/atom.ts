@@ -14,6 +14,7 @@ import {
   TProductivity,
   TProductivitySummary,
   TTopDefect,
+  THistoryUpdatePrice
 } from "@/types";
 import { atom } from "jotai";
 
@@ -32,3 +33,4 @@ export const productivitySummaryAtom = atom<TProductivitySummary[]>([]);
 export const machineAtom = atom<TMachine[]>([]);
 export const accountAtom = atom<TAccount[]>([]);
 export const priceRatioAtom = atom<TPriceRatio[]>([]);
+export const historyUpdatePriceAtom = atom<THistoryUpdatePrice[]>([]);

@@ -3,6 +3,7 @@ export const CHANGE_PASSWORD = "CHANGE_PASSWORD";
 export const GET_PLANTS = "GET_PLANTS";
 
 export const GET_PARTS = "GET_PARTS";
+export const GET_HISTORY_UPDATE_PRICE = "GET_HISTORY_UPDATE_PRICE";
 export const CREATE_PART = "CREATE_PART";
 export const UPDATE_PART = "UPDATE_PART";
 export const DELETE_PART = "DELETE_PART";

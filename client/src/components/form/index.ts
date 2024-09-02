@@ -7,3 +7,4 @@ export * from "./change-password";
 export * from "./create-update-account";
 export * from "./create-update-machine";
 export * from "./create-update-price-ratio";
+export * from './create-update-price-part'

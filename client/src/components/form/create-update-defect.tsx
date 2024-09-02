@@ -63,7 +63,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
     accept: {
       "image/*": [],
     },
-    maxSize: 5242880, // 5MB
+    maxSize: 8 * 1024 * 1024, // 8 MB
     maxFiles: 1,
     onDrop: (files) => {
       const file = files[0];
@@ -202,10 +202,17 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               <div>
                 <ComboBoxResponsive
                   label="Part No."
-                  options={partList?.map((part) => ({
-                    label: `${part.part_code} - ${part.part_name}`,
-                    value: part.part_id,
-                  }))}
+                  options={partList
+                    ?.filter((part) => {
+                      if (values?.process_id) {
+                        return part.processes?.includes(values?.process_id);
+                      }
+                      return part;
+                    })
+                    ?.map((part) => ({
+                      label: `${part.part_code} - ${part.part_name}`,
+                      value: part.part_id,
+                    }))}
                   value={values?.part_id ?? ""}
                   onChange={(value) => {
                     handleChange({
@@ -270,10 +277,17 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               <div>
                 <ComboBoxResponsive
                   label="สาเหตุ / Cause"
-                  options={ngCauseList?.map((ng) => ({
-                    label: ng.case_name,
-                    value: ng.case_id,
-                  }))}
+                  options={ngCauseList
+                    ?.filter((ng) => {
+                      if (values?.part_id) {
+                        return ng?.processes?.includes(values?.part_id);
+                      }
+                      return ng;
+                    })
+                    ?.map((ng) => ({
+                      label: ng.case_name,
+                      value: ng.case_id,
+                    }))}
                   value={values?.case_id ?? ""}
                   onChange={(value) => {
                     handleChange({
