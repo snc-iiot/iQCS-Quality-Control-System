@@ -144,7 +144,7 @@ export const PartPage: FC = () => {
                               setSelectedPart(part);
                               setIsDialogUpdateOpen(true);
                             }}
-                            className="text-blue-500"
+                            className="text-yellow-500"
                           >
                             Edit
                           </button>

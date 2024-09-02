@@ -204,7 +204,7 @@ export const AccountSettingPage: FC = () => {
                         More Detail
                       </button>
                       <button
-                        className="text-blue-500 hover:underline"
+                        className="text-yellow-500 hover:underline"
                         onClick={() => {
                           setAccountSelected({
                             operator_id: operator?.operator_id,

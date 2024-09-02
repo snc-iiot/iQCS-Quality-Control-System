@@ -82,7 +82,7 @@ export const CausePage: FC = () => {
         actions: () => (
           <div className="flex items-center gap-2">
             <button
-              className="text-blue-500 hover:underline"
+              className="text-yellow-500 hover:underline"
               onClick={() => {
                 setSelectedNGCause(ngCause);
                 setIsDialogUpdateOpen(true);

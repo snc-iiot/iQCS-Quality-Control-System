@@ -288,7 +288,7 @@ export const HistoryPage: FC = () => {
                 View
               </button>
               <button
-                className="text-blue-500 hover:underline"
+                className="text-yellow-500 hover:underline"
                 onClick={() => {
                   console.log("defect", defect);
                   setSelectedDefect(defect);
@@ -365,7 +365,7 @@ export const HistoryPage: FC = () => {
                 View
               </button>
               <button
-                className="text-blue-500 hover:underline"
+                className="text-yellow-500 hover:underline"
                 onClick={() => {
                   setSelectedProductivity(productivity);
                   setIsOpenProductivityEdit(true);

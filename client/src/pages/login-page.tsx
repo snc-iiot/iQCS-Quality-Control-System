@@ -75,13 +75,13 @@ export const LoginPage: FC = () => {
           {({ values, errors, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <div className="space-y-5">
               <div className="relative">
-                <User className=" absolute left-2 top-9 text-gray-400" />
+                <User className=" absolute left-2 top-[2.1rem] text-gray-400" />
                 <InputForm
                   label="Username"
                   required
                   placeholder="Username"
                   name="username"
-                  className="pl-9"
+                  className="pl-10"
                   value={values.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -90,14 +90,14 @@ export const LoginPage: FC = () => {
               </div>
 
               <div className="relative">
-                <LockKeyhole className=" absolute left-2 top-9 text-gray-400" />
+                <LockKeyhole className=" absolute left-2 top-[2.1rem] text-gray-400" />
                 <InputForm
                   label="Password"
                   required
                   type={view ? "" : "password"}
                   placeholder="Password"
                   name="password"
-                  className="pl-9"
+                  className="pl-10"
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}

@@ -76,7 +76,7 @@ export const SettingMachinePage: FC = () => {
     const { machine } = props as { machine: TMachine };
     return (
       <button
-        className="text-blue-500 hover:underline"
+        className="text-yellow-500 hover:underline"
         onClick={() => {
           setUpdateMachine({
             machine_id: machine?.machine_id,

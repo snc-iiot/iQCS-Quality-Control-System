@@ -33,6 +33,7 @@ export const DashboardPage: FC = () => {
 
   const [processSelected, setProcessSelected] = useState<string>("ALL");
   const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
+  const [ranking, setRanking] = useState<number>(10);
 
   const mapCardProcess = processList?.map((process) => {
     const data = groupProcess("process_name")[process?.process_name];
@@ -146,7 +147,7 @@ export const DashboardPage: FC = () => {
     selected?.type === "daily" ? selected?.start_date : selected?.end_date,
     processSelected,
     shiftSelected,
-    10
+    ranking
   );
   const { isLoading: isLoadingSummaryDefectsByPartGraph } = useGetSummaryDefectsByPartGraph(
     selected?.start_date,
@@ -291,15 +292,39 @@ export const DashboardPage: FC = () => {
         md:grid-cols-1 md:gap-2 md:space-y-0 lg:grid-cols-3 lg:gap-2"
           >
             <div className="flex h-[10rem] w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
-              <div className={cn("w-full")}>
-                <h1 className="text-sm font-semibold">
-                  10 สาเหตุที่ทำให้งานเสียมากที่สุด / Top 10 causes that cause the most defects
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  รายการสาเหตุที่ทำให้งานเสียมากที่สุดในวันที่ {selected?.start_date} / Top 10 causes that cause the
-                  most defects on {selected?.start_date}{" "}
-                </p>
+              <div className="flex">
+                <div className={cn("w-full")}>
+                  <h1 className="text-sm font-semibold">
+                    10 สาเหตุที่ทำให้งานเสียมากที่สุด / Top 10 causes that cause the most defects
+                  </h1>
+                  <p className="text-xs text-muted-foreground">
+                    รายการสาเหตุที่ทำให้งานเสียมากที่สุด / List of causes that cause the most work loss
+                  </p>
+                </div>
+
+                <SelectForm
+                  value={String(ranking)}
+                  onChange={(e) => {
+                    setRanking(Number(e.target.value));
+                  }}
+                  options={[
+                    {
+                      label: "10",
+                      value: "10",
+                    },
+                    {
+                      label: "15",
+                      value: "15",
+                    },
+                    {
+                      label: "20",
+                      value: "20",
+                    },
+                  ]}
+                  className="w-[10rem]"
+                />
               </div>
+
               <div className="h-full">
                 {topDefectList?.length === 0 ? (
                   <div className="flex w-full justify-center">
@@ -314,7 +339,9 @@ export const DashboardPage: FC = () => {
                         label: case_name,
                         value: ng_quantity,
                       })),
-                      { label: "-", value: "" },
+                      ...Array(ranking - topDefectList?.length)
+                        ?.fill(0)
+                        ?.map(() => ({ label: "-", value: "" })),
                     ]}
                   />
                 )}

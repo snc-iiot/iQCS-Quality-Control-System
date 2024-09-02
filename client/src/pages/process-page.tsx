@@ -164,7 +164,7 @@ export const ProcessPage: FC = () => {
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() => handleEditProcess(process)}
-                                    className="text-blue-500 hover:underline"
+                                    className="text-yellow-500 hover:underline"
                                   >
                                     Edit
                                   </button>
