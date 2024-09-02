@@ -119,7 +119,6 @@ export const HistoryPage: FC = () => {
       start_date_time = covertToUTC(historyFilter?.start_date_time);
       end_date_time = covertToUTC(historyFilter?.end_date_time);
     }
-
     return { start_date_time, end_date_time };
   };
 
@@ -144,6 +143,10 @@ export const HistoryPage: FC = () => {
         },
         { label: "Process", key: "process_id" },
         { label: "Machine Name", key: "machine_id" },
+        {
+          label: "Operator Name",
+          key: "operator_name",
+        },
         { label: "Part Code", key: "part_code" },
         { label: "Part Name", key: "part_name" },
         { label: "Production Quantity", key: "production_quantity" },
@@ -496,16 +499,11 @@ export const HistoryPage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
-        {/* <PageHeader
-          title="ประวัติการบันทึก / History"
-          description="รายการประวัติการบันทึก / History list"
-        /> */}
         <Tabs defaultValue="summary" className="flex h-full flex-col">
           <TabsList className="max-w-max">
             <TabsTrigger value="summary">ประวัติการบันทึกยอดการผลิต / History</TabsTrigger>
             <TabsTrigger value="raw-data">ประวัติการบันทึก / History</TabsTrigger>
           </TabsList>
-
           <TabsContent value="summary" className="h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -735,7 +733,6 @@ export const HistoryPage: FC = () => {
               )}
             </div>
           </TabsContent>
-
           <TabsContent value="summary" className="hidden h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -1003,7 +1000,6 @@ export const HistoryPage: FC = () => {
               )}
             </div>
           </TabsContent>
-
           <TabsContent value="raw-data" className="h-full">
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -1036,7 +1032,7 @@ export const HistoryPage: FC = () => {
                     });
                   }}
                 />
-                {historyFilter?.mode === "date_range" ? (
+                {historyFilter?.mode === "period" ? (
                   <div className="flex flex-wrap items-center gap-2">
                     <DateInputForm
                       type="datetime-local"
@@ -1304,9 +1300,7 @@ export const HistoryPage: FC = () => {
                 ng_quantity: selectedDefect?.ng_quantity || null,
                 machine_id: selectedDefect?.machine_id || "",
                 rework_quantity: selectedDefect?.rework_quantity || null,
-                // rework_cost_per_unit: selectedDefect?.rework_cost_per_unit || "",
                 scrap_quantity: selectedDefect?.scrap_quantity || null,
-                // scrap_cost_per_unit: selectedDefect?.scrap_cost_per_unit || null,
                 image: selectedDefect?.image || "",
                 remarks: selectedDefect?.remarks || "",
               }}
