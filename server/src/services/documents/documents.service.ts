@@ -33,7 +33,18 @@ export class DocumentsService {
       // check type file from base64
       const [mimeType, base64Data] = input.document_data.split(';base64,');
       const [type, extension] = mimeType.split('/');
-      if (type !== 'application')
+
+      const mapFiles = {
+        pdf: 'pdf',
+        csv: 'csv',
+        msword: 'doc',
+        'vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+        'vnd.ms-excel': 'xls',
+        'vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+        'vnd.ms-powerpoint': 'ppt',
+        'vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+      };
+      if (type !== 'data:application' || !mapFiles[extension])
         return {
           status: 'error',
           statusCode: 400,
@@ -53,6 +64,14 @@ export class DocumentsService {
         creator_id: decoded.user_id,
         plant_code: decoded.plant_code,
       };
+
+      const filename = `${this.randomString(20)}_${Date.now()}.${mapFiles[extension]}`;
+      const remotePath = `/CoDE_Data/iqcs/docs/v1/${filename}`;
+      const isUploaded = await FtpUploadFileFromBase64(base64Data, remotePath);
+
+      if (isUploaded)
+        record.source_file = `https://sncservices.sncformer.com/data/iqcs/docs/v1/${filename}`;
+
       const created = await this.documentRepository.save(record);
 
       return {
@@ -80,9 +99,45 @@ export class DocumentsService {
           ? null
           : input.effective_date,
         expire_date: !Boolean(input.expire_date) ? null : input.expire_date,
-        source_file:
-          'https://sncservices.sncformer.com/data/ivrs/v1/docs/pdf/IdgeDLtU-i1724032381/rE7feYodnyABIIz81RbOMbCXV6YWwbfy40XN5o67xJotbvu_odz91n-3cpn66wGNc70gk10Hr-vEjfo12Ap29lW0XgRF6VBA8lUB-FI-STMTS2.pdf',
+        source_file: null,
       };
+
+      if (input.document_data.length > 100) {
+        // check type file from base64
+        const [mimeType, base64Data] = input.document_data.split(';base64,');
+        const [type, extension] = mimeType.split('/');
+
+        const mapFiles = {
+          pdf: 'pdf',
+          csv: 'csv',
+          msword: 'doc',
+          'vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+          'vnd.ms-excel': 'xls',
+          'vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+          'vnd.ms-powerpoint': 'ppt',
+          'vnd.openxmlformats-officedocument.presentationml.presentation':
+            'pptx',
+        };
+        if (type !== 'application' || !mapFiles[extension])
+          return {
+            status: 'error',
+            statusCode: 400,
+            message: 'Invalid file type',
+            data: [],
+          };
+
+        const filename = `${this.randomString(20)}_${Date.now()}.${mapFiles[extension]}`;
+        const remotePath = `/CoDE_Data/iqcs/docs/v1/${filename}`;
+        const isUploaded = await FtpUploadFileFromBase64(
+          base64Data,
+          remotePath,
+        );
+
+        if (isUploaded)
+          record.source_file = `https://sncservices.sncformer.com/data/iqcs/docs/v1/${filename}`;
+      }
+
+      if (record.source_file === null) delete record.source_file;
       const updated = await this.documentRepository.update(
         { document_id: input.document_id },
         record,
@@ -106,14 +161,24 @@ export class DocumentsService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      const results = await this.documentRepository.find({
-        where: {
+      // const results = await this.documentRepository.find({
+      //   where: {
+      //     plant_code: decoded.plant_code,
+      //   },
+      //   order: {
+      //     created_at: 'DESC',
+      //   },
+      // });
+
+      const results = await this.documentRepository
+        .createQueryBuilder('t1')
+        .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
-        },
-        order: {
-          created_at: 'DESC',
-        },
-      });
+        })
+        .leftJoin('tb_users', 't2', 't1.creator_id = t2.user_id')
+        .select('t1.*, t2.name as creator_name')
+        .orderBy('t1.created_at', 'DESC')
+        .getRawMany();
 
       return {
         status: 'success',

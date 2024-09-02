@@ -34,7 +34,7 @@ export class DefectService {
 
   randomString(length: number = 8): string {
     const chars =
-      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz_-';
     let randomstring = '';
     for (let i = 0; i < length; i++) {
       const rnum = Math.floor(Math.random() * chars.length);
