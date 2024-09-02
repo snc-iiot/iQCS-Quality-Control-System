@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
 import { Request, Response } from 'express';
-import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
+import {
+  CreatePartDto,
+  CreatePartsDto,
+  UpdatePartDto,
+  FindPartDto,
+} from './dto';
 import { TJwtPayload } from 'src/types';
 
 @Controller('parts')
@@ -25,6 +30,16 @@ export class PartsController {
     @Res() res: Response,
   ) {
     const result = await this.partService.create(body, req.decoded);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Post('import-excel')
+  async createParts(
+    @Body() body: CreatePartsDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.partService.createParts(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 

@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not } from 'typeorm';
 import { Part } from './entities';
 import { TServiceResponse, TJwtPayload } from 'src/types';
-import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
+import {
+  CreatePartDto,
+  CreatePartsDto,
+  UpdatePartDto,
+  FindPartDto,
+} from './dto';
 
 @Injectable()
 export class PartsService {
@@ -61,6 +66,68 @@ export class PartsService {
         statusCode: 200,
         message: 'Part created successfully',
         data: [created],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async createParts(
+    input: CreatePartsDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    // return {
+    //   status: 'success',
+    //   statusCode: 200,
+    //   message: 'Demo0',
+    //   data: [{ input, decoded }],
+    // };
+    try {
+      /*
+      //! Block duplicate part code
+      const partExists = await this.partRepository.find({
+        where: { part_code: input.part_code, plant_code: decoded.plant_code },
+        take: 1,
+      });
+
+      if (partExists.length > 0)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Part already exists',
+          data: [],
+        };
+
+      const record = {
+        sap_code: input.sap_code,
+        part_code: input.part_code,
+        part_name: input.part_name,
+        part_description: input.part_description ?? '',
+        processes: input.processes,
+        price: input.price,
+        customers: input.customers ?? [],
+        plant_code: decoded.plant_code,
+      };
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo1',
+      //   data: [{ record }],
+      // };
+      const created = await this.partRepository.save(record);
+      */
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Part created successfully',
+        data: [input, decoded],
       };
     } catch (error) {
       return {
