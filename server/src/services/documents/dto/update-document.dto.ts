@@ -9,8 +9,8 @@ export class UpdateDocumentDto {
   @IsNotEmpty()
   document_name: string;
 
-  @IsString()
-  @IsNotEmpty()
+  // @IsString()
+  // @IsNotEmpty()
   document_data: string;
 
   document_description: string;

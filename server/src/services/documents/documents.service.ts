@@ -103,7 +103,7 @@ export class DocumentsService {
         source_file: null,
       };
 
-      if (input.document_data.length > 100) {
+      if (input.document_data !== null || input.document_data.length > 100) {
         // check type file from base64
         const [mimeType, base64Data] = input.document_data.split(';base64,');
         const [type, extension] = mimeType.split('/');

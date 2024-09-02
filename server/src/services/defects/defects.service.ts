@@ -892,7 +892,7 @@ export class DefectService {
         .groupBy('t1.case_id,t2.case_name')
         .orderBy('ng_quantity', 'DESC')
         // .orderBy('case_name', 'ASC')
-        .take(input.ranking)
+        .take(Number(input.ranking) || 10)
         .getRawMany();
 
       return {
@@ -969,7 +969,7 @@ export class DefectService {
         .groupBy('t1.case_id,t2.case_name')
         .orderBy('ng_quantity', 'DESC')
         // .orderBy('case_name', 'ASC')
-        .take(input.ranking)
+        .take(Number(input.ranking) || 10)
         .getRawMany();
 
       return {

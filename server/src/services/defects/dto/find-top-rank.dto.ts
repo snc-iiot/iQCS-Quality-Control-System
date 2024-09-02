@@ -4,7 +4,7 @@ import {
   Matches,
   IsIn,
   Min,
-  IsNumber,
+  IsNumberString,
 } from 'class-validator';
 
 export class FindTopRankDto {
@@ -27,8 +27,8 @@ export class FindTopRankDto {
   @IsIn(['ALL', 'DAY', 'NIGHT'])
   shift: string;
 
-  @IsNumber()
+  @IsNumberString()
   @IsNotEmpty()
-  @Min(1)
+  // @Min(1)
   ranking: number;
 }
