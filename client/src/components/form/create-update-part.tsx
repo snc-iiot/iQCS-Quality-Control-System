@@ -26,7 +26,9 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
     part_code: data?.part_code || "",
     part_name: data?.part_name || "",
     price: data?.price || 0,
+    sap_code: data?.sap_code || "",
     part_description: data?.part_description || "",
+    customers: data?.customers || [],
   });
 
   // Define a validation schema using Yup
@@ -66,7 +68,9 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
         part_code: data.part_code ?? "",
         part_name: data.part_name ?? "",
         price: data.price ?? 0,
-        part_description: data.part_description ?? "",
+        sap_code: data?.sap_code || "",
+        part_description: data?.part_description || "",
+        customers: data?.customers || [],
       });
     }
   }, [data]);
@@ -105,6 +109,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.part_code}
+              required
             />
             <InputForm
               label="Part name"
@@ -114,6 +119,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.part_name}
+              required
             />
             <InputForm
               label="Part price"
@@ -124,10 +130,14 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.price}
+              required
             />
 
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-semibold">Processes</p>
+              <div className=" flex gap-2">
+                <p className="text-sm font-semibold">Processes</p>
+                <p className=" text-red-500">*</p>
+              </div>
               {processList?.map((process, i) => (
                 <div className="flex items-center gap-2" key={`process-${i}`}>
                   <Checkbox
@@ -160,6 +170,17 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               {errors?.processes && <p className="text-xs text-red-500">{errors?.processes}</p>}
             </div>
 
+            <InputForm
+              label="SAP code"
+              placeholder="ระบุ SAP code"
+              name="sap_code"
+              value={values.sap_code}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.sap_code}
+              labelOptional="(Optional)"
+            />
+
             <TextAreaForm
               label="Description"
               placeholder="โปรดระบุรายละเอียด"
@@ -170,6 +191,18 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               error={errors.part_description}
               labelOptional="(Optional)"
             />
+
+            <InputForm
+              label="Customer"
+              placeholder="ระบุ Customer"
+              name="customers"
+              value={values.customers[0] || ""}
+              onChange={(e) => handleChange({ target: { name: "customers", value: [e.target.value] } })}
+              onBlur={handleBlur}
+              error={errors.customers}
+              labelOptional="(Optional)"
+            />
+
             <div className="flex w-full gap-2">
               <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
                 บันทึก / Save

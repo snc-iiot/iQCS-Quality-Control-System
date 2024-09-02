@@ -22,7 +22,7 @@ import MenuSettingPage from "../pages/menu-setting-page";
 const App = () => {
   return (
     <RootLayout>
-      {/* <BrowserRouter basename="/toolbox-on-cloud"> */}
+      {/* <BrowserRouter basename="/iqcs"> */}
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

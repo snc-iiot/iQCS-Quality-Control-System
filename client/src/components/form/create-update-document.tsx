@@ -21,7 +21,7 @@ interface CreateUpdateDocumentProps {
 
 export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVisible, className, data, onClose }) => {
   const base64Helper = new Base64Helper();
-  const { mutateCreateDocument, mutateUpdateDocument, mutateDeleteDocument } = useDocument();
+  const { mutateCreateDocument, mutateUpdateDocument } = useDocument();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDocument>({
     document_name: data?.document_name ?? "",
     document_data: data?.document_data ?? "",
@@ -70,7 +70,8 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
 
     const Values = {
       ...values,
-      document_data: initialValues?.document_data === data?.source_file ? null : initialValues?.document_data,
+      document_id: data?.document_id,
+      document_data: initialValues?.document_data === data?.source_file ? "" : initialValues?.document_data,
     };
 
     if (data) {

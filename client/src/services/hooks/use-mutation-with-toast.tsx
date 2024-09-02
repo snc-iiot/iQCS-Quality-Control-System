@@ -28,15 +28,8 @@ export const useMutationWithToast = <TData,>(
 
       Swal.close();
 
-      // Show result Swal
-      // Swal.fire({
-      //   title: res?.message,
-      //   icon: res?.status,
-      //   timer: 2000,
-      //   showConfirmButton: false,
-      // });
       if (isShowSuccessToast) {
-        Swal.fire({
+        await Swal.fire({
           title: res?.message,
           icon: res?.status,
           showConfirmButton: false,
@@ -44,7 +37,7 @@ export const useMutationWithToast = <TData,>(
         });
       } else {
         if (res?.status !== "success") {
-          Swal.fire({
+          await Swal.fire({
             title: res?.message,
             icon: res?.status,
             showConfirmButton: false,
@@ -54,7 +47,7 @@ export const useMutationWithToast = <TData,>(
       }
 
       if (revalidateKey) {
-        queryClient?.invalidateQueries({
+        await queryClient?.invalidateQueries({
           queryKey: revalidateKey,
         });
       }

@@ -20,7 +20,7 @@ export const DashboardPage: FC = () => {
     end_date: "",
   });
 
-  const { useGetSummaryDefectsByDateGraph, useGetTopDefects } = useDefect();
+  const { useGetSummaryDefectsByDateGraph, useGetTopDefects, useGetSummaryDefectsByPartGraph } = useDefect();
 
   const { graphSummaryList, topDefectList, processList } = useAtomStore();
   const [shiftSelected, setShiftSelected] = useState<string>("ALL");
@@ -130,6 +130,11 @@ export const DashboardPage: FC = () => {
     processSelected,
     shiftSelected,
     10
+  );
+  const { isLoading: isLoadingSummaryDefectsByPartGraph } = useGetSummaryDefectsByPartGraph(
+    selected?.start_date,
+    selected?.type === "daily" ? selected?.start_date : selected?.end_date,
+    processSelected
   );
 
   return (

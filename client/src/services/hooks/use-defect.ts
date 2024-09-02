@@ -13,6 +13,7 @@ export const useDefect = () => {
     deleteDefect,
     getSummaryDefectsByDateGraph,
     getTopDefects,
+    getSummaryDefectsByPartGraph,
   } = new DefectService();
   const { mutateAsync: mutateCreateDefect } = useMutationWithToast(
     async (data: TCreateUpdateDefect) => await createDefect(data),
@@ -61,6 +62,14 @@ export const useDefect = () => {
     });
   };
 
+  const useGetSummaryDefectsByPartGraph = (start_date: string, end_date: string, process_id: string) => {
+    return useQuery({
+      queryKey: [GET_GRAPH_SUMMARIES, start_date, end_date, process_id],
+      queryFn: (): Promise<TGraphSummary[]> => getSummaryDefectsByPartGraph(start_date, end_date, process_id),
+      refetchInterval: 60000,
+    });
+  };
+
   return {
     mutateCreateDefect,
     useGetRawDefects,
@@ -69,5 +78,6 @@ export const useDefect = () => {
     mutateDeleteDefect,
     useGetSummaryDefectsByDateGraph,
     useGetTopDefects,
+    useGetSummaryDefectsByPartGraph,
   };
 };

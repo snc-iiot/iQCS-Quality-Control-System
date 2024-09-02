@@ -27,6 +27,7 @@ export const useAtomStore = () => {
   const [defectList, setDefectList] = useAtom(defectAtom);
   const [defectSummaryList, setDefectSummaryList] = useAtom(defectSummaryAtom);
   const [graphSummaryList, setGraphSummaryList] = useAtom(graphSummaryAtom);
+  const [partSummaryList, setPartSummaryList] = useAtom(graphSummaryAtom);
   const [topDefectList, setTopDefectList] = useAtom(topDefectAtom);
 
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
