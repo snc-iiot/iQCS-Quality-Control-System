@@ -88,6 +88,12 @@ export class PartsService {
     //   data: [{ input, decoded }],
     // };
     try {
+      const allPartCode = await this.partRepository.find({
+        where: { plant_code: decoded.plant_code },
+      });
+
+      const partCodeExists = allPartCode.map((part) => part.part_code);
+
       /*
       //! Block duplicate part code
       const partExists = await this.partRepository.find({

@@ -27,6 +27,9 @@ export class PartsDto {
 
   @IsArray()
   @ArrayMinSize(1)
+  // @ValidateNested()
+  // @Type(() => IsUUID)
+  // processes: ProcessDto[];
   processes: string[];
 
   @IsNumber()

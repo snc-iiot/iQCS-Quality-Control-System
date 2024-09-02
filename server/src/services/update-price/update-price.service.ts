@@ -130,15 +130,25 @@ export class UpdatePriceService {
 
   async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
-      const results = await this.updatePriceRepository.find({
-        where: {
+      // const results = await this.updatePriceRepository.find({
+      //   where: {
+      //     plant_code: decoded.plant_code,
+      //   },
+      //   order: {
+      //     effective_date: 'DESC',
+      //     part_id: 'DESC',
+      //   },
+      // });
+
+      const results = await this.updatePriceRepository
+        .createQueryBuilder('t1')
+        .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
-        },
-        order: {
-          effective_date: 'DESC',
-          part_id: 'DESC',
-        },
-      });
+        })
+        .leftJoin('tb_users', 't2', 't1.creator_id = t2.user_id')
+        .select('t1.*, t2.name as creator_name')
+        .orderBy('t1.created_at', 'DESC')
+        .getRawMany();
 
       return {
         status: 'success',
