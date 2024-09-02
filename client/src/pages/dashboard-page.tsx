@@ -4,6 +4,7 @@ import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { HorizontalBarChart } from "@/components/ui/horizontal-bar-chart";
 import { Input } from "@/components/ui/input";
+import { groupByField } from "@/helpers/array.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
 import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
@@ -20,11 +21,10 @@ export const DashboardPage: FC = () => {
     end_date: "",
   });
 
-  const { useGetSummaryDefectsByDateGraph, useGetTopDefects } = useDefect();
+  const { useGetSummaryDefectsByDateGraph, useGetTopDefects, useGetSummaryDefectsByPartGraph } = useDefect();
 
-  const { graphSummaryList, topDefectList, processList } = useAtomStore();
+  const { graphSummaryList, topDefectList, processList, partSummaryList } = useAtomStore();
   const [shiftSelected, setShiftSelected] = useState<string>("ALL");
-  console.log(graphSummaryList);
   const { groupProcess, groupDate } = useDashboardHelper(
     graphSummaryList
       ?.filter((item) => (shiftSelected == "ALL" ? true : item?.shift === shiftSelected))
@@ -32,7 +32,7 @@ export const DashboardPage: FC = () => {
   );
 
   const [processSelected, setProcessSelected] = useState<string>("ALL");
-  const [process2Selected, setProcess2Selected] = useState<string>(processList[0]?.process_id);
+  const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
 
   const mapCardProcess = processList?.map((process) => {
     const data = groupProcess("process_name")[process?.process_name];
@@ -107,6 +107,25 @@ export const DashboardPage: FC = () => {
     }
   };
 
+  const defectDataPartSummary = () => {
+    const dataPartSummaryList = groupByField(partSummaryList, "part_code");
+
+    const data = Object.keys(dataPartSummaryList)?.map((key) => {
+      return {
+        ...dataPartSummaryList[key]?.reduce(
+          (acc, curr) => {
+            return {
+              ...acc,
+              ng_quantity: (acc.ng_quantity || 0) + (curr.ng_quantity || 0),
+            };
+          },
+          { label: key, ng_quantity: 0 }
+        ),
+      };
+    });
+    return data;
+  };
+
   const chartConfig = {
     desktop: {
       label: "Desktop",
@@ -118,8 +137,6 @@ export const DashboardPage: FC = () => {
     },
   } satisfies ChartConfig;
 
-  // console.log("GET_TIME_SLOTS", GET_TIME_SLOTS(selectedDate));
-
   const { isLoading: isLoadingSummaryDefectsByDateGraph } = useGetSummaryDefectsByDateGraph(
     selected?.start_date,
     selected?.type === "daily" ? selected?.start_date : selected?.end_date
@@ -130,6 +147,11 @@ export const DashboardPage: FC = () => {
     processSelected,
     shiftSelected,
     10
+  );
+  const { isLoading: isLoadingSummaryDefectsByPartGraph } = useGetSummaryDefectsByPartGraph(
+    selected?.start_date,
+    selected?.type === "daily" ? selected?.start_date : selected?.end_date,
+    processPartSelected
   );
 
   return (
@@ -287,10 +309,13 @@ export const DashboardPage: FC = () => {
                   </div>
                 ) : (
                   <HorizontalBarChart
-                    data={topDefectList?.map(({ case_name, ng_quantity }) => ({
-                      label: case_name,
-                      value: ng_quantity,
-                    }))}
+                    data={[
+                      ...topDefectList?.map(({ case_name, ng_quantity }) => ({
+                        label: case_name,
+                        value: ng_quantity,
+                      })),
+                      { label: "-", value: "" },
+                    ]}
                   />
                 )}
               </div>
@@ -369,21 +394,38 @@ export const DashboardPage: FC = () => {
               </h1>
               <p className="text-xs text-muted-foreground">
                 รายการสาเหตุที่ทำให้งานของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
-                {processList?.find(({ process_id }) => process_id === process2Selected)?.process_name} / List of reasons
-                for the work of each piece in the process{" "}
-                {processList?.find(({ process_id }) => process_id === process2Selected)?.process_name}{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name} / List of
+                reasons for the work of each piece in the process{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
               </p>
             </div>
             <SelectForm
-              value={process2Selected}
+              value={processPartSelected}
               className="w-full md:w-[14rem] lg:w-[14rem]"
-              onChange={(e) => setProcess2Selected(e.target.value)}
+              onChange={(e) => setProcessPartSelected(e.target.value)}
               options={processList?.map((process) => ({
                 label: process?.process_name,
                 value: process?.process_id,
               }))}
             />
           </div>
+          {partSummaryList?.length === 0 ? (
+            <div className="flex w-full justify-center">
+              <p className="text-xs">
+                {isLoadingSummaryDefectsByPartGraph ? "กำลังโหลดข้อมูล / Loading data" : "ไม่พบข้อมูล / No data found"}
+              </p>
+            </div>
+          ) : (
+            <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+              <BarChart accessibilityLayer data={defectDataPartSummary()}>
+                <CartesianGrid vertical={true} />
+                <YAxis />
+                <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
+                <Bar dataKey={"ng_quantity"} fill={"#8884d8"} />
+              </BarChart>
+            </ChartContainer>
+          )}
         </div>
         <div className="flex w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full"></div>
       </div>

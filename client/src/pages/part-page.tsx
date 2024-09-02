@@ -31,7 +31,9 @@ const HEADER = [
   "Part No.",
   "Part Name",
   "Part Price",
+  "SAP Code.",
   "Part Description",
+  "Customer",
   "Created Date",
   "Updated Date",
   "Action",
@@ -142,7 +144,9 @@ export const PartPage: FC = () => {
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
                       <TableCell>{part?.price ?? "0.00"}</TableCell>
+                      <TableCell>{part?.sap_code || "-"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
+                      <TableCell>{part?.customers[0] || "-"}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.created_at))}</TableCell>
                       <TableCell>{renderFormattedDateWithTime(new Date(part?.updated_at))}</TableCell>
                       <TableCell className="whitespace-nowrap">
@@ -211,7 +215,9 @@ export const PartPage: FC = () => {
               part_name: selectedPart?.part_name,
               price: Number(selectedPart?.price),
               processes: selectedPart?.processes,
+              sap_code: selectedPart?.sap_code || "",
               part_description: selectedPart?.part_description || "",
+              customers: selectedPart?.customers || [],
             }}
             onClose={() => {
               setIsDialogUpdateOpen(false);

@@ -1,6 +1,14 @@
 import { API_BASE_URL, calculateDateTime } from "@/helpers/common.helper";
 import { useAtomStore } from "@/store";
-import { TCreateUpdateDefect, TDefect, TDefectSummary, TGraphSummary, TResponse, TTopDefect } from "@/types";
+import {
+  TCreateUpdateDefect,
+  TDefect,
+  TDefectSummary,
+  TGraphSummary,
+  TPartSummary,
+  TResponse,
+  TTopDefect,
+} from "@/types";
 import { AxiosError } from "axios";
 import { APIService } from "./api.service";
 
@@ -169,6 +177,28 @@ export class DefectService extends APIService {
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("GET_TOP_DEFECTS_ERROR", error);
+        return [];
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return [];
+      }
+    }
+  };
+
+  public getSummaryDefectsByPartGraph = async (
+    start_date: string,
+    end_date: string,
+    process_id: string
+  ): Promise<TPartSummary[]> => {
+    try {
+      const { data: res } = await this.get<TResponse<TPartSummary[]>>(
+        `/defects-logging/graph-summary-part-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}`
+      );
+      this.store.setPartSummaryList(res?.data || []);
+      return res?.data || [];
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("GET_SUMMARY_DEFECTS_ERROR", error);
         return [];
       } else {
         console.error("UNKNOWN_ERROR", error);

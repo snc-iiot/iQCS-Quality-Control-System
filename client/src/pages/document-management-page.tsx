@@ -18,7 +18,7 @@ import { useDocument } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TDocument } from "@/types";
 import { AlertDialog, AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
-import { ArrowDownToLine, Copy, Ellipsis, Pencil, Trash2 } from "lucide-react";
+import { Copy, Ellipsis, Pencil, Trash2, User } from "lucide-react";
 import { useState } from "react";
 
 const DocumentManagementPage = () => {
@@ -35,8 +35,6 @@ const DocumentManagementPage = () => {
       part?.document_name?.toLowerCase().includes(search.toLowerCase()) ||
       part?.creator_name?.toLowerCase().includes(search.toLowerCase())
   );
-
-  console.log(documentList);
 
   return (
     <>
@@ -99,10 +97,6 @@ const DocumentManagementPage = () => {
                           <Copy size={18} />
                           <p className="text-sm font-medium">Copy link</p>
                         </div>
-                        <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                          <ArrowDownToLine size={18} />
-                          <p className="text-sm font-medium">Download</p>
-                        </div>
 
                         <AlertDialog>
                           <AlertDialogTrigger>
@@ -135,7 +129,11 @@ const DocumentManagementPage = () => {
                     }
                   />
                 </div>
-                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white">
+                <a
+                  href={source_file}
+                  target="_blank"
+                  className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white"
+                >
                   {typeFile === "pdf" ? (
                     <iframe src={source_file} />
                   ) : (
@@ -144,14 +142,11 @@ const DocumentManagementPage = () => {
                     </div>
                   )}
                   <div className="absolute left-0 top-0 h-full w-full" />
-                </div>
+                </a>
+
                 <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
-                  <div className="h-6 w-6 rounded-full">
-                    <img
-                      className="w-full"
-                      src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745"
-                      alt="file"
-                    />
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00000020]">
+                    <User size={20} />
                   </div>
                   <div className="flex flex-1 items-center gap-1 overflow-hidden">
                     <p className="truncate text-xs font-medium">{creator_name}</p>
