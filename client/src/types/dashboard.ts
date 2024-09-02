@@ -5,6 +5,7 @@ export type TGraphSummary = {
   date?: string;
   time_slot: string;
   shift: "DAY" | "NIGHT";
-  process: string;
+  process_id: string;
+  process_name: string;
   ng_quantity: number;
 };

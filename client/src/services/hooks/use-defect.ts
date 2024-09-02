@@ -54,10 +54,10 @@ export const useDefect = () => {
     });
   };
 
-  const useGetTopDefects = (start_date: string, end_date: string, process: string, shift: string) => {
+  const useGetTopDefects = (start_date: string, end_date: string, process: string, shift: string, ranking: number) => {
     return useQuery({
       queryKey: [GET_TOP_DEFECTS, start_date, end_date, process, shift],
-      queryFn: (): Promise<TTopDefect[]> => getTopDefects(start_date, end_date, process, shift),
+      queryFn: (): Promise<TTopDefect[]> => getTopDefects(start_date, end_date, process, shift, ranking),
     });
   };
 

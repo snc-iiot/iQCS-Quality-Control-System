@@ -196,8 +196,11 @@ export const PartPage: FC = () => {
           </DialogHeader>
           <CreateUpdatePart
             data={{
+              part_id: selectedPart?.part_id,
               part_code: selectedPart?.part_code,
               part_name: selectedPart?.part_name,
+              price: Number(selectedPart?.price),
+              processes: selectedPart?.processes,
               part_description: selectedPart?.part_description || "",
             }}
             onClose={() => {

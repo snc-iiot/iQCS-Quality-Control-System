@@ -1,7 +1,8 @@
 export type TCreateUpdateDocument = {
   document_id?: string;
   document_name: string;
-  document_data: string;
+  document_data?: string;
+  source_file?: string;
 
   //! Not required
   document_description?: string;
@@ -21,6 +22,5 @@ export type TDocument = {
   created_at: string;
   updated_at: string;
 
-  // ? +++
-  inspector_name: string;
+  creator_name: string;
 };

@@ -156,13 +156,13 @@ export class DefectService extends APIService {
   public getTopDefects = async (
     start_date: string,
     end_date: string,
-    process: string,
-    shift: string
+    process_id: string,
+    shift: string,
+    ranking: number
   ): Promise<TTopDefect[]> => {
     try {
       const { data: res } = await this.get<TResponse<TTopDefect[]>>(
-        // `/defects-logging/top-rank-by-date?start_date=${start_date}&end_date=${end_date}&process=${process}&shift=${shift}`
-        `/defects-logging/top-rank-by-date-range?start_date=${start_date}&end_date=${end_date}&process=${process}&shift=${shift}`
+        `/defects-logging/top-rank-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&shift=${shift}&ranking=${ranking}`
       );
       this.store.setTopDefectList(res?.data || []);
       return res?.data || [];

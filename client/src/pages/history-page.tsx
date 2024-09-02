@@ -1034,60 +1034,78 @@ export const HistoryPage: FC = () => {
                     });
                   }}
                 />
-                {historyFilter?.mode === "date_range" ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <DateInputForm
-                      type="datetime-local"
+                <div className="flex flex-wrap items-center gap-2">
+                  {historyFilter?.mode === "week" && (
+                    <Input
                       onChange={(e) => {
+                        const value = e.target.value;
+                        const [year, week] = value.split("-W");
+                        const YEAR = parseInt(year);
+                        const WEEK = parseInt(week);
+                        const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
                         setHistoryFilter({
                           ...historyFilter,
-                          start_date_time: e.target.value,
+                          start_date_time: renderFormattedPayloadDate(new Date(start_date)) ?? "",
+                          end_date_time: renderFormattedPayloadDate(new Date(end_date)) ?? "",
                         });
                       }}
-                      value={historyFilter?.start_date_time}
-                      max={historyFilter?.end_date_time}
+                      value={getWeekString(new Date(historyFilter?.start_date_time))}
+                      className="block w-full md:w-[14rem] lg:w-[10rem]"
+                      type="week"
                     />
-                    <p className="hidden text-sm md:block">ถึง</p>
-                    <DateInputForm
-                      type="datetime-local"
+                  )}
+
+                  {(historyFilter?.mode === "daily" ||
+                    historyFilter?.mode === "period" ||
+                    historyFilter?.mode === "monthly") && (
+                    <Input
+                      className="block w-full md:w-[14rem] lg:w-[10rem]"
+                      value={historyFilter?.start_date_time?.slice(0, historyFilter?.mode === "monthly" ? 7 : 10)}
                       onChange={(e) => {
+                        const start_date_time = e.target.value + (historyFilter?.mode === "monthly" ? "-01" : "");
+                        let end_date_time = historyFilter?.end_date_time;
+
+                        if (historyFilter?.mode === "monthly") {
+                          const [year, month] = start_date_time.split("-");
+                          const endOfMonth = new Date(Number(year), Number(month), 0);
+                          end_date_time = `${year}-${month}-${endOfMonth.getDate()}`;
+                        }
+
                         setHistoryFilter({
                           ...historyFilter,
-                          end_date_time: e.target.value,
+                          start_date_time,
+                          end_date_time,
                         });
                       }}
+                      type={historyFilter?.mode === "monthly" ? "month" : "date"}
+                    />
+                  )}
+
+                  {historyFilter?.mode === "period" && (
+                    <Input
+                      className="block w-full md:w-[14rem] lg:w-[10rem]"
                       value={historyFilter?.end_date_time}
+                      onChange={(e) => setHistoryFilter({ ...historyFilter, end_date_time: e.target.value })}
+                      type="date"
                       min={historyFilter?.start_date_time}
-                      disabled={historyFilter?.start_date_time === ""}
                     />
-                  </div>
-                ) : (
-                  <>
-                    <DateInputForm
-                      value={filterHistory?.date}
-                      onChange={(e) => {
-                        setFilterHistory({
-                          ...filterHistory,
-                          date: renderFormattedPayloadDate(e.target.value) ?? "",
-                        });
-                      }}
-                      className="w-full md:w-[14rem]"
-                    />
-                    {allFilter?.shift?.length === 0 && (
-                      <SelectForm
-                        options={GET_TIME_SLOTS(filterHistory?.date, true)}
-                        value={filterHistory?.time_slot}
-                        onChange={(e) => {
-                          setFilterHistory({
-                            ...filterHistory,
-                            time_slot: e.target.value,
-                          });
-                        }}
-                        className="w-full md:w-[14rem]"
-                      />
-                    )}
-                  </>
+                  )}
+                </div>
+
+                {allFilter?.shift?.length === 0 && (
+                  <SelectForm
+                    options={GET_TIME_SLOTS(filterHistory?.date, true)}
+                    value={filterHistory?.time_slot}
+                    onChange={(e) => {
+                      setFilterHistory({
+                        ...filterHistory,
+                        time_slot: e.target.value,
+                      });
+                    }}
+                    className="w-full md:w-[14rem]"
+                  />
                 )}
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full md:w-max">

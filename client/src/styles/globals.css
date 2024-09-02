@@ -68,6 +68,17 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    --chart-horizontal-bar-chart-1: 0 100% 25%;
+    --chart-horizontal-bar-chart-2: 0 100% 30%;
+    --chart-horizontal-bar-chart-3: 0 100% 35%;
+    --chart-horizontal-bar-chart-4: 0 100% 40%;
+    --chart-horizontal-bar-chart-5: 0 100% 45%;
+    --chart-horizontal-bar-chart-6: 0 100% 50%;
+    --chart-horizontal-bar-chart-7: 6 100% 50%;
+    --chart-horizontal-bar-chart-8: 12 100% 50%;
+    --chart-horizontal-bar-chart-9: 15 100% 55%;
+    --chart-horizontal-bar-chart-10: 16 100% 65%;
   }
 }
 
