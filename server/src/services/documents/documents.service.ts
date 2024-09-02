@@ -48,7 +48,8 @@ export class DocumentsService {
         return {
           status: 'error',
           statusCode: 400,
-          message: 'Invalid file type',
+          message:
+            'Invalid file type (only pdf, csv, doc, docx, xls, xlsx, ppt, pptx) allowed',
           data: [],
         };
 
