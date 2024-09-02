@@ -28,7 +28,7 @@ const colors = [
 ];
 
 export type THorizontalBarChart = {
-  data: { label: string; value: number }[];
+  data: { label: string; value: number | string }[];
 };
 
 const HorizontalBarChart: FC<THorizontalBarChart> = ({ data }) => {

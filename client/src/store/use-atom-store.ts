@@ -8,6 +8,7 @@ import {
   machineAtom,
   ngCauseAtom,
   partAtom,
+  partSummaryAtom,
   plantsAtom,
   priceRatioAtom,
   processAtom,
@@ -27,7 +28,7 @@ export const useAtomStore = () => {
   const [defectList, setDefectList] = useAtom(defectAtom);
   const [defectSummaryList, setDefectSummaryList] = useAtom(defectSummaryAtom);
   const [graphSummaryList, setGraphSummaryList] = useAtom(graphSummaryAtom);
-  const [partSummaryList, setPartSummaryList] = useAtom(graphSummaryAtom);
+  const [partSummaryList, setPartSummaryList] = useAtom(partSummaryAtom);
   const [topDefectList, setTopDefectList] = useAtom(topDefectAtom);
 
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
@@ -54,6 +55,8 @@ export const useAtomStore = () => {
     setDefectSummaryList,
     graphSummaryList,
     setGraphSummaryList,
+    partSummaryList,
+    setPartSummaryList,
     topDefectList,
     setTopDefectList,
     productivityList,

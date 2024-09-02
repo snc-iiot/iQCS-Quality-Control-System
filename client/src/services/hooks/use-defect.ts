@@ -1,5 +1,11 @@
-import { GET_DEFECT_SUMMARIES_BY_DATE, GET_GRAPH_SUMMARIES, GET_RAW_DEFECTS, GET_TOP_DEFECTS } from "@/lib/constants";
-import { TCreateUpdateDefect, TDefect, TDefectSummary, TGraphSummary, TTopDefect } from "@/types";
+import {
+  GET_DEFECT_SUMMARIES_BY_DATE,
+  GET_GRAPH_SUMMARIES,
+  GET_PART_SUMMARIES,
+  GET_RAW_DEFECTS,
+  GET_TOP_DEFECTS,
+} from "@/lib/constants";
+import { TCreateUpdateDefect, TDefect, TDefectSummary, TGraphSummary, TPartSummary, TTopDefect } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { DefectService } from "../defect.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
@@ -64,8 +70,8 @@ export const useDefect = () => {
 
   const useGetSummaryDefectsByPartGraph = (start_date: string, end_date: string, process_id: string) => {
     return useQuery({
-      queryKey: [GET_GRAPH_SUMMARIES, start_date, end_date, process_id],
-      queryFn: (): Promise<TGraphSummary[]> => getSummaryDefectsByPartGraph(start_date, end_date, process_id),
+      queryKey: [GET_PART_SUMMARIES, start_date, end_date, process_id],
+      queryFn: (): Promise<TPartSummary[]> => getSummaryDefectsByPartGraph(start_date, end_date, process_id),
       refetchInterval: 60000,
     });
   };

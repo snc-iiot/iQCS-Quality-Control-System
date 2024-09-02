@@ -9,3 +9,12 @@ export type TGraphSummary = {
   process_name: string;
   ng_quantity: number;
 };
+
+export type TPartSummary = {
+  shift: "DAY" | "NIGHT";
+  process_id: string;
+  part_id: string;
+  part_code: string;
+  part_name: string;
+  ng_quantity: number;
+};
