@@ -1,11 +1,23 @@
 import { PageHeader } from "@/components/common/page-header";
 import { CreateUpdateDocument } from "@/components/form";
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
 import { renderFormattedDate } from "@/helpers/date-time.helper";
+import { useDocument } from "@/services/hooks";
 import { useAtomStore } from "@/store";
+import { TDocument } from "@/types";
+import { AlertDialog, AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { ArrowDownToLine, Copy, Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -14,11 +26,14 @@ const DocumentManagementPage = () => {
 
   const [search, setSearch] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
+  const [selectedDocument, setSelectedDocument] = useState<TDocument | null>(null);
+  const { mutateDeleteDocument } = useDocument();
 
   const filteredDocument = documentList?.filter(
     (part) =>
       part?.document_name?.toLowerCase().includes(search.toLowerCase()) ||
-      part?.inspector_name?.toLowerCase().includes(search.toLowerCase())
+      part?.creator_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   console.log(documentList);
@@ -50,60 +65,103 @@ const DocumentManagementPage = () => {
           </div>
         )}
         <div className="grid max-h-full grid-cols-1 gap-2 overflow-auto py-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filteredDocument?.map(({ document_name, inspector_name, updated_at, source_file }, i) => (
-            <div
-              key={i}
-              className="flex h-[16rem] w-full cursor-pointer flex-col gap-1 overflow-clip rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
-            >
-              <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip">
-                <div className="flex-1 overflow-hidden">
-                  <p className="truncate text-sm font-medium">{document_name}</p>
-                </div>
+          {filteredDocument?.map((info, i) => {
+            const { document_name, creator_name, updated_at, source_file, document_id } = info;
+            const typeFile = source_file?.split(".")[source_file?.split(".")?.length - 1];
+            return (
+              <div
+                key={i}
+                className="flex h-[16rem] w-full cursor-pointer flex-col gap-1 overflow-clip rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
+              >
+                <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip">
+                  <div className="flex-1 overflow-hidden">
+                    <p className="truncate text-sm font-medium">{document_name}</p>
+                  </div>
 
-                <Dropdown
-                  icon={<Ellipsis size={28} className="w-min rounded-full p-1 hover:bg-gray-300" />}
-                  content={
-                    <div className="flex flex-col">
-                      <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                        <Pencil size={18} />
-                        <p className="text-sm font-medium">Edit</p>
+                  <Dropdown
+                    icon={<Ellipsis size={28} className="w-min rounded-full p-1 hover:bg-gray-300" />}
+                    content={
+                      <div className="flex flex-col">
+                        <div
+                          className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
+                          onClick={() => {
+                            setIsDialogUpdateOpen(true);
+                            setSelectedDocument(info);
+                          }}
+                        >
+                          <Pencil size={18} />
+                          <p className="text-sm font-medium">Edit</p>
+                        </div>
+                        <div
+                          className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
+                          onClick={() => navigator.clipboard.writeText(source_file)}
+                        >
+                          <Copy size={18} />
+                          <p className="text-sm font-medium">Copy link</p>
+                        </div>
+                        <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
+                          <ArrowDownToLine size={18} />
+                          <p className="text-sm font-medium">Download</p>
+                        </div>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
+                              <Trash2 size={18} />
+                              <p className="text-sm font-medium">Delete</p>
+                            </div>
+                          </AlertDialogTrigger>{" "}
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={async () => {
+                                  const res = await mutateDeleteDocument(document_id);
+                                  console.log(res);
+                                }}
+                              >
+                                ลบ / Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
-                      <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                        <Copy size={18} />
-                        <p className="text-sm font-medium">Copy link</p>
-                      </div>
-                      <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                        <ArrowDownToLine size={18} />
-                        <p className="text-sm font-medium">Download</p>
-                      </div>
-                      <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                        <Trash2 size={18} />
-                        <p className="text-sm font-medium">Delete</p>
-                      </div>
-                    </div>
-                  }
-                />
-              </div>
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white">
-                <iframe src={source_file} />
-                <div className="absolute left-0 top-0 h-full w-full" />
-              </div>
-              <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
-                <div className="h-6 w-6 rounded-full">
-                  <img
-                    className="w-full"
-                    src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745"
-                    alt="file"
+                    }
                   />
                 </div>
-                <div className="flex flex-1 items-center gap-1 overflow-hidden">
-                  <p className="truncate text-xs font-medium">{inspector_name}</p>
-                  <div className="mt-1 min-h-[4px] min-w-[4px] rounded-full bg-black" />
-                  <p className="whitespace-nowrap text-xs font-medium">{renderFormattedDate(updated_at)}</p>
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white">
+                  {typeFile === "pdf" ? (
+                    <iframe src={source_file} />
+                  ) : (
+                    <div className="p-20">
+                      <img src="https://cdn-icons-png.freepik.com/512/8361/8361467.png" alt="xlsx" />
+                    </div>
+                  )}
+                  <div className="absolute left-0 top-0 h-full w-full" />
+                </div>
+                <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
+                  <div className="h-6 w-6 rounded-full">
+                    <img
+                      className="w-full"
+                      src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745"
+                      alt="file"
+                    />
+                  </div>
+                  <div className="flex flex-1 items-center gap-1 overflow-hidden">
+                    <p className="truncate text-xs font-medium">{creator_name}</p>
+                    <div className="min-h-[4px] min-w-[4px] rounded-full bg-black" />
+                    <p className="whitespace-nowrap text-xs font-medium">{renderFormattedDate(updated_at)}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -114,6 +172,29 @@ const DocumentManagementPage = () => {
           </DialogHeader>
 
           <CreateUpdateDocument onClose={() => setIsDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>แก้ไขเอกสาร / Edit Document</DialogTitle>
+            <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
+          </DialogHeader>
+          <CreateUpdateDocument
+            data={{
+              document_name: selectedDocument?.document_name ?? "",
+              document_data: selectedDocument?.source_file ?? "",
+              document_description: selectedDocument?.document_description ?? "",
+              effective_date: selectedDocument?.effective_date ?? "",
+              expire_date: selectedDocument?.expire_date ?? "",
+              document_id: selectedDocument?.document_id ?? "",
+              source_file: selectedDocument?.source_file ?? "",
+            }}
+            onClose={() => {
+              setIsDialogUpdateOpen(false);
+              setSelectedDocument(null);
+            }}
+          />
         </DialogContent>
       </Dialog>
     </>
