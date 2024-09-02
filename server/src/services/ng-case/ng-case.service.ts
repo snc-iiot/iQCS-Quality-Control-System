@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { NgCases } from './entities';
 import { TJwtPayload, TServiceResponse } from 'src/types';
 import { CreateNgCaseDto, UpdateNgCaseDto, FindNgCaseDto } from './dto';
@@ -17,6 +17,22 @@ export class NgCaseService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
+      //! Check if the case name already exists
+      const checkExists = await this.ngCaseRepository.find({
+        where: {
+          case_name: input.case_name,
+          plant_code: decoded.plant_code,
+        },
+        take: 1,
+      });
+      if (checkExists.length > 0)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Ng case name already exists',
+          data: [],
+        };
+
       const record = {
         case_name: input.case_name,
         description: input.description ?? '',
@@ -41,8 +57,28 @@ export class NgCaseService {
     }
   }
 
-  async update(input: UpdateNgCaseDto): Promise<TServiceResponse> {
+  async update(
+    input: UpdateNgCaseDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
     try {
+      //! Check if the case name already exists
+      const checkExists = await this.ngCaseRepository.find({
+        where: {
+          case_id: Not(input.case_id),
+          case_name: input.case_name,
+          plant_code: decoded.plant_code,
+        },
+        take: 1,
+      });
+      if (checkExists.length > 0)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Ng case name already exists',
+          data: [],
+        };
+
       const record = {
         case_name: input.case_name,
         description: input.description ?? '',

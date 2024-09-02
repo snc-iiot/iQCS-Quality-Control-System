@@ -44,8 +44,12 @@ export class NgCaseController {
   }
 
   @Put()
-  async update(@Body() body: UpdateNgCaseDto, @Res() res: Response) {
-    const result = await this.ngCaseService.update(body);
+  async update(
+    @Body() body: UpdateNgCaseDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.ngCaseService.update(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
