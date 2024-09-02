@@ -7,6 +7,7 @@ import {
   DashboardPage,
   HistoryPage,
   HomePage,
+  ImportExcelPart,
   LoginPage,
   NotFoundPage,
   PartPage,
@@ -43,6 +44,7 @@ const App = () => {
               <Route index element={<MenuSettingPage />} />
               <Route path="process" element={<ProcessPage />} />
               <Route path="part" element={<PartPage />} />
+              <Route path="part/import" element={<ImportExcelPart />} />
               <Route path="cause" element={<CausePage />} />
               <Route path="account" element={<AccountSettingPage />} />
               <Route path="machine" element={<SettingMachinePage />} />

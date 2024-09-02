@@ -1,10 +1,12 @@
 export type TCreateUpdatePart = {
-  part_id?: string;
-  processes: string[];
-  part_code: string;
-  part_name: string;
-  price: number;
-  part_description: string;
+  part_id?: string
+  part_code: string
+  part_name: string
+  processes: string[]
+  price: number
+  sap_code?: string
+  part_description?: string
+  customers?: string[]
 };
 
 export type TPart = {

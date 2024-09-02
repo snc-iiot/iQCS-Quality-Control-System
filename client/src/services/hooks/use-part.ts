@@ -5,7 +5,7 @@ import { PartService } from "../part.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
 
 export const usePart = () => {
-  const { getParts, createPart, updatePart, deletePart } = new PartService();
+  const { getParts, createPart, updatePart, deletePart,importExcelPart } = new PartService();
 
   const useGetParts = () => {
     return useQuery({
@@ -33,10 +33,17 @@ export const usePart = () => {
     [GET_PARTS]
   );
 
+  const { mutateAsync: mutateImportExcelPart } = useMutationWithToast(
+    async (data: TCreateUpdatePart[]) => await importExcelPart(data),
+    "Part imported successfully",
+    [GET_PARTS]
+  );
+
   return {
     useGetParts,
     mutateCreatePart,
     mutateUpdatePart,
     mutateDeletePart,
+    mutateImportExcelPart,
   };
 };

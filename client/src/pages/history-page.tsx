@@ -1270,7 +1270,8 @@ export const HistoryPage: FC = () => {
                     </TableBody>
                     <TableFooter>
                       <TableRow>
-                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 7}>Total Summary</TableCell>
+                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 8}>Total Summary</TableCell>
+                        <TableCell className="text-right">{summaryMapped("production_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("ng_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("rework_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("scrap_quantity")}</TableCell>

@@ -19,3 +19,4 @@ export * from "./logging-productivity-page";
 export * from "./setting-account";
 export * from "./setting-machine";
 export * from "./cost-page";
+export * from './import-excel-part'

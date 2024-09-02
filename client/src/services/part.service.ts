@@ -46,6 +46,34 @@ export class PartService extends APIService {
     }
   };
 
+  public importExcelPart = async (data: TCreateUpdatePart[]): Promise<TResponse<unknown>> => {
+    try {
+      const response = await this.post<TResponse<unknown>>("/parts/import-excel", {
+        data: data,
+      });
+      return response?.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("IMPORT_EXCEL_PART_ERROR", error);
+        return {
+          message: error.response?.data?.message || "Failed to import part",
+          statusCode: error.response?.status || 500,
+          status: "error",
+          data: [],
+        };
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return {
+          message: "Failed to import part",
+          statusCode: 500,
+          status: "error",
+          data: [],
+        };
+      }
+    }
+  }
+
+
   public updatePart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {
       const response = await this.put<TResponse<unknown>>(`/parts`, data);

@@ -29,3 +29,10 @@ export const validationPriceRatioSchema = Yup.object<TCreateUpdatePriceRatio>({
   rework_ratio: Yup.number().required("โปรดระบุ Rework Ratio").min(0).max(100),
   remarks: Yup.string().notRequired(),
 });
+
+
+export const validationImportExcelPartSchema = Yup.object({
+  process_id: Yup.string().required("โปรดระบุ Process"),
+  customer: Yup.string().required("โปรดระบุ Customer"),
+  total_part: Yup.number().required("โปรดระบุ Total Part").min(1),
+});

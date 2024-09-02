@@ -23,6 +23,7 @@ import { usePart } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TPart } from "@/types";
 import { FC, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HEADER = [
   "No.",
@@ -37,6 +38,7 @@ const HEADER = [
 ];
 
 export const PartPage: FC = () => {
+  const navigate = useNavigate();
   const { partList, processList } = useAtomStore();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -92,6 +94,16 @@ export const PartPage: FC = () => {
                 </div>
               }
             />
+            <Button
+              variant="outline"
+              className="whitespace-nowrap"
+              onClick={() => {
+                // part/import
+                navigate("/settings/part/import");
+              }}
+            >
+              Import Part List
+            </Button>
             <Button className="whitespace-nowrap" onClick={() => setIsDialogOpen(true)}>
               Add Part
             </Button>
