@@ -295,7 +295,7 @@ export const DashboardPage: FC = () => {
               <div className="flex">
                 <div className={cn("w-full")}>
                   <h1 className="text-sm font-semibold">
-                    10 สาเหตุที่ทำให้งานเสียมากที่สุด / Top 10 causes that cause the most defects
+                    {ranking} สาเหตุที่ทำให้งานเสียมากที่สุด / Top {ranking} causes that cause the most defects
                   </h1>
                   <p className="text-xs text-muted-foreground">
                     รายการสาเหตุที่ทำให้งานเสียมากที่สุด / List of causes that cause the most work loss
@@ -321,7 +321,7 @@ export const DashboardPage: FC = () => {
                       value: "20",
                     },
                   ]}
-                  className="w-[10rem]"
+                  className="w-[6rem]"
                 />
               </div>
 
@@ -341,7 +341,7 @@ export const DashboardPage: FC = () => {
                       })),
                       ...Array(ranking - topDefectList?.length)
                         ?.fill(0)
-                        ?.map(() => ({ label: "-", value: "" })),
+                        ?.map(() => ({ label: "-", value: "1" })),
                     ]}
                   />
                 )}

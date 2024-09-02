@@ -25,6 +25,16 @@ const colors = [
   "hsl(var(--chart-horizontal-bar-chart-8))",
   "hsl(var(--chart-horizontal-bar-chart-9))",
   "hsl(var(--chart-horizontal-bar-chart-10))",
+  "hsl(var(--chart-horizontal-bar-chart-11))",
+  "hsl(var(--chart-horizontal-bar-chart-12))",
+  "hsl(var(--chart-horizontal-bar-chart-13))",
+  "hsl(var(--chart-horizontal-bar-chart-14))",
+  "hsl(var(--chart-horizontal-bar-chart-15))",
+  "hsl(var(--chart-horizontal-bar-chart-16))",
+  "hsl(var(--chart-horizontal-bar-chart-17))",
+  "hsl(var(--chart-horizontal-bar-chart-18))",
+  "hsl(var(--chart-horizontal-bar-chart-19))",
+  "hsl(var(--chart-horizontal-bar-chart-20))",
 ];
 
 export type THorizontalBarChart = {
@@ -32,7 +42,7 @@ export type THorizontalBarChart = {
 };
 
 const HorizontalBarChart: FC<THorizontalBarChart> = ({ data }) => {
-  const getBarColor = (index: number) => colors[index % colors.length];
+  const getBarColor = (index: number) => colors[(index + (data.length <= 10 ? 1 : 0)) % colors.length];
 
   return (
     <ChartContainer config={chartConfig} className="h-full w-full">
