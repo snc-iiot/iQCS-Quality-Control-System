@@ -6,6 +6,6 @@ interface ICreateUpdateCostProps {
   onClose?: () => void;
 }
 
-export const CreateUpdateCost: FC<ICreateUpdateCostProps> = (props) => {
+export const CreateUpdateCost: FC<ICreateUpdateCostProps> = () => {
   return <div></div>;
 };
