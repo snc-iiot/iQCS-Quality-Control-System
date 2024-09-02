@@ -15,28 +15,26 @@ import {
   productivityAtom,
   productivitySummaryAtom,
   topDefectAtom,
+  historyUpdatePriceAtom,
 } from "./atom";
 
 export const useAtomStore = () => {
   const [plantList, setPlantList] = useAtom(plantsAtom);
-
   const [processList, setProcessList] = useAtom(processAtom);
   const [partList, setPartList] = useAtom(partAtom);
   const [documentList, setDocumentList] = useAtom(documentAtom);
   const [ngCauseList, setNgCauseList] = useAtom(ngCauseAtom);
-
   const [defectList, setDefectList] = useAtom(defectAtom);
   const [defectSummaryList, setDefectSummaryList] = useAtom(defectSummaryAtom);
   const [graphSummaryList, setGraphSummaryList] = useAtom(graphSummaryAtom);
   const [partSummaryList, setPartSummaryList] = useAtom(partSummaryAtom);
   const [topDefectList, setTopDefectList] = useAtom(topDefectAtom);
-
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
   const [productivitySummaryList, setProductivitySummaryList] = useAtom(productivitySummaryAtom);
-
   const [machineList, setMachineList] = useAtom(machineAtom);
   const [accountList, setAccountList] = useAtom(accountAtom);
   const [priceRatioList, setPriceRatioList] = useAtom(priceRatioAtom);
+  const [historyUpdatePriceList, setHistoryUpdatePriceList] = useAtom(historyUpdatePriceAtom);
 
   return {
     plantList,
@@ -69,5 +67,7 @@ export const useAtomStore = () => {
     setAccountList,
     priceRatioList,
     setPriceRatioList,
+    historyUpdatePriceList,
+    setHistoryUpdatePriceList,
   };
 };

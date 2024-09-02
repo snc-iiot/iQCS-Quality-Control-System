@@ -24,3 +24,28 @@ export type TPart = {
   created_at: string;
   updated_at: string;
 };
+
+
+export type THistoryUpdatePrice = {
+  update_price_id: string
+  effective_date: string
+  part_id: string
+  price: string
+  ng_price: string
+  scrap_price: string
+  rework_price: string
+  remarks: string
+  plant_code: string
+  creator_id: string
+  creator_name: string
+  created_at: string
+  updated_at: string
+}
+
+
+export type TCreateUpdatePartPrice = {
+  effective_date: string
+  part_id: string
+  price: number | null
+  remarks: string
+}

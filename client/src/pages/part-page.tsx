@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/common/page-header";
-import { CreateUpdatePart } from "@/components/form";
+import { CreateUpdatePart, CreateUpdatePartPrice } from "@/components/form";
 import { WithAdminHOC } from "@/components/hoc";
 import { CheckboxForm } from "@/components/ui-pattern/form-field/check-box-form";
 import {
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
 import { usePart } from "@/services/hooks";
@@ -36,13 +37,30 @@ const HEADER = [
   "Customer",
   "Created Date",
   "Updated Date",
-  "Action",
+  "#",
+];
+
+const HEADER_HISTORY = [
+  "No.",
+  "Effective Date",
+  "Price",
+  "NG Price",
+  "Scrap Price",
+  "Rework Price",
+  "Remarks",
+  "Creator By",
+  "Created Date",
+  "Updated Date",
+  "#",
 ];
 
 export const PartPage: FC = () => {
   const navigate = useNavigate();
-  const { partList, processList } = useAtomStore();
+  const { partList, processList, historyUpdatePriceList } = useAtomStore();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const [isUpdatePriceDialogOpen, setIsUpdatePriceDialogOpen] = useState<boolean>(false);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState<boolean>(false);
 
   const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
   const [fields, setFields] = useState<{ [key: string]: string[] }>({});
@@ -61,9 +79,19 @@ export const PartPage: FC = () => {
       (part?.processes?.some((process) => fields?.process?.includes(process)) || (fields?.process?.length ?? 0) === 0)
   );
 
-  const { mutateDeletePart } = usePart();
+  const { mutateDeletePart, mutateDeleteUpdatePrice } = usePart();
 
-  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
+  const ActionWithAuth = WithAdminHOC(() => (
+    <AlertDialogTrigger className="text-red-500 hover:underline">Delete</AlertDialogTrigger>
+  ));
+
+  const DeleteHistory = WithAdminHOC(() => (
+    <AlertDialogTrigger className="text-red-500 hover:underline">Delete</AlertDialogTrigger>
+  ));
+
+  const filterByPart = (part_id: string) => {
+    return historyUpdatePriceList?.filter((item) => item?.part_id === part_id);
+  };
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -153,14 +181,27 @@ export const PartPage: FC = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
+                              if (filterByPart(part?.part_id)?.length === 0) {
+                                setSelectedPart(part);
+                                setIsUpdatePriceDialogOpen(true);
+                              } else {
+                                setSelectedPart(part);
+                                setIsHistoryDialogOpen(true);
+                              }
+                            }}
+                            className="text-blue-500 hover:underline"
+                          >
+                            {filterByPart(part?.part_id)?.length === 0 ? "Update Price" : "View History"}
+                          </button>
+                          <button
+                            onClick={() => {
                               setSelectedPart(part);
                               setIsDialogUpdateOpen(true);
                             }}
-                            className="text-blue-500"
+                            className="text-yellow-500 hover:underline"
                           >
                             Edit
                           </button>
-
                           <AlertDialog>
                             <ActionWithAuth />
                             <AlertDialogContent>
@@ -226,6 +267,114 @@ export const PartPage: FC = () => {
           />
         </DialogContent>
       </Dialog>
+      <Dialog
+        open={isUpdatePriceDialogOpen}
+        onOpenChange={(isOpen) => {
+          setIsUpdatePriceDialogOpen(isOpen);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update part price</DialogTitle>
+            <DialogDescription>Please fill in the information completely</DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            <CreateUpdatePartPrice
+              data={{
+                effective_date: "",
+                part_id: selectedPart?.part_id,
+                price: null,
+                remarks: "",
+              }}
+              onClose={() => {
+                setIsUpdatePriceDialogOpen(false);
+                if (!isHistoryDialogOpen) {
+                  setSelectedPart(null);
+                }
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Sheet
+        open={isHistoryDialogOpen}
+        onOpenChange={(isOpen) => {
+          setIsHistoryDialogOpen(isOpen);
+        }}
+      >
+        <SheetContent style={{ maxWidth: "70vw" }}>
+          <SheetHeader>
+            <SheetTitle>ประวัติการอัพเดทราคา / History Update Price</SheetTitle>
+            <SheetDescription>
+              แสดงรายการประวัติการอัพเดทราคาของ Part / Show the history of price update of the part
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex flex-1 flex-col overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-secondary">
+                  {HEADER_HISTORY.map((header) => (
+                    <TableHead className="whitespace-nowrap" key={header}>
+                      {header}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filterByPart(selectedPart?.part_id ?? "")?.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      {item?.effective_date ? renderFormattedDateWithTime(new Date(item?.effective_date)) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right">{item?.price}</TableCell>
+                    <TableCell className="text-right">{item?.ng_price}</TableCell>
+                    <TableCell className="text-right">{item?.scrap_price}</TableCell>
+                    <TableCell className="text-right">{item?.rework_price}</TableCell>
+                    <TableCell>{item?.remarks ?? "-"}</TableCell>
+                    <TableCell>{item?.creator_name}</TableCell>
+                    <TableCell>{renderFormattedDateWithTime(new Date(item?.created_at))}</TableCell>
+                    <TableCell>{renderFormattedDateWithTime(new Date(item?.updated_at))}</TableCell>
+                    <TableCell>
+                      <AlertDialog>
+                        <DeleteHistory />
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                await mutateDeleteUpdatePrice(item?.update_price_id);
+                              }}
+                            >
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <SheetFooter className="mt-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsUpdatePriceDialogOpen(true);
+              }}
+            >
+              อัพเดทราคา / Update Price
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

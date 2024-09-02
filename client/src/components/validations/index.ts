@@ -1,3 +1,4 @@
+import { TCreateUpdatePartPrice } from './../../types/part';
 import { TCreateUpdatePriceRatio } from "@/types/price-ratios";
 import * as Yup from "yup";
 
@@ -36,3 +37,10 @@ export const validationImportExcelPartSchema = Yup.object({
   customer: Yup.string().required("โปรดระบุ Customer"),
   total_part: Yup.number().required("โปรดระบุ Total Part").min(1),
 });
+
+export const validationUpdatePartPriceSchema = Yup.object<TCreateUpdatePartPrice>({
+  effective_date: Yup.string().required("โปรดระบุวันที่"),
+  part_id: Yup.string().required("โปรดระบุ Part"),
+  price: Yup.number().required("โปรดระบุราคา").min(0),
+  remarks: Yup.string().notRequired(),
+})

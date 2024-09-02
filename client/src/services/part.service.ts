@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/helpers/common.helper";
-import { TCreateUpdatePart, TPart, TResponse } from "@/types";
+import { TCreateUpdatePart, TPart, TResponse,THistoryUpdatePrice,TCreateUpdatePartPrice } from "@/types";
 import { AxiosError } from "axios";
 import { useAtomStore } from "./../store/use-atom-store";
 import { APIService } from "./api.service";
@@ -20,6 +20,69 @@ export class PartService extends APIService {
       return [];
     }
   };
+
+
+  public getHistoryUpdatePrice = async (): Promise<THistoryUpdatePrice[]> => {
+    try {
+      const { data } = await this.get<TResponse<THistoryUpdatePrice[]>>(`/update-prices`);
+      this.store.setHistoryUpdatePriceList(data?.data);
+      return data?.data ?? [];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+
+  public updatePartPrice = async (data: TCreateUpdatePartPrice): Promise<TResponse<unknown>> => {
+    try {
+      const response = await this.post<TResponse<unknown>>(`/update-prices`, data);
+      return response?.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("UPDATE_PART_PRICE_ERROR", error);
+        return {
+          message: error.response?.data?.message || "Failed to update part price",
+          statusCode: error.response?.status || 500,
+          status: "error",
+          data: [],
+        };
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return {
+          message: "Failed to update part price",
+          statusCode: 500,
+          status: "error",
+          data: [],
+        };
+      }
+    }
+  }
+
+  public deleteUpdatePrice = async (update_price_id: string): Promise<TResponse<unknown>> => {
+    try {
+      const response = await this.delete<TResponse<unknown>>(`/update-prices?update_price_id=${update_price_id}`);
+      return response?.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("DELETE_UPDATE_PRICE_ERROR", error);
+        return {
+          message: error.response?.data?.message || "Failed to delete update price",
+          statusCode: error.response?.status || 500,
+          status: "error",
+          data: [],
+        };
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return {
+          message: "Failed to delete update price",
+          statusCode: 500,
+          status: "error",
+          data: [],
+        };
+      }
+    }
+  }
 
   public createPart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {
