@@ -1,64 +1,54 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { GET_NOW_TIME_SLOT, GET_TIME_SLOTS } from "@/helpers";
 import { Base64Helper } from "@/helpers/base64.helper";
 import { renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
-import { TCreateUpdateDefect } from "@/types";
-import { FC, useEffect, useRef, useState } from "react";
+import { TCreateUpdateDefectMultiple } from "@/types";
+import { Formik } from "formik";
+import { FC, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { PageHeader } from "../common/page-header";
-import { ComboBoxResponsive, FormField } from "../ui-pattern";
+import { ComboBoxResponsive } from "../ui-pattern";
 import { DateInputForm, InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
 import { SelectForm } from "../ui-pattern/form-field/select-form";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
-import { validationDefectSchema } from "../validations";
-import { CreateUpdateCause } from "./create-update-cause";
+import { validationDefectMultipleSchema } from "../validations";
+import { CaseMultipleForm } from "./case-multiple-form";
 import { CreateUpdatePart } from "./create-update-part";
 
-interface CreateUpdateNgProps {
-  isTitleVisible?: boolean;
-  data?: Partial<TCreateUpdateDefect>;
-  onClose?: () => void;
-  className?: string;
-}
-
-export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = true, data, onClose, className }) => {
+export const CreateUpdateDefectMultiple: FC = () => {
   const base64Helper = new Base64Helper();
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
-  const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
-  const { mutateCreateDefect, mutateUpdateDefect } = useDefect();
-  const { partList, ngCauseList, processList, machineList, accountList } = useAtomStore();
-  const [initialValues, setInitialValues] = useState<TCreateUpdateDefect>({
-    defects_log_id: data?.defects_log_id || "",
-    datetime: data?.datetime || "",
-    date: data?.date ?? renderFormattedPayloadDate(new Date()) ?? "",
-    time_slot: data?.time_slot || GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
-    process_id: data?.process_id || "",
-    part_id: data?.part_id || "",
-    case_id: data?.case_id || "",
-    ng_quantity: data?.ng_quantity || null,
-    defects_type: data?.defects_type || "S",
+  const [initialValues, setInitialValues] = useState<TCreateUpdateDefectMultiple>({
+    defects_log_id: "",
+    datetime: "",
+    date: renderFormattedPayloadDate(new Date()) ?? "",
+    time_slot: GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
+    defects_type: "S",
+    process_id: "",
+    part_id: "",
+    defects: [],
 
     // Optional
-    machine_id: data?.machine_id || "",
-    operator_id: data?.operator_id || "",
-    production_quantity: data?.production_quantity || null,
-    rework_quantity: data?.rework_quantity || null,
-    scrap_quantity: data?.scrap_quantity || null,
-    claim_supplier_quantity: data?.claim_supplier_quantity || null,
-    scrap_approval_sheet_no: data?.scrap_approval_sheet_no || "",
-    car_no: data?.car_no || "",
-    image: data?.image || "",
-    solve_problem: data?.solve_problem || "",
-    remarks: data?.remarks || "",
+    machine_id: "",
+    operator_id: "",
+    production_quantity: null,
+    rework_quantity: null,
+    scrap_quantity: null,
+    claim_supplier_quantity: null,
+    scrap_approval_sheet_no: "",
+    car_no: "",
+    image: "",
+    solve_problem: "",
+    remarks: "",
   });
-  const [isDeleteImage, setIsDeleteImage] = useState<boolean>(false);
-  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
-  const resetRef = useRef<HTMLButtonElement>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const { partList, processList, machineList, accountList, ngCauseList } = useAtomStore();
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [],
@@ -82,88 +72,102 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
       setAcceptedFiles(files); // Update acceptedFiles state
     },
   });
-  // Helper function to reset the form values
-  const resetFormValues = () => {
-    setInitialValues({
-      defects_log_id: "",
-      datetime: "",
-      date: renderFormattedPayloadDate(new Date()) ?? "",
-      time_slot: GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
-      defects_type: "S",
-      process_id: "",
-      part_id: "",
+
+  const getCauseDetail = (causeId: string) => {
+    return ngCauseList?.find((cause) => cause?.case_id === causeId);
+  };
+
+  const [caseMultipleValues, setCaseMultipleValues] = useState<TCreateUpdateDefectMultiple["defects"]>([
+    {
       case_id: "",
       ng_quantity: null,
+    },
+  ]);
 
-      // Optional
-      machine_id: "",
-      operator_id: "",
-      production_quantity: null,
-      rework_quantity: null,
-      scrap_quantity: null,
-      claim_supplier_quantity: null,
-      scrap_approval_sheet_no: "",
-      car_no: "",
-      image: "",
-      solve_problem: "",
-      remarks: "",
-    });
-  };
-  // Define the submit handler
-  const handleSubmit = async (values: TCreateUpdateDefect, { setSubmitting }: any) => {
+  const { mutateCreateDefectMultiple } = useDefect();
+
+  const handleSubmit = async (values: TCreateUpdateDefectMultiple) => {
     try {
-      setSubmitting(true);
       const dateTime = GET_TIME_SLOTS(values?.date).find((slot) => slot.value == values?.time_slot)?.date_time;
-      const payloadImage =
-        !isDeleteImage && initialValues?.image ? initialValues?.image : isDeleteImage ? "DELETE" : null;
+      const payloadImage = initialValues?.image;
       const payload = {
         ...values,
         datetime: dateTime ?? "",
         image: payloadImage,
+        defects: caseMultipleValues,
       };
-      const res = data?.defects_log_id ? await mutateUpdateDefect(payload) : await mutateCreateDefect(payload);
+      const res = await mutateCreateDefectMultiple(payload);
       if (res.status == "success") {
-        onClose?.();
-        resetFormValues();
-        if (resetRef.current) {
-          resetRef.current.click();
-        }
+        setInitialValues({
+          defects_log_id: "",
+          datetime: "",
+          date: renderFormattedPayloadDate(new Date()) ?? "",
+          time_slot: GET_NOW_TIME_SLOT(renderFormattedPayloadDate(new Date()) ?? "").value,
+          defects_type: "S",
+          process_id: "",
+          part_id: "",
+          defects: [],
+
+          // Optional
+          machine_id: "",
+          operator_id: "",
+          production_quantity: null,
+          rework_quantity: null,
+          scrap_quantity: null,
+          claim_supplier_quantity: null,
+          scrap_approval_sheet_no: "",
+          car_no: "",
+          image: "",
+          solve_problem: "",
+          remarks: "",
+        });
+        setCaseMultipleValues([
+          {
+            case_id: "",
+            ng_quantity: null,
+          },
+        ]);
       }
     } finally {
-      setSubmitting(false);
     }
   };
 
-  useEffect(() => {
-    setInitialValues((prevValues) => ({
-      ...prevValues,
-      ...data,
-      image: null,
-    }));
-  }, [data]);
-
   return (
-    <div className={cn("relative flex w-full flex-col gap-2", className)}>
-      {isTitleVisible && (
-        <PageHeader
-          title="บันทึกข้อมูล NG"
-          description={
-            <div className="flex flex-col gap-1 text-sm">
-              <p>โปรดกรอกข้อมูลให้ครบถ้วน</p>
-            </div>
+    <div className={cn("relative flex w-full flex-col gap-2")}>
+      <PageHeader
+        title="บันทึกข้อมูลแบบหลายสาเหตุ"
+        description={
+          <div className="flex flex-col gap-1 text-sm">
+            <p className="text-muted-foreground">ใช้สำหรับบันทึกข้อมูลการเกิด NG ที่มีสาเหตุมากกว่า 1 สาเหตุ</p>
+          </div>
+        }
+      />
+      <Formik
+        enableReinitialize
+        id="defect-form-multiple"
+        onSubmit={(values) => {
+          const changes: {
+            [key in keyof TCreateUpdateDefectMultiple]?: any;
+          } = {};
+          Object.keys(values).forEach((key) => {
+            if (
+              values[key as keyof TCreateUpdateDefectMultiple] !==
+              initialValues[key as keyof TCreateUpdateDefectMultiple]
+            ) {
+              changes[key as keyof TCreateUpdateDefectMultiple] =
+                values[key as keyof TCreateUpdateDefectMultiple] ?? {};
+            }
+          });
+          if (Object.keys(changes).length > 0) {
+            handleSubmit(values);
           }
-        />
-      )}
-      <FormField
-        id="defect-form"
-        onSubmit={handleSubmit}
+        }}
         initialValues={initialValues}
-        validationSchema={validationDefectSchema}
+        validationSchema={validationDefectMultipleSchema}
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => {
-          console.log("errors", errors);
           return (
-            <div className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <DateInputForm
                 label="วันที่ / Date"
                 name="date"
@@ -193,20 +197,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                   label: process?.process_name,
                   value: process?.process_id,
                 }))}
-                onChange={(value) => {
-                  handleChange({
-                    target: {
-                      name: "process_id",
-                      value,
-                    },
-                  });
-                  handleChange({
-                    target: {
-                      name: "part_id",
-                      value: "",
-                    },
-                  });
-                }}
+                onChange={handleChange}
                 onBlur={handleBlur}
                 value={values?.process_id ?? ""}
                 error={errors.process_id}
@@ -275,56 +266,24 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 error={errors.production_quantity}
                 labelOptional="(Optional)"
               />
-              <InputForm
-                label="จำนวน NG / NG Q'ty"
-                name="ng_quantity"
-                placeholder="โปรดระบุจำนวน NG"
-                type="number"
-                inputMode="numeric"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values?.ng_quantity ?? ""}
-                error={errors.ng_quantity}
-                required
-              />
-              <div>
-                <ComboBoxResponsive
-                  label="สาเหตุ / Cause"
-                  options={ngCauseList
-                    ?.filter((ng) => {
-                      if (values?.part_id) {
-                        return ng?.processes?.includes(values?.process_id);
-                      }
-                      return ng;
-                    })
-                    ?.map((ng) => ({
-                      label: ng.case_name,
-                      value: ng.case_id,
-                    }))}
-                  value={values?.case_id ?? ""}
-                  onChange={(value) => {
-                    handleChange({
-                      target: {
-                        name: "case_id",
-                        value,
-                      },
-                    });
-                  }}
-                  error={errors?.case_id}
-                  labelFilter="ค้นหาสาเหตุ / Search Cause"
-                  emptyLabel="เลือกสาเหตุ"
-                  required
-                />
-                <Button
-                  variant="link"
-                  className="text-sm text-blue-500"
-                  type="button"
-                  onClick={() => setIsOpenAddCause(true)}
-                >
-                  เพิ่ม Cause / Add Cause
-                </Button>
-              </div>
+              {/*//! Select multiple case */}
+              <Button variant="outline" type="button" className="w-full" onClick={() => setIsSheetOpen(true)}>
+                เลือกสาเหตุ / Select Defect
+              </Button>
+              {errors?.defects && (
+                <p className="text-sm text-red-500">Please select at least one defect / โปรดเลือกอย่างน้อย 1 สาเหตุ</p>
+              )}
 
+              {caseMultipleValues.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold">รายการสาเหตุ / Defect List</p>
+                  {caseMultipleValues.map((caseValue, index) => (
+                    <p key={index} className="text-sm text-muted-foreground">
+                      {getCauseDetail(caseValue?.case_id)?.case_name} - {caseValue?.ng_quantity} ชิ้น
+                    </p>
+                  ))}
+                </div>
+              )}
               <Collapsible>
                 <CollapsibleTrigger>
                   <div className="flex items-center gap-2">
@@ -466,21 +425,6 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                       <label htmlFor="file" className="text-sm font-semibold">
                         รูปภาพ / Image <span className="text-xs text-gray-400">(Optional)</span>
                       </label>
-                      {data?.image && (
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="delete_image"
-                            checked={isDeleteImage}
-                            onCheckedChange={(checked) => {
-                              const isChecked = checked == true;
-                              setIsDeleteImage(isChecked);
-                            }}
-                          />
-                          <label htmlFor="delete_image" className="text-sm text-red-500">
-                            ลบรูปภาพที่มีอยู่ / Remove Image
-                          </label>
-                        </div>
-                      )}
                       <div {...getRootProps()} className="flex flex-col gap-2">
                         <input {...getInputProps()} />
                         <div className="flex gap-2">
@@ -492,7 +436,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                           ))}
                         </div>
                         <Button variant="secondary" type="button">
-                          {data && data.image ? "เปลี่ยนรูปภาพ / Change Image" : "เลือกรูปภาพ / Choose Image"}
+                          เลือกรูปภาพ / Choose Image
                         </Button>
                         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
                       </div>
@@ -522,7 +466,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 </CollapsibleContent>
               </Collapsible>
               <div className="flex w-full gap-2">
-                <Button className="w-full" type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                <Button className="w-full" type="submit" disabled={isSubmitting}>
                   บันทึก / Save
                 </Button>
                 <Button
@@ -531,17 +475,21 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                   type="reset"
                   onClick={() => {
                     handleReset();
-                    resetFormValues();
+                    setCaseMultipleValues([
+                      {
+                        case_id: "",
+                        ng_quantity: null,
+                      },
+                    ]);
                   }}
-                  ref={resetRef}
                 >
                   ล้างข้อมูล / Reset
                 </Button>
               </div>
-            </div>
+            </form>
           );
         }}
-      </FormField>
+      </Formik>
       <Dialog open={isOpenAddPart} onOpenChange={() => setIsOpenAddPart(false)}>
         <DialogContent>
           <DialogHeader>
@@ -551,15 +499,30 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
           <CreateUpdatePart onClose={() => setIsOpenAddPart(false)} />
         </DialogContent>
       </Dialog>
-      <Dialog open={isOpenAddCause} onOpenChange={() => setIsOpenAddCause(false)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>เพิ่ม Cause / Add Cause</DialogTitle>
-            <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
-          </DialogHeader>
-          <CreateUpdateCause onClose={() => setIsOpenAddCause(false)} />
-        </DialogContent>
-      </Dialog>
+      <Sheet open={isSheetOpen} onOpenChange={() => setIsSheetOpen(false)}>
+        <SheetContent side="right" style={{ minWidth: "100vw", overflow: "auto" }}>
+          <SheetHeader>
+            <SheetTitle>เลือกสาเหตุ / Select Defect</SheetTitle>
+            <SheetDescription>โปรดเลือกสาเหตุที่เกิดขึ้น / Please select the defect that occurred</SheetDescription>
+          </SheetHeader>
+          <div className="">
+            <CaseMultipleForm
+              processId={""}
+              onSubmit={(value) => {
+                setCaseMultipleValues(value?.defects);
+                setInitialValues((prevValues) => ({
+                  ...prevValues,
+                  defects: value?.defects,
+                }));
+                setIsSheetOpen(false);
+              }}
+              values={{
+                defects: caseMultipleValues,
+              }}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

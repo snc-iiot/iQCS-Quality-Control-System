@@ -12,8 +12,9 @@ export class NGCauseService extends APIService {
   public getNGCauses = async (): Promise<TNGCause[]> => {
     try {
       const { data } = await this.get<TResponse<TNGCause[]>>(`/ng-cases`);
-      this.store.setNgCauseList(data?.data ?? []);
-      return data?.data ?? [];
+      const uniqueData = data?.data.filter((v, i, a) => a.findIndex((t) => t?.case_id === v?.case_id) === i);
+      this.store.setNgCauseList(uniqueData ?? []);
+      return uniqueData
     } catch (error) {
       console.error(error);
       return [];

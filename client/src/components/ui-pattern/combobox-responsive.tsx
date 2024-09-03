@@ -61,7 +61,7 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
               </svg>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-max p-0" align="start">
+          <PopoverContent aria-describedby={undefined} className="w-max p-0" align="start">
             <OptionList
               options={optionWithOutDuplicate}
               selectedOption={value}
@@ -100,7 +100,7 @@ export const ComboBoxResponsive: FC<ComboBoxResponsiveProps> = ({
             </svg>
           </Button>
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent aria-describedby={undefined}>
           <div className="mt-4 border-t">
             <OptionList
               options={optionWithOutDuplicate}
@@ -128,7 +128,7 @@ const OptionList: FC<{
   return (
     <Command>
       <CommandInput placeholder={label} />
-      <CommandList>
+      <CommandList aria-describedby={undefined}>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {options.map((option) => (

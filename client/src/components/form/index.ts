@@ -8,3 +8,5 @@ export * from "./create-update-account";
 export * from "./create-update-machine";
 export * from "./create-update-price-ratio";
 export * from './create-update-price-part'
+export * from './create-update-defect-multiple'
+export * from './case-multiple-form'

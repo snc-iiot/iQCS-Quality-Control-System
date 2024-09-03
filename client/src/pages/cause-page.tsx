@@ -59,7 +59,9 @@ export const CausePage: FC = () => {
     []
   );
 
-  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
+  const ActionWithAuth = WithAdminHOC(() => (
+    <AlertDialogTrigger className="text-red-500 hover:underline">Delete</AlertDialogTrigger>
+  ));
 
   const ngCauseMapped = useMemo(() => {
     return ngCauseList
@@ -91,9 +93,7 @@ export const CausePage: FC = () => {
               Edit
             </button>
             <AlertDialog>
-              <AlertDialogTrigger>
-                <ActionWithAuth />
-              </AlertDialogTrigger>
+              <ActionWithAuth />
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>คุณต้องการลบข้อมูลนี้ใช่หรือไม่ / Are you sure</AlertDialogTitle>

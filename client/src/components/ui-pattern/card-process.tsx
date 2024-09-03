@@ -16,7 +16,7 @@ export const CardProcess: FC<ICardProcessProps> = ({ title, value, percentage, i
   return (
     <Card
       x-chunk="dashboard-01-chunk-0"
-      className={cn(isActive && "bg-muted", "cursor-pointer")}
+      className={cn(isActive && "bg-muted", "cursor-pointer, min-h-max")}
       onClick={() => {
         onClick && onClick(title);
       }}

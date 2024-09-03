@@ -17,4 +17,11 @@ export type TPartSummary = {
   part_code: string;
   part_name: string;
   ng_quantity: number;
+  details: [
+    {
+      case_id: string;
+      case_name: string;
+      ng_quantity: number;
+    }
+  ]
 };

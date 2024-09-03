@@ -5,7 +5,7 @@ import {
   GET_RAW_DEFECTS,
   GET_TOP_DEFECTS,
 } from "@/lib/constants";
-import { TCreateUpdateDefect, TDefect, TDefectSummary, TGraphSummary, TPartSummary, TTopDefect } from "@/types";
+import { TCreateUpdateDefect, TCreateUpdateDefectMultiple, TDefect, TDefectSummary, TGraphSummary, TPartSummary, TTopDefect } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { DefectService } from "../defect.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
@@ -20,12 +20,20 @@ export const useDefect = () => {
     getSummaryDefectsByDateGraph,
     getTopDefects,
     getSummaryDefectsByPartGraph,
+    createDefectMultiple
   } = new DefectService();
   const { mutateAsync: mutateCreateDefect } = useMutationWithToast(
     async (data: TCreateUpdateDefect) => await createDefect(data),
     "Defect created successfully",
     [GET_RAW_DEFECTS]
   );
+
+  const { mutateAsync: mutateCreateDefectMultiple } = useMutationWithToast(
+    async (data: TCreateUpdateDefectMultiple) => await createDefectMultiple(data),
+    "Defect created successfully",
+    [GET_RAW_DEFECTS]
+  );
+  
 
   const { mutateAsync: mutateUpdateDefect } = useMutationWithToast(
     async (data: TCreateUpdateDefect) => await updateDefect(data),
@@ -85,5 +93,6 @@ export const useDefect = () => {
     useGetSummaryDefectsByDateGraph,
     useGetTopDefects,
     useGetSummaryDefectsByPartGraph,
+    mutateCreateDefectMultiple
   };
 };
