@@ -899,16 +899,18 @@ export class DefectService {
           ];
         }
 
-        return acc.map((item) => {
-          if (item.part_id === cur.part_id && item.shift === cur.shift) {
-            return {
-              ...item,
-              ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
-            };
-          }
+        return acc.map(
+          (item: { part_id: string; shift: string; ng_quantity: number }) => {
+            if (item.part_id === cur.part_id && item.shift === cur.shift) {
+              return {
+                ...item,
+                ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
+              };
+            }
 
-          return item;
-        });
+            return item;
+          },
+        );
       }, []);
 
       // Sum details
@@ -926,7 +928,7 @@ export class DefectService {
             ];
           }
 
-          return acc.map((item) => {
+          return acc.map((item: { case_id: string; ng_quantity: number }) => {
             if (item.case_id === cur.case_id) {
               return {
                 ...item,
