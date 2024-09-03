@@ -21,6 +21,7 @@ import {
   FindByDateRangeDto,
   FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
+  CreateDefectsMoreNgCasesDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
 
@@ -35,6 +36,16 @@ export class DefectController {
     @Res() res: Response,
   ) {
     const result = await this.defectService.create(body, req.decoded);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Post('more-defects')
+  async createMoreNgCase(
+    @Body() body: CreateDefectsMoreNgCasesDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.createMoreNgCase(body, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 

@@ -8,3 +8,4 @@ export * from './find-top-rank.dto';
 export * from './find-by-process-date-range.dto';
 export * from './find-by-date-range.dto';
 export * from './find-top-rank-date-range.dto';
+export * from './create-defects-more-ng-cases.dto';

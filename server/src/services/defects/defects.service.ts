@@ -15,6 +15,7 @@ import {
   FindByDateRangeDto,
   FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
+  CreateDefectsMoreNgCasesDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
 import { FtpUploadFileFromBase64 } from 'src/common/utils';
@@ -118,24 +119,109 @@ export class DefectService {
     }
   }
 
+  async createMoreNgCase(
+    input: CreateDefectsMoreNgCasesDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    // return {
+    //   status: 'success',
+    //   statusCode: 200,
+    //   message: 'Demo',
+    //   data: [{ input, decoded }],
+    // };
+    try {
+      const checkPartExists = await this.partRepository.findOne({
+        where: { part_id: input.part_id, plant_code: decoded.plant_code },
+      });
+
+      if (!checkPartExists)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Part not found',
+          data: [],
+        };
+
+      let isUploaded = false;
+      const filename = `${this.randomString(20)}_${Date.now()}.png`;
+      // /*
+      if (input.image !== '' && input.image !== null) {
+        const remotePath = `/CoDE_Data/toolbox/docs/v1/${filename}`;
+        isUploaded =
+          ((await FtpUploadFileFromBase64(
+            // input.image,
+            input.image.replace(/^data:image\/\w+;base64,/, ''),
+            remotePath,
+          )) as boolean) ?? false;
+        // console.log('isUploaded', isUploaded);
+        // https://sncservices.sncformer.com/data/toolbox/docs/v1/test.png
+        // if (isUploaded)
+        //   record.image = `https://sncservices.sncformer.com/data/toolbox/docs/v1/${filename}`;
+      }
+      // */
+
+      const records = input.defects.map((item) => ({
+        datetime: input.datetime,
+        defects_type: input.defects_type,
+        process_id: input.process_id,
+        part_id: input.part_id,
+        case_id: item.case_id,
+        ng_quantity: item.ng_quantity,
+        //! Not required
+        machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
+        operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
+        production_quantity: input.production_quantity ?? 0,
+        rework_quantity: input.rework_quantity ?? 0,
+        scrap_quantity: input.scrap_quantity ?? 0,
+        claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
+        scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
+        car_no: input.car_no ?? '',
+        image: !isUploaded
+          ? null
+          : `https://sncservices.sncformer.com/data/toolbox/docs/v1/${filename}`,
+        solve_problem: input.solve_problem ?? '',
+        remarks: input.remarks ?? '',
+        creator_id: decoded.user_id,
+        plant_code: decoded.plant_code,
+      }));
+
+      const created = await this.defectsLoggingRepository.save(records);
+
+      return {
+        status: 'success',
+        statusCode: 201,
+        message: 'Defects created successfully',
+        data: [created],
+        // data: [input],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
   async findRawDataByDatetimeRange(
     input: FindByDatetimeRangeDto,
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      // const cacheKey = `/toolbox/v1/defects-logging/raw-data-by-datetime-range_${input.start_datetime}_${input.end_datetime}`;
-      // // console.log(cacheKey);
-      // const cacheTTL = 5 * 1000; // 5 seconds
-      // const cacheValue = await this.cacheManager.get(cacheKey);
-      // if (cacheValue !== undefined) {
-      //   return {
-      //     status: 'success',
-      //     statusCode: 200,
-      //     message: 'Data (Cache)',
-      //     data: cacheValue as any[],
-      //   };
-      // }
+      const cacheKey = `/iqcs/dev/v1/defects-logging/raw-data-by-datetime-range_${input.start_datetime}_${input.end_datetime}_${decoded.plant_code}`;
+      // console.log(cacheKey);
+      const cacheTTL = 5 * 1000; // 5 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
       // //! ./Check Cache
 
       // const datetime = new Date(input.datetime);
@@ -168,9 +254,9 @@ export class DefectService {
       //   scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
       // }));
 
-      // //! Check Cache
-      // await this.cacheManager.set(cacheKey, data, cacheTTL);
-      // //! ./Check Cache
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, results, cacheTTL);
+      //! ./Check Cache
 
       return {
         status: 'success',
@@ -385,20 +471,20 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      // //! Check Cache
-      // const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date_${input.date}`;
-      // // console.log(cacheKey);
-      // const cacheTTL = 30 * 1000; // 30 seconds
-      // const cacheValue = await this.cacheManager.get(cacheKey);
-      // if (cacheValue !== undefined) {
-      //   return {
-      //     status: 'success',
-      //     statusCode: 200,
-      //     message: 'Data (Cache)',
-      //     data: cacheValue as any[],
-      //   };
-      // }
-      // //! ./Check Cache
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date_${input.date}_${decoded.plant_code}`;
+      // console.log(cacheKey);
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
 
       const startDatetime = new Date(`${input.date}T01:00:00Z`);
       const endDatetime = new Date(`${input.date}T01:00:00Z`);
@@ -508,9 +594,9 @@ export class DefectService {
         }
       }
 
-      // //! Check Cache
-      // await this.cacheManager.set(cacheKey, data, cacheTTL);
-      // //! ./Check Cache
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, data, cacheTTL);
+      //! ./Check Cache
 
       return {
         status: 'success',
@@ -537,20 +623,20 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      // //! Check Cache
-      // const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}`;
-      // // console.log(cacheKey);
-      // const cacheTTL = 30 * 1000; // 30 seconds
-      // const cacheValue = await this.cacheManager.get(cacheKey);
-      // if (cacheValue !== undefined) {
-      //   return {
-      //     status: 'success',
-      //     statusCode: 200,
-      //     message: 'Data (Cache)',
-      //     data: cacheValue as any[],
-      //   };
-      // }
-      // //! ./Check Cache
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}_${decoded.plant_code}`;
+      // console.log(cacheKey);
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
 
       const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
       const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
@@ -691,9 +777,9 @@ export class DefectService {
         if (timestamp.getTime() >= endDatetime.getTime()) break;
       }
 
-      // //! Check Cache
-      // await this.cacheManager.set(cacheKey, data, cacheTTL);
-      // //! ./Check Cache
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, data, cacheTTL);
+      //! ./Check Cache
 
       return {
         status: 'success',
@@ -719,20 +805,20 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      // //! Check Cache
-      // const cacheKey = `/toolbox/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}`;
-      // // console.log(cacheKey);
-      // const cacheTTL = 30 * 1000; // 30 seconds
-      // const cacheValue = await this.cacheManager.get(cacheKey);
-      // if (cacheValue !== undefined) {
-      //   return {
-      //     status: 'success',
-      //     statusCode: 200,
-      //     message: 'Data (Cache)',
-      //     data: cacheValue as any[],
-      //   };
-      // }
-      // //! ./Check Cache
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-part-by-date-range_${input.start_date}_${input.end_date}_${decoded.plant_code}`;
+      // console.log(cacheKey);
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
 
       const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
       const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
@@ -765,14 +851,22 @@ export class DefectService {
           end_datetime: endDatetime,
         })
         // .leftJoin('tb_processes', 't2', 't1.process_id = t2.process_id')
-        .leftJoin('tb_part_material', 't3', 't1.part_id = t3.part_id')
+        .leftJoin('tb_part_material', 't2', 't1.part_id = t2.part_id')
+        .leftJoin('tb_ng_cases', 't3', 't1.case_id = t3.case_id')
         .select(
-          `t1.process_id,t1.part_id,t3.part_code,t3.part_name
+          `t1.process_id,t1.part_id,t2.part_code,t2.part_name
           --,to_char(t1.datetime, 'YYYY-MM-DD') as date
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,sum(t1.ng_quantity) as ng_quantity`,
+          ,sum(t1.ng_quantity) as ng_quantity
+          ,array_agg(
+            jsonb_build_object(
+                      'case_id', t1.case_id,
+                      'case_name', t3.case_name,
+                'ng_quantity', t1.ng_quantity
+              )
+          ) as details`,
         )
-        .groupBy('t1.process_id,t1.part_id,t3.part_code,t3.part_name,shift')
+        .groupBy('t1.process_id,t1.part_id,t2.part_code,t2.part_name,shift')
         // .orderBy('date', 'ASC')
         .orderBy('shift', 'ASC')
         .getRawMany();
@@ -800,6 +894,7 @@ export class DefectService {
               part_name: cur.part_name,
               // process_name: cur.process_name,
               ng_quantity: Number(cur.ng_quantity),
+              details: cur.details,
             },
           ];
         }
@@ -816,6 +911,39 @@ export class DefectService {
         });
       }, []);
 
+      // Sum details
+      const summaryDetails = summary.map((item) => {
+        const details = item.details.reduce((acc, cur) => {
+          const allCase = acc.map((item) => item.case_id);
+          if (!allCase.includes(cur.case_id)) {
+            return [
+              ...acc,
+              {
+                case_id: cur.case_id,
+                case_name: cur.case_name,
+                ng_quantity: cur.ng_quantity,
+              },
+            ];
+          }
+
+          return acc.map((item) => {
+            if (item.case_id === cur.case_id) {
+              return {
+                ...item,
+                ng_quantity: item.ng_quantity + cur.ng_quantity,
+              };
+            }
+
+            return item;
+          });
+        }, []);
+
+        return {
+          ...item,
+          details: details,
+        };
+      });
+
       // return {
       //   status: 'success',
       //   statusCode: 200,
@@ -823,9 +951,9 @@ export class DefectService {
       //   data: summary,
       // };
 
-      // //! Check Cache
-      // await this.cacheManager.set(cacheKey, data, cacheTTL);
-      // //! ./Check Cache
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, summaryDetails, cacheTTL);
+      //! ./Check Cache
 
       return {
         status: 'success',
@@ -833,7 +961,8 @@ export class DefectService {
         message: 'Defects graph summary by date',
         // data: [startAt, endAt],
         // data: data,
-        data: summary,
+        // data: summary,
+        data: summaryDetails,
         // data: [input],
       };
     } catch (error) {
