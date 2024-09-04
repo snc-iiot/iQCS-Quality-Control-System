@@ -1022,6 +1022,8 @@ export class DefectService {
       // Sum details
       const summaryDetails = summary.map(
         (item: {
+          production_quantity: number;
+          ng_quantity: number;
           details: {
             case_id: string;
             case_name: string;
@@ -1057,6 +1059,9 @@ export class DefectService {
 
           return {
             ...item,
+            defects_percentage:
+              ((item.production_quantity - item.ng_quantity) * 100) /
+              item.production_quantity,
             details: details,
           };
         },
