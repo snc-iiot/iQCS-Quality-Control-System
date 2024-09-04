@@ -1102,6 +1102,217 @@ export class DefectService {
     }
   }
 
+  async graphSummaryPartDefectsAllPlantByDateRange(
+    input: FindByProcessDateRangeDto,
+  ): Promise<TServiceResponse> {
+    try {
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-part-all-plant-by-date-range_${input.start_date}_${input.end_date}_${input.defects_type}`;
+      // console.log(cacheKey);
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
+
+      const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
+      const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
+      endDatetime.setHours(endDatetime.getHours() + 23);
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo',
+      //   // data: [input],
+      //   data: [
+      //     {
+      //       start_datetime: startDatetime,
+      //       end_datetime: endDatetime,
+      //     },
+      //   ],
+      // };
+      // /*
+
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+          start_datetime: startDatetime,
+          end_datetime: endDatetime,
+        })
+        // .leftJoin('tb_processes', 't2', 't1.process_id = t2.process_id')
+        .leftJoin('tb_part_material', 't2', 't1.part_id = t2.part_id')
+        .leftJoin('tb_processes', 't3', 't1.process_id = t3.process_id')
+        .leftJoin('tb_ng_cases', 't4', 't1.case_id = t4.case_id')
+        .select(
+          `t1.plant_code,t1.process_id,t3.process_name,t3.process_description,t1.part_id,t2.part_code,t2.part_name
+          ,sum(t1.production_quantity) as production_quantity
+          ,sum(t1.ng_quantity) as ng_quantity
+          ,array_agg(
+            jsonb_build_object(
+                'case_id', t1.case_id,
+                'case_name', t4.case_name,
+                'ng_quantity', t1.ng_quantity
+              )
+          ) as details`,
+        )
+        .groupBy(
+          't1.plant_code,t1.process_id,t3.process_name,t3.process_description,t1.part_id,t2.part_code,t2.part_name',
+        )
+        // .orderBy('date', 'ASC')
+        .orderBy('plant_code', 'ASC')
+        .orderBy('process_id', 'ASC')
+        .getRawMany();
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo2',
+      //   data: results,
+      //   // data: results.filter((item) => item.process === 'ASSEMBLY'),
+      // };
+
+      const summary = results.reduce((acc, cur) => {
+        const allProcessAndDate = acc.map(
+          (item) => `${item.part_id}_${item.plant_code}`,
+        );
+        if (!allProcessAndDate.includes(`${cur.part_id}_${cur.plant_code}`)) {
+          return [
+            ...acc,
+            {
+              // date: cur.date,
+              shift: cur.shift,
+              process_id: cur.process_id,
+              process_name: cur.process_name,
+              process_description: cur.process_description,
+              part_id: cur.part_id,
+              part_code: cur.part_code,
+              part_name: cur.part_name,
+              // process_name: cur.process_name,
+              production_quantity: Number(cur.production_quantity),
+              ng_quantity: Number(cur.ng_quantity),
+              details: cur.details,
+            },
+          ];
+        }
+
+        return acc.map(
+          (item: {
+            part_id: string;
+            production_quantity: number;
+            ng_quantity: number;
+          }) => {
+            if (item.part_id === cur.part_id) {
+              return {
+                ...item,
+                production_quantity:
+                  item.production_quantity + Number(cur.production_quantity),
+                ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
+              };
+            }
+
+            return item;
+          },
+        );
+      }, []);
+
+      // Sum details
+      const summaryDetails = summary.map(
+        (item: {
+          production_quantity: number;
+          ng_quantity: number;
+          details: {
+            case_id: string;
+            case_name: string;
+            ng_quantity: number;
+          }[];
+        }) => {
+          const details = item.details
+            .filter((x) => Boolean(x.case_id))
+            .reduce((acc, cur) => {
+              const allCase = acc.map(
+                (item: { case_id: string }) => item.case_id,
+              );
+              if (!allCase.includes(cur.case_id)) {
+                return [
+                  ...acc,
+                  {
+                    case_id: cur.case_id,
+                    case_name: cur.case_name,
+                    ng_quantity: Number(cur.ng_quantity),
+                  },
+                ];
+              }
+
+              return acc.map(
+                (item: { case_id: string; ng_quantity: number }) => {
+                  if (item.case_id === cur.case_id) {
+                    return {
+                      ...item,
+                      ng_quantity: item.ng_quantity + cur.ng_quantity,
+                    };
+                  }
+
+                  return item;
+                },
+              );
+            }, []);
+
+          return {
+            ...item,
+            defects_percentage:
+              ((item.production_quantity - item.ng_quantity) * 100) /
+              item.production_quantity,
+            details: details,
+          };
+        },
+      );
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo3',
+      //   data: summary,
+      // };
+
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, summaryDetails, cacheTTL);
+      //! ./Check Cache
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Defects graph summary part all plant by date range',
+        // data: [startAt, endAt],
+        // data: data,
+        // data: summary,
+        data: summaryDetails,
+        // data: [input],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
   async findTopRankByDate(
     input: FindTopRankDto,
     decoded: TJwtPayload,
