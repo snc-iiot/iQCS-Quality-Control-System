@@ -2,13 +2,13 @@ import { API_BASE_URL, calculateDateTime } from "@/helpers/common.helper";
 import { useAtomStore } from "@/store";
 import {
   TCreateUpdateDefect,
+  TCreateUpdateDefectMultiple,
   TDefect,
   TDefectSummary,
   TGraphSummary,
   TPartSummary,
   TResponse,
   TTopDefect,
-  TCreateUpdateDefectMultiple
 } from "@/types";
 import { AxiosError } from "axios";
 import { APIService } from "./api.service";

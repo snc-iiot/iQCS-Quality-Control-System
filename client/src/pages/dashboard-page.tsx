@@ -73,7 +73,11 @@ export const DashboardPage: FC = () => {
       const data = Object.keys(dataTimeSlot)?.map((key) => {
         return {
           ...dataTimeSlot[key]
-            ?.filter((item) => (process === "ALL" ? true : item?.process_name === process))
+            ?.filter((item) =>
+              process === "ALL"
+                ? true
+                : item?.process_name === processList?.find((info) => info?.process_id === process)?.process_name
+            )
             ?.reduce(
               (acc, curr) => {
                 return {
@@ -370,12 +374,13 @@ export const DashboardPage: FC = () => {
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
                 <BarChart accessibilityLayer data={defectData(processSelected)}>
                   <CartesianGrid vertical={true} />
+
                   <YAxis />
                   <XAxis dataKey="time_slot" tickLine={true} tickMargin={10} axisLine={false} />
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                   {processList?.map((process, i) => (
                     <Fragment key={i}>
-                      {(processSelected === "ALL" || processSelected === process?.process_name) && (
+                      {(processSelected === "ALL" || processSelected === process?.process_id) && (
                         <Bar
                           key={process?.process_name}
                           dataKey={process?.process_name}
@@ -455,6 +460,58 @@ export const DashboardPage: FC = () => {
             <div className={cn("w-full")}>
               <h1 className="text-sm font-semibold">
                 สาเหตุของงานเสียแยกตามชิ้นงาน / Causes of waste separated by work piece
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                รายการสาเหตุที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name} / List of
+                reasons for the work of each piece in the process{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
+              </p>
+            </div>
+            <SelectForm
+              className="w-full md:w-[14rem] lg:w-[14rem]"
+              options={partSummaryList?.map((part) => ({
+                label: part?.part_code,
+                value: part?.part_code,
+              }))}
+              placeholder="เลือกชิ้นงาน / Select part"
+              onChange={(e) => setPartSelected(e.target.value)}
+              value={partSelected}
+            />
+          </div>
+          <div className="flex h-0 flex-grow flex-col">
+            {getPartSummaryList(partSummaryList, partSelected)?.length === 0 ? (
+              <div className="flex w-full justify-center">
+                <p className="text-xs">
+                  {isLoadingSummaryDefectsByPartGraph
+                    ? "กำลังโหลดข้อมูล / Loading data"
+                    : partSelected
+                      ? "เลือกชิ้นงานที่ต้องการดู / Select the part you want to see"
+                      : "ไม่พบข้อมูล / No data found"}
+                </p>
+              </div>
+            ) : (
+              <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+                <BarChart accessibilityLayer data={getPartSummaryList(partSummaryList, partSelected)}>
+                  <CartesianGrid vertical={true} />
+                  <YAxis />
+                  <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
+                  <Bar
+                    dataKey={"ng_quantity"}
+                    fill={processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color}
+                  />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </div>
+        </div>
+        {/*//! Summary Defects By Part Chart */}
+        <div className="flex h-[25rem] flex-col gap-2 rounded-md border p-2">
+          <div className="flex flex-col justify-between gap-2 md:flex-row lg:flex-row">
+            <div className={cn("w-full")}>
+              <h1 className="text-sm font-semibold">
+                ปริมาณการผลิตและความบกพร่องของผลิตภัณฑ์ / Production volume and product defects
               </h1>
               <p className="text-xs text-muted-foreground">
                 รายการสาเหตุที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
