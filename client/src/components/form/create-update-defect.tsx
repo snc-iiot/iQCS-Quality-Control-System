@@ -272,7 +272,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 onBlur={handleBlur}
                 value={values?.production_quantity ?? ""}
                 error={errors.production_quantity}
-                labelOptional="(Optional)"
+                required
               />
               <InputForm
                 label="จำนวน NG / NG Q'ty"

@@ -166,13 +166,16 @@ export class DefectService extends APIService {
     }
   };
 
-  public getSummaryDefectsByDateGraph = async (start_date: string, end_date: string): Promise<TGraphSummary[]> => {
+  public getSummaryDefectsByDateGraph = async (
+    start_date: string,
+    end_date: string,
+    defects_type: "ALL" | "P" | "S"
+  ): Promise<TGraphSummary[]> => {
     try {
       console.log(start_date, end_date);
 
       const { data: res } = await this.get<TResponse<TGraphSummary[]>>(
-        // `/defects-logging/graph-summary-by-date?start_date=${start_date}&end_date=${end_date}`
-        `/defects-logging/graph-summary-by-date-range?start_date=${start_date}&end_date=${end_date}`
+        `/defects-logging/graph-summary-by-date-range?start_date=${start_date}&end_date=${end_date}&defects_type=${defects_type}`
       );
       this.store.setGraphSummaryList(res?.data || []);
       return res?.data || [];
@@ -192,11 +195,12 @@ export class DefectService extends APIService {
     end_date: string,
     process_id: string,
     shift: string,
-    ranking: number
+    ranking: number,
+    defects_type: "ALL" | "P" | "S"
   ): Promise<TTopDefect[]> => {
     try {
       const { data: res } = await this.get<TResponse<TTopDefect[]>>(
-        `/defects-logging/top-rank-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&shift=${shift}&ranking=${ranking}`
+        `/defects-logging/top-rank-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&shift=${shift}&ranking=${ranking}&defects_type=${defects_type}`
       );
       this.store.setTopDefectList(res?.data || []);
       return res?.data || [];
@@ -214,11 +218,12 @@ export class DefectService extends APIService {
   public getSummaryDefectsByPartGraph = async (
     start_date: string,
     end_date: string,
-    process_id: string
+    process_id: string,
+    defects_type: "ALL" | "P" | "S"
   ): Promise<TPartSummary[]> => {
     try {
       const { data: res } = await this.get<TResponse<TPartSummary[]>>(
-        `/defects-logging/graph-summary-part-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}`
+        `/defects-logging/graph-summary-part-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&defects_type=${defects_type}`
       );
       this.store.setPartSummaryList(res?.data || []);
       return res?.data || [];

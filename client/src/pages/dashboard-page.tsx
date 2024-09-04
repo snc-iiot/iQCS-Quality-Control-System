@@ -9,7 +9,7 @@ import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } 
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
-import { TGraphSummary, TPartSummary } from "@/types";
+import { TDefectsTypeReq, TGraphSummary, TPartSummary } from "@/types";
 import { FC, Fragment, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -21,7 +21,6 @@ export const DashboardPage: FC = () => {
   });
 
   const { useGetSummaryDefectsByDateGraph, useGetTopDefects, useGetSummaryDefectsByPartGraph } = useDefect();
-
   const { graphSummaryList, topDefectList, processList, partSummaryList } = useAtomStore();
   const [shiftSelected, setShiftSelected] = useState<string>("ALL");
   const { groupProcess, groupDate } = useDashboardHelper(
@@ -30,13 +29,11 @@ export const DashboardPage: FC = () => {
       ?.map((info) => ({ ...info, date: info?.datetime.slice(0, 10) }))
   );
 
-  console.log(topDefectList);
-
   const [processSelected, setProcessSelected] = useState<string>("ALL");
   const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
+  const [ngTypeSelected, setNgTypeSelected] = useState<TDefectsTypeReq>("ALL");
   const [ranking, setRanking] = useState<number>(10);
   const [partSelected, setPartSelected] = useState<string>("");
-
   const mapCardProcess = processList?.map((process) => {
     const data = groupProcess("process_name")[process?.process_name];
     const total = data?.reduce((acc, curr) => acc + curr?.ng_quantity, 0) ?? 0;
@@ -48,7 +45,6 @@ export const DashboardPage: FC = () => {
       raw_data: data,
     };
   });
-
   const getDateRange = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -63,7 +59,6 @@ export const DashboardPage: FC = () => {
 
     return dates;
   };
-
   const defectData = (process: string) => {
     const dataTimeSlot = groupProcess("time_slot");
     const dateRange = getDateRange(selected?.start_date, selected?.end_date);
@@ -127,20 +122,23 @@ export const DashboardPage: FC = () => {
 
   const { isFetching: isLoadingSummaryDefectsByDateGraph } = useGetSummaryDefectsByDateGraph(
     selected?.start_date,
-    selected?.type === "daily" ? selected?.start_date : selected?.end_date
+    selected?.type === "daily" ? selected?.start_date : selected?.end_date,
+    ngTypeSelected
   );
   const { isFetching: isLoadingTopDefects } = useGetTopDefects(
     selected?.start_date,
     selected?.type === "daily" ? selected?.start_date : selected?.end_date,
     processSelected,
     shiftSelected,
-    ranking
+    ranking,
+    ngTypeSelected
   );
   const { isFetching: isLoadingSummaryDefectsByPartGraph, refetch: refetchSummaryDefectsByPartGraph } =
     useGetSummaryDefectsByPartGraph(
       selected?.start_date,
       selected?.type === "daily" ? selected?.start_date : selected?.end_date,
-      processPartSelected
+      processPartSelected,
+      ngTypeSelected
     );
 
   const getPartSummaryList = (partSummaryList: TPartSummary[], partSelected: string) => {
@@ -166,6 +164,25 @@ export const DashboardPage: FC = () => {
       <div className="flex h-max w-full flex-col justify-between gap-2 md:flex-row lg:flex-row">
         <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
         <div className="flex w-full flex-col gap-2 md:w-min md:flex-row">
+          <SelectForm
+            options={[
+              {
+                label: "Part (Incoming)",
+                value: "P",
+              },
+              {
+                label: "Shop (Inprocess)",
+                value: "S",
+              },
+              {
+                label: "Part + Shop (All)",
+                value: "ALL",
+              },
+            ]}
+            value={ngTypeSelected}
+            onChange={(e) => setNgTypeSelected(e.target.value as "ALL" | "P" | "S")}
+            className="w-[10rem]"
+          />
           <SelectForm
             value={selected?.type}
             onChange={(e) => {
@@ -233,7 +250,6 @@ export const DashboardPage: FC = () => {
               type="week"
             />
           )}
-
           {(selected?.type === "daily" || selected?.type === "period" || selected?.type === "monthly") && (
             <Input
               className="block w-full md:w-[14rem] lg:w-[10rem]"
@@ -241,13 +257,11 @@ export const DashboardPage: FC = () => {
               onChange={(e) => {
                 const start_date = e.target.value + (selected?.type === "monthly" ? "-01" : "");
                 let end_date = selected?.end_date;
-
                 if (selected?.type === "monthly") {
                   const [year, month] = start_date.split("-");
                   const endOfMonth = new Date(Number(year), Number(month), 0);
                   end_date = `${year}-${month}-${endOfMonth.getDate()}`;
                 }
-
                 setSelected({
                   ...selected,
                   start_date,
@@ -257,7 +271,6 @@ export const DashboardPage: FC = () => {
               type={selected?.type === "monthly" ? "month" : "date"}
             />
           )}
-
           {selected?.type === "period" && (
             <Input
               className="block w-full md:w-[14rem] lg:w-[10rem]"

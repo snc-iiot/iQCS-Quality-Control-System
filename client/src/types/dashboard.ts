@@ -25,3 +25,5 @@ export type TPartSummary = {
   ng_quantity: number;
   details: TPartSummaryDetails[];
 };
+
+export type TDefectsTypeReq = "ALL" | "P" | "S";
