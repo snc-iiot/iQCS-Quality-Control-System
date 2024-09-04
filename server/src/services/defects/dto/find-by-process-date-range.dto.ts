@@ -5,6 +5,11 @@ export class FindByProcessDateRangeDto {
   @IsNotEmpty()
   process_id: string;
 
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
+
   @IsString()
   @IsNotEmpty()
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {

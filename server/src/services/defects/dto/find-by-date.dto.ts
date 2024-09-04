@@ -10,4 +10,9 @@ export class FindByDateDto {
     message: 'date must be in the format yyyy-mm-dd',
   })
   date: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
 }

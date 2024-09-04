@@ -14,4 +14,9 @@ export class FindByDateRangeDto {
     message: 'date must be in the format yyyy-mm-dd',
   })
   end_date: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
 }

@@ -3,7 +3,7 @@ import {
   IsString,
   Matches,
   IsIn,
-  Min,
+  // Min,
   IsNumberString,
 } from 'class-validator';
 
@@ -21,6 +21,11 @@ export class FindTopRankDto {
   @IsString()
   @IsNotEmpty()
   process_id: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
 
   @IsString()
   @IsNotEmpty()

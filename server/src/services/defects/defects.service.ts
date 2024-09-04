@@ -312,10 +312,19 @@ export class DefectService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -404,10 +413,20 @@ export class DefectService {
       //   ],
       // };
       // /*
+
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -536,10 +555,20 @@ export class DefectService {
       //   ],
       // };
       // /*
+
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -690,10 +719,19 @@ export class DefectService {
       // };
       // /*
 
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -873,10 +911,19 @@ export class DefectService {
       // };
       // /*
 
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id = :process_id', {
@@ -893,6 +940,7 @@ export class DefectService {
           `t1.process_id,t1.part_id,t2.part_code,t2.part_name
           --,to_char(t1.datetime, 'YYYY-MM-DD') as date
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
+          ,sum(t1.production_quantity) as production_quantity
           ,sum(t1.ng_quantity) as ng_quantity
           ,array_agg(
             jsonb_build_object(
@@ -911,7 +959,8 @@ export class DefectService {
       //   status: 'success',
       //   statusCode: 200,
       //   message: 'Demo2',
-      //   data: results.filter((item) => item.process === 'ASSEMBLY'),
+      //   data: results,
+      //   // data: results.filter((item) => item.process === 'ASSEMBLY'),
       // };
 
       const summary = results.reduce((acc, cur) => {
@@ -929,6 +978,7 @@ export class DefectService {
               part_code: cur.part_code,
               part_name: cur.part_name,
               // process_name: cur.process_name,
+              production_quantity: Number(cur.production_quantity),
               ng_quantity: Number(cur.ng_quantity),
               details: cur.details,
             },
@@ -936,10 +986,17 @@ export class DefectService {
         }
 
         return acc.map(
-          (item: { part_id: string; shift: string; ng_quantity: number }) => {
+          (item: {
+            part_id: string;
+            shift: string;
+            production_quantity: number;
+            ng_quantity: number;
+          }) => {
             if (item.part_id === cur.part_id && item.shift === cur.shift) {
               return {
                 ...item,
+                production_quantity:
+                  item.production_quantity + Number(cur.production_quantity),
                 ng_quantity: item.ng_quantity + Number(cur.ng_quantity),
               };
             }
@@ -996,7 +1053,7 @@ export class DefectService {
       return {
         status: 'success',
         statusCode: 200,
-        message: 'Defects graph summary by date',
+        message: 'Defects graph summary part by date range',
         // data: [startAt, endAt],
         // data: data,
         // data: summary,
@@ -1044,10 +1101,19 @@ export class DefectService {
           ? allProcesses.map((item) => item.process_id)
           : [input.process_id];
 
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id in (:...processes)', {
@@ -1123,10 +1189,19 @@ export class DefectService {
             ? allShiftNight
             : [...allShiftDay, ...allShiftNight];
 
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
         })
         .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id in (:...process)', { process: filterProcess })
