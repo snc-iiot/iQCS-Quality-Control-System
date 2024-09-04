@@ -524,7 +524,7 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date_${input.date}_${decoded.plant_code}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date_${input.date}_${input.defects_type}_${decoded.plant_code}`;
       // console.log(cacheKey);
       const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
@@ -687,7 +687,7 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}_${decoded.plant_code}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-by-date-range_${input.start_date}_${input.end_date}_${input.defects_type}_${decoded.plant_code}`;
       // console.log(cacheKey);
       const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
@@ -879,7 +879,7 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-part-by-date-range_${input.start_date}_${input.end_date}_${input.process_id}_${decoded.plant_code}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-part-by-date-range_${input.start_date}_${input.end_date}_${input.process_id}_${input.defects_type}_${decoded.plant_code}`;
       // console.log(cacheKey);
       const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
@@ -911,15 +911,15 @@ export class DefectService {
       // };
       // /*
 
-      const allProcesses = await this.processRepository.find({
-        where: { plant_code: decoded.plant_code },
-        select: ['process_id', 'process_name'],
-      });
+      // const allProcesses = await this.processRepository.find({
+      //   where: { plant_code: decoded.plant_code },
+      //   select: ['process_id', 'process_name'],
+      // });
 
-      const filterProcess =
-        input.process_id === 'ALL'
-          ? allProcesses.map((item) => item.process_id)
-          : [input.process_id];
+      // const filterProcess =
+      //   input.process_id === 'ALL'
+      //     ? allProcesses.map((item) => item.process_id)
+      //     : [input.process_id];
 
       const filterDefectsType = !['P', 'S'].includes(
         input.defects_type ?? 'ALL',
@@ -935,13 +935,13 @@ export class DefectService {
         .andWhere('t1.defects_type in (:...defects_type)', {
           defects_type: filterDefectsType,
         })
-        .andWhere('t1.ng_quantity > 0')
-        // .andWhere('t1.process_id = :process_id', {
-        //   process_id: input.process_id,
-        // })
-        .andWhere('t1.process_id in (:...processes)', {
-          processes: filterProcess,
+        // .andWhere('t1.ng_quantity > 0')
+        .andWhere('t1.process_id = :process_id', {
+          process_id: input.process_id,
         })
+        // .andWhere('t1.process_id in (:...processes)', {
+        //   processes: filterProcess,
+        // })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -957,8 +957,8 @@ export class DefectService {
           ,sum(t1.ng_quantity) as ng_quantity
           ,array_agg(
             jsonb_build_object(
-                      'case_id', t1.case_id,
-                      'case_name', t3.case_name,
+                'case_id', t1.case_id,
+                'case_name', t3.case_name,
                 'ng_quantity', t1.ng_quantity
               )
           ) as details`,
@@ -1020,37 +1020,47 @@ export class DefectService {
       }, []);
 
       // Sum details
-      const summaryDetails = summary.map((item) => {
-        const details = item.details.reduce((acc, cur) => {
-          const allCase = acc.map((item) => item.case_id);
-          if (!allCase.includes(cur.case_id)) {
-            return [
-              ...acc,
-              {
-                case_id: cur.case_id,
-                case_name: cur.case_name,
-                ng_quantity: cur.ng_quantity,
-              },
-            ];
-          }
-
-          return acc.map((item: { case_id: string; ng_quantity: number }) => {
-            if (item.case_id === cur.case_id) {
-              return {
-                ...item,
-                ng_quantity: item.ng_quantity + cur.ng_quantity,
-              };
+      const summaryDetails = summary.map(
+        (item: {
+          details: {
+            case_id: string;
+            case_name: string;
+            ng_quantity: number;
+          }[];
+        }) => {
+          const details = item.details.reduce((acc, cur) => {
+            const allCase = acc.map(
+              (item: { case_id: string }) => item.case_id,
+            );
+            if (!allCase.includes(cur.case_id)) {
+              return [
+                ...acc,
+                {
+                  case_id: cur.case_id,
+                  case_name: cur.case_name,
+                  ng_quantity: Number(cur.ng_quantity),
+                },
+              ];
             }
 
-            return item;
-          });
-        }, []);
+            return acc.map((item: { case_id: string; ng_quantity: number }) => {
+              if (item.case_id === cur.case_id) {
+                return {
+                  ...item,
+                  ng_quantity: item.ng_quantity + cur.ng_quantity,
+                };
+              }
 
-        return {
-          ...item,
-          details: details,
-        };
-      });
+              return item;
+            });
+          }, []);
+
+          return {
+            ...item,
+            details: details,
+          };
+        },
+      );
 
       // return {
       //   status: 'success',
