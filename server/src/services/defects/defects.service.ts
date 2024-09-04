@@ -243,7 +243,7 @@ export class DefectService {
           `t1.*
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name`,
+          ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name,t4.customers`,
         )
         .orderBy('t1.created_at', 'DESC')
         .getRawMany();
