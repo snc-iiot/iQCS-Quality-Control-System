@@ -21,6 +21,7 @@ import { OperatorsModule } from './services/operators/operators.module';
 import { DocumentsModule } from './services/documents/documents.module';
 import { UpdatePriceModule } from './services/update-price/update-price.module';
 import { PriceRatioModule } from './services/price-ratio/price-ratio.module';
+import { DashboardModule } from './services/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { PriceRatioModule } from './services/price-ratio/price-ratio.module';
     DocumentsModule,
     UpdatePriceModule,
     PriceRatioModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -55,7 +57,12 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware)
-      .exclude('/users/login', '/users/gen-pass', '/users/plants')
+      .exclude(
+        '/users/login',
+        '/users/gen-pass',
+        '/users/plants',
+        '/users/add-user',
+      )
       .forRoutes({
         path: '/users*',
         method: RequestMethod.ALL,

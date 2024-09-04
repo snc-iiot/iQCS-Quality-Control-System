@@ -103,7 +103,10 @@ export class DocumentsService {
         source_file: null,
       };
 
-      if (input.document_data !== null || input.document_data.length > 100) {
+      if (
+        input.document_data !== null ||
+        (input.document_data?.length ?? 0) > 100
+      ) {
         // check type file from base64
         const [mimeType, base64Data] = input.document_data.split(';base64,');
         const [type, extension] = mimeType.split('/');
@@ -119,7 +122,10 @@ export class DocumentsService {
           'vnd.openxmlformats-officedocument.presentationml.presentation':
             'pptx',
         };
-        if (type !== 'application' || !mapFiles[extension])
+
+        console.log('type', type, extension);
+
+        if (type !== 'data:application' || !mapFiles[extension])
           return {
             status: 'error',
             statusCode: 400,

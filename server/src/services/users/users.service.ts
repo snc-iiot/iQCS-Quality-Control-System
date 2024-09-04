@@ -8,7 +8,7 @@ import * as jwt from 'jsonwebtoken';
 // import { AuthLoginDto } from './dto/auth-login.dto';
 import { TJwtPayload } from 'src/types/jwt-payload';
 import { TServiceResponse } from 'src/types/service-response';
-import { LoginDto, ChangePasswordDto } from './dto';
+import { LoginDto, ChangePasswordDto, CreateUserDto } from './dto';
 import { config } from 'src/common/configs/config';
 
 @Injectable()
@@ -186,6 +186,52 @@ export class UsersService {
             password: hash,
           },
         ],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async create(input: CreateUserDto): Promise<TServiceResponse> {
+    try {
+      //~ Check if username already exists
+      const user = await this.userRepository.findOne({
+        where: {
+          username: input.username.toLowerCase(),
+          plant_code: input.plant_code,
+        },
+      });
+      if (user)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'Username already exists',
+          data: [],
+        };
+
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(input.password, salt);
+      const record = {
+        name: input.name,
+        username: input.username.toLowerCase(),
+        password: hash,
+        role: input.role,
+        plant_code: input.plant_code,
+        email: input.email,
+      };
+
+      const created = await this.userRepository.save(record);
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'User created successfully',
+        data: [created],
       };
     } catch (error) {
       return {
