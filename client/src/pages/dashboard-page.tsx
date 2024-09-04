@@ -155,6 +155,7 @@ export const DashboardPage: FC = () => {
   useEffect(() => {
     setProcessPartSelected(graphSummaryList?.find((info) => info?.ng_quantity > 0)?.process_id ?? "");
   }, [isLoadingSummaryDefectsByDateGraph === false]);
+
   useEffect(() => {
     setPartSelected(partSummaryList[0]?.part_name ?? "");
   }, [isLoadingSummaryDefectsByPartGraph === false]);
@@ -163,9 +164,13 @@ export const DashboardPage: FC = () => {
     <div className="flex h-full w-full flex-col space-y-2 overflow-y-auto p-2">
       <div className="flex h-max w-full flex-col justify-between gap-2 md:flex-row lg:flex-row">
         <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
-        <div className="flex w-full flex-col gap-2 md:w-min md:flex-row">
+        <div className="flex w-full flex-col gap-2 md:w-min md:flex-row lg:w-min">
           <SelectForm
             options={[
+              {
+                label: "Part + Shop (All)",
+                value: "ALL",
+              },
               {
                 label: "Part (Incoming)",
                 value: "P",
@@ -174,14 +179,10 @@ export const DashboardPage: FC = () => {
                 label: "Shop (Inprocess)",
                 value: "S",
               },
-              {
-                label: "Part + Shop (All)",
-                value: "ALL",
-              },
             ]}
             value={ngTypeSelected}
             onChange={(e) => setNgTypeSelected(e.target.value as "ALL" | "P" | "S")}
-            className="w-[10rem]"
+            className="w-full md:w-[10rem] lg:w-[10rem]"
           />
           <SelectForm
             value={selected?.type}
@@ -229,7 +230,7 @@ export const DashboardPage: FC = () => {
                 value: "monthly",
               },
             ]}
-            className="w-[10rem]"
+            className="w-full md:w-[10rem] lg:w-[10rem]"
           />
           {selected?.type === "week" && (
             <Input
@@ -394,7 +395,6 @@ export const DashboardPage: FC = () => {
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
                 <BarChart accessibilityLayer data={defectData(processSelected)}>
                   <CartesianGrid vertical={true} />
-
                   <YAxis />
                   <XAxis dataKey="time_slot" tickLine={true} tickMargin={10} axisLine={false} />
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />

@@ -192,20 +192,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                   label: process?.process_name,
                   value: process?.process_id,
                 }))}
-                onChange={(value) => {
-                  handleChange({
-                    target: {
-                      name: "process_id",
-                      value,
-                    },
-                  });
-                  handleChange({
-                    target: {
-                      name: "part_id",
-                      value: "",
-                    },
-                  });
-                }}
+                onChange={handleChange}
                 onBlur={handleBlur}
                 value={values?.process_id ?? ""}
                 error={errors.process_id}
