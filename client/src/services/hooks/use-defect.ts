@@ -5,7 +5,16 @@ import {
   GET_RAW_DEFECTS,
   GET_TOP_DEFECTS,
 } from "@/lib/constants";
-import { TCreateUpdateDefect, TCreateUpdateDefectMultiple, TDefect, TDefectSummary, TGraphSummary, TPartSummary, TTopDefect } from "@/types";
+import {
+  TCreateUpdateDefect,
+  TCreateUpdateDefectMultiple,
+  TDefect,
+  TDefectsTypeReq,
+  TDefectSummary,
+  TGraphSummary,
+  TPartSummary,
+  TTopDefect,
+} from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { DefectService } from "../defect.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
@@ -20,7 +29,7 @@ export const useDefect = () => {
     getSummaryDefectsByDateGraph,
     getTopDefects,
     getSummaryDefectsByPartGraph,
-    createDefectMultiple
+    createDefectMultiple,
   } = new DefectService();
   const { mutateAsync: mutateCreateDefect } = useMutationWithToast(
     async (data: TCreateUpdateDefect) => await createDefect(data),
@@ -33,7 +42,6 @@ export const useDefect = () => {
     "Defect created successfully",
     [GET_RAW_DEFECTS]
   );
-  
 
   const { mutateAsync: mutateUpdateDefect } = useMutationWithToast(
     async (data: TCreateUpdateDefect) => await updateDefect(data),
@@ -61,25 +69,38 @@ export const useDefect = () => {
     });
   };
 
-  const useGetSummaryDefectsByDateGraph = (start_date: string, end_date: string) => {
+  const useGetSummaryDefectsByDateGraph = (start_date: string, end_date: string, defects_type: TDefectsTypeReq) => {
     return useQuery({
-      queryKey: [GET_GRAPH_SUMMARIES, start_date, end_date],
-      queryFn: (): Promise<TGraphSummary[]> => getSummaryDefectsByDateGraph(start_date, end_date),
+      queryKey: [GET_GRAPH_SUMMARIES, start_date, end_date, defects_type],
+      queryFn: (): Promise<TGraphSummary[]> => getSummaryDefectsByDateGraph(start_date, end_date, defects_type),
       refetchInterval: 60000,
     });
   };
 
-  const useGetTopDefects = (start_date: string, end_date: string, process: string, shift: string, ranking: number) => {
+  const useGetTopDefects = (
+    start_date: string,
+    end_date: string,
+    process: string,
+    shift: string,
+    ranking: number,
+    defects_type: TDefectsTypeReq
+  ) => {
     return useQuery({
-      queryKey: [GET_TOP_DEFECTS, start_date, end_date, process, shift],
-      queryFn: (): Promise<TTopDefect[]> => getTopDefects(start_date, end_date, process, shift, ranking),
+      queryKey: [GET_TOP_DEFECTS, start_date, end_date, process, shift, defects_type],
+      queryFn: (): Promise<TTopDefect[]> => getTopDefects(start_date, end_date, process, shift, ranking, defects_type),
     });
   };
 
-  const useGetSummaryDefectsByPartGraph = (start_date: string, end_date: string, process_id: string) => {
+  const useGetSummaryDefectsByPartGraph = (
+    start_date: string,
+    end_date: string,
+    process_id: string,
+    defects_type: TDefectsTypeReq
+  ) => {
     return useQuery({
-      queryKey: [GET_PART_SUMMARIES, start_date, end_date, process_id],
-      queryFn: (): Promise<TPartSummary[]> => getSummaryDefectsByPartGraph(start_date, end_date, process_id),
+      queryKey: [GET_PART_SUMMARIES, start_date, end_date, process_id, defects_type],
+      queryFn: (): Promise<TPartSummary[]> =>
+        getSummaryDefectsByPartGraph(start_date, end_date, process_id, defects_type),
       refetchInterval: 60000,
     });
   };
@@ -93,6 +114,6 @@ export const useDefect = () => {
     useGetSummaryDefectsByDateGraph,
     useGetTopDefects,
     useGetSummaryDefectsByPartGraph,
-    mutateCreateDefectMultiple
+    mutateCreateDefectMultiple,
   };
 };
