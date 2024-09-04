@@ -66,7 +66,7 @@ export class DefectService {
         defects_type: input.defects_type,
         process_id: input.process_id,
         part_id: input.part_id,
-        case_id: input.case_id,
+        case_id: !Boolean(input.case_id) ? null : input.case_id,
         ng_quantity: input.ng_quantity,
         //! Not required
         machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
@@ -160,38 +160,66 @@ export class DefectService {
       }
       // */
 
-      const records = input.defects.map((item) => ({
-        datetime: input.datetime,
-        defects_type: input.defects_type,
-        process_id: input.process_id,
-        part_id: input.part_id,
-        case_id: item.case_id,
-        ng_quantity: item.ng_quantity,
-        //! Not required
-        machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
-        operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
-        production_quantity: input.production_quantity ?? 0,
-        rework_quantity: input.rework_quantity ?? 0,
-        scrap_quantity: input.scrap_quantity ?? 0,
-        claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
-        scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
-        car_no: input.car_no ?? '',
-        image: !isUploaded
-          ? null
-          : `https://sncservices.sncformer.com/data/toolbox/docs/v1/${filename}`,
-        solve_problem: input.solve_problem ?? '',
-        remarks: input.remarks ?? '',
-        creator_id: decoded.user_id,
-        plant_code: decoded.plant_code,
-      }));
+      if (input.defects.length === 0) {
+        const record = {
+          datetime: input.datetime,
+          defects_type: input.defects_type,
+          process_id: input.process_id,
+          part_id: input.part_id,
+          case_id: null,
+          ng_quantity: 0,
+          //! Not required
+          machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
+          operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
+          production_quantity: input.production_quantity ?? 0,
+          rework_quantity: input.rework_quantity ?? 0,
+          scrap_quantity: input.scrap_quantity ?? 0,
+          claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
+          scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
+          car_no: input.car_no ?? '',
+          image: !isUploaded
+            ? null
+            : `https://sncservices.sncformer.com/data/toolbox/docs/v1/${filename}`,
+          solve_problem: input.solve_problem ?? '',
+          remarks: input.remarks ?? '',
+          creator_id: decoded.user_id,
+          plant_code: decoded.plant_code,
+        };
+        const created = await this.defectsLoggingRepository.save(record);
+      } else {
+        const records = input.defects.map((item) => ({
+          datetime: input.datetime,
+          defects_type: input.defects_type,
+          process_id: input.process_id,
+          part_id: input.part_id,
+          case_id: item.case_id,
+          ng_quantity: item.ng_quantity,
+          //! Not required
+          machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
+          operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
+          production_quantity: input.production_quantity ?? 0,
+          rework_quantity: input.rework_quantity ?? 0,
+          scrap_quantity: input.scrap_quantity ?? 0,
+          claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
+          scrap_approval_sheet_no: input.scrap_approval_sheet_no ?? '',
+          car_no: input.car_no ?? '',
+          image: !isUploaded
+            ? null
+            : `https://sncservices.sncformer.com/data/toolbox/docs/v1/${filename}`,
+          solve_problem: input.solve_problem ?? '',
+          remarks: input.remarks ?? '',
+          creator_id: decoded.user_id,
+          plant_code: decoded.plant_code,
+        }));
 
-      const created = await this.defectsLoggingRepository.save(records);
+        const created = await this.defectsLoggingRepository.save(records);
+      }
 
       return {
         status: 'success',
         statusCode: 201,
         message: 'Defects created successfully',
-        data: [created],
+        data: [],
         // data: [input],
       };
     } catch (error) {
@@ -239,11 +267,14 @@ export class DefectService {
         .leftJoin('tb_ng_cases', 't2', 't1.case_id = t2.case_id')
         .leftJoin('tb_users', 't3', 't1.creator_id = t3.user_id')
         .leftJoin('tb_part_material', 't4', 't1.part_id = t4.part_id')
+        .leftJoin('tb_machines', 't5', 't1.machine_id = t5.machine_id')
+        .leftJoin('tb_operators', 't6', 't1.operator_id = t6.operator_id')
         .select(
           `t1.*
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
-          ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name,t4.customers`,
+          ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name,t4.customers
+          ,t5.machine_no,t5.machine_name,t6.employee_id,t6.operator_name`,
         )
         .orderBy('t1.created_at', 'DESC')
         .getRawMany();
@@ -286,6 +317,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: input.start_datetime,
           end_datetime: input.end_datetime,
@@ -377,6 +409,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -508,6 +541,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -661,6 +695,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,
@@ -843,6 +878,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id = :process_id', {
           process_id: input.process_id,
         })
@@ -1013,6 +1049,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id in (:...processes)', {
           processes: filterProcess,
         })
@@ -1091,6 +1128,7 @@ export class DefectService {
         .where('t1.plant_code = :plant_code', {
           plant_code: decoded.plant_code,
         })
+        .andWhere('t1.ng_quantity > 0')
         .andWhere('t1.process_id in (:...process)', { process: filterProcess })
         .andWhere('t1.datetime in (:...datetime)', { datetime: filterShift })
         // .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -1144,7 +1182,7 @@ export class DefectService {
         defects_type: input.defects_type,
         process_id: input.process_id,
         part_id: input.part_id,
-        case_id: input.case_id,
+        case_id: !Boolean(input.case_id) ? null : input.case_id,
         ng_quantity: input.ng_quantity,
         //! Not required
         machine_id: !Boolean(input.machine_id) ? null : input.machine_id,

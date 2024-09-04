@@ -30,18 +30,23 @@ export class CreateDefectsDto {
   @IsNotEmpty()
   part_id: string;
 
-  @IsUUID()
-  @IsNotEmpty()
+  // @IsUUID()
+  // @IsNotEmpty()
   case_id: string;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
+  production_quantity: number;
+
+  // @IsNumber()
+  // @IsNotEmpty()
+  // @Min(0)
   ng_quantity: number;
 
   machine_id: string;
   operator_id: string;
-  production_quantity: number;
+  // production_quantity: number;
   rework_quantity: number;
   scrap_quantity: number;
   claim_supplier_quantity: number;

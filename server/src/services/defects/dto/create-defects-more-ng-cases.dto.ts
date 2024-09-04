@@ -45,15 +45,20 @@ export class CreateDefectsMoreNgCasesDto {
   @IsNotEmpty()
   part_id: string;
 
-  @IsArray()
-  @ArrayMinSize(1)
-  @ValidateNested({ each: true })
+  // @IsArray()
+  // @ArrayMinSize(1)
+  // @ValidateNested({ each: true })
   @Type(() => DefectsDto)
   defects: DefectsDto[];
 
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  production_quantity: number;
+
   machine_id: string;
   operator_id: string;
-  production_quantity: number;
+  // production_quantity: number;
   rework_quantity: number;
   scrap_quantity: number;
   claim_supplier_quantity: number;
