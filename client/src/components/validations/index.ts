@@ -1,5 +1,6 @@
 import { TCreateUpdatePartPrice } from './../../types/part';
 import { TCreateUpdatePriceRatio } from "@/types/price-ratios";
+import { TCreateUpdateDefectMultiple } from '@/types';
 import * as Yup from "yup";
 
 export const validationDefectSchema = Yup.object({
@@ -44,3 +45,38 @@ export const validationUpdatePartPriceSchema = Yup.object<TCreateUpdatePartPrice
   price: Yup.number().required("โปรดระบุราคา").min(0),
   remarks: Yup.string().notRequired(),
 })
+
+
+export const validationDefectMultipleSchema = Yup.object<TCreateUpdateDefectMultiple>({
+  date: Yup.string().required("โปรดระบุวันที่"),
+  time_slot: Yup.string().required("โปรดระบุช่วงเวลา"),
+  defects_type: Yup.string().required("โปรดระบุประเภทของ NG").oneOf(["S", "P"]),
+  process_id: Yup.string().required("โปรดระบุ Process"),
+  part_id: Yup.string().required("โปรดระบุ Part"),
+  defects: Yup.array().of(
+    Yup.object({
+      case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+      ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(1),
+    })
+  ).min(1),
+  machine_id: Yup.string().notRequired(),
+  operator_id: Yup.string().notRequired(),
+  production_quantity: Yup.number().notRequired(),
+  rework_quantity: Yup.number().notRequired(),
+  scrap_quantity: Yup.number().notRequired(),
+  claim_supplier_quantity: Yup.number().notRequired(),
+  scrap_approval_sheet_no: Yup.string().notRequired(),
+  car_no: Yup.string().notRequired(),
+  image: Yup.string().notRequired(),
+  solve_problem: Yup.string().notRequired(),
+  remarks: Yup.string().notRequired(),
+});
+
+export const validationCaseMultipleSchema = Yup.object({
+  defects: Yup.array().of(
+    Yup.object({
+      case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+      ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(1),
+    })
+  ).min(1),
+});

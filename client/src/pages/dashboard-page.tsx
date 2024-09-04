@@ -4,14 +4,13 @@ import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { HorizontalBarChart } from "@/components/ui/horizontal-bar-chart";
 import { Input } from "@/components/ui/input";
-import { groupByField } from "@/helpers/array.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
 import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
-import { TGraphSummary, TPartSummaryDetails } from "@/types";
-import { FC, Fragment, useEffect, useState } from "react";
+import { TGraphSummary } from "@/types";
+import { FC, Fragment, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const DashboardPage: FC = () => {
@@ -31,10 +30,11 @@ export const DashboardPage: FC = () => {
       ?.map((info) => ({ ...info, date: info?.datetime.slice(0, 10) }))
   );
 
+  console.log(topDefectList);
+
   const [processSelected, setProcessSelected] = useState<string>("ALL");
   const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
   const [ranking, setRanking] = useState<number>(10);
-  const [part, setPart] = useState<string>("");
 
   const mapCardProcess = processList?.map((process) => {
     const data = groupProcess("process_name")[process?.process_name];
@@ -110,7 +110,7 @@ export const DashboardPage: FC = () => {
   };
 
   const defectDataPartSummary = () => {
-    const dataPartSummaryList = groupByField(partSummaryList, "part_name");
+    const dataPartSummaryList = groupByField(partSummaryList, "part_code");
 
     const data = Object.keys(dataPartSummaryList)?.map((key) => {
       return {
@@ -119,10 +119,9 @@ export const DashboardPage: FC = () => {
             return {
               ...acc,
               ng_quantity: (acc.ng_quantity || 0) + (curr.ng_quantity || 0),
-              details: [...acc.details, ...(curr.details || [])],
             };
           },
-          { label: key, ng_quantity: 0, details: [] as TPartSummaryDetails[] }
+          { label: key, ng_quantity: 0 }
         ),
       };
     });
@@ -140,11 +139,11 @@ export const DashboardPage: FC = () => {
     },
   } satisfies ChartConfig;
 
-  const { isLoading: isLoadingSummaryDefectsByDateGraph } = useGetSummaryDefectsByDateGraph(
+  const { isFetching: isLoadingSummaryDefectsByDateGraph } = useGetSummaryDefectsByDateGraph(
     selected?.start_date,
     selected?.type === "daily" ? selected?.start_date : selected?.end_date
   );
-  const { isLoading: isLoadingTopDefects } = useGetTopDefects(
+  const { isFetching: isLoadingTopDefects } = useGetTopDefects(
     selected?.start_date,
     selected?.type === "daily" ? selected?.start_date : selected?.end_date,
     processSelected,
@@ -157,17 +156,20 @@ export const DashboardPage: FC = () => {
     processPartSelected
   );
 
-  useEffect(() => {
-    setProcessPartSelected(graphSummaryList?.find(({ ng_quantity }) => ng_quantity > 0)?.process_id ?? "");
-  }, [isLoadingSummaryDefectsByDateGraph === false]);
-
-  useEffect(() => {
-    setPart(defectDataPartSummary()?.[0]?.label ?? "");
-  }, [isLoadingSummaryDefectsByPartGraph === false]);
+  const getPartSummaryList = (partSummaryList: TPartSummary[], partSelected: string) => {
+    return (
+      partSummaryList
+        ?.find((item) => item?.part_code === partSelected)
+        ?.details?.map((item) => ({
+          label: item?.case_name,
+          ng_quantity: item?.ng_quantity ?? 0,
+        })) ?? []
+    );
+  };
 
   return (
-    <div className="h-screen w-full overflow-auto pb-[5rem] md:pb-0" style={{ height: "calc(100vh - 4.4rem)" }}>
-      <div className="flex  w-full flex-col gap-2 overflow-hidden px-2 py-1 md:h-full">
+    <div className="h-screen w-full overflow-auto" style={{ height: "calc(100vh - 4.4rem)" }}>
+      <div className="flex h-full w-full flex-col gap-2 overflow-hidden px-2 py-1">
         <div className="flex h-min w-full flex-col items-center gap-1 md:flex-row">
           <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
 
@@ -301,7 +303,7 @@ export const DashboardPage: FC = () => {
             className="grid h-full w-full grid-cols-1 space-y-2 overflow-hidden rounded-md 
         md:grid-cols-1 md:gap-2 md:space-y-0 lg:grid-cols-3 lg:gap-2"
           >
-            <div className="flex h-[20rem] w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
+            <div className="flex h-[10rem] w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
               <div className="flex">
                 <div className={cn("w-full")}>
                   <h1 className="text-sm font-semibold">
@@ -351,14 +353,14 @@ export const DashboardPage: FC = () => {
                       })),
                       ...Array(ranking - topDefectList?.length)
                         ?.fill(0)
-                        ?.map(() => ({ label: "-", value: "" })),
+                        ?.map(() => ({ label: "-", value: "1" })),
                     ]}
                   />
                 )}
               </div>
             </div>
 
-            <div className="flex h-full w-full flex-col gap-2 rounded-md border p-2 shadow md:col-span-2">
+            <div className="col-span-2 flex h-full w-full flex-col gap-2 rounded-md border p-2 shadow">
               <div className="flex flex-col gap-2 md:flex-row">
                 <div className={cn("w-full")}>
                   <h1 className="text-sm font-semibold">รายละเอียดของข้อมูลที่มีการบันทึก / Data Details</h1>
@@ -422,8 +424,8 @@ export const DashboardPage: FC = () => {
         </div>
       </div>
 
-      <div className="grid h-max w-full grid-cols-1 flex-col gap-2 overflow-hidden px-2 py-1 md:h-full lg:grid-cols-2">
-        <div className="flex h-[20rem] w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
+      <div className="grid h-full w-full flex-col gap-2 overflow-hidden px-2 py-1 md:grid-cols-2">
+        <div className="flex w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
           <div className=" justify-center md:flex">
             <div className={cn("w-full")}>
               <h1 className="text-sm font-semibold">
@@ -435,7 +437,7 @@ export const DashboardPage: FC = () => {
             </div>
             <SelectForm
               value={processPartSelected}
-              className="w-full md:w-[9rem] lg:w-[9rem]"
+              className="w-full md:w-[14rem] lg:w-[14rem]"
               onChange={(e) => setProcessPartSelected(e.target.value)}
               options={processList?.map((process) => ({
                 label: process?.process_name,
@@ -456,62 +458,12 @@ export const DashboardPage: FC = () => {
                 <YAxis />
                 <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                <Bar
-                  dataKey={"ng_quantity"}
-                  fill={processList?.find((info) => info?.process_id === processPartSelected)?.process_color}
-                  onClick={(e) => setPart(e?.label)}
-                  className=" cursor-pointer"
-                />
+                <Bar dataKey={"ng_quantity"} fill={"#8884d8"} />
               </BarChart>
             </ChartContainer>
           )}
         </div>
-        <div className="flex h-[20rem] w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full">
-          <div className=" justify-center md:flex">
-            <div className={cn("w-full")}>
-              <h1 className="text-sm font-semibold">
-                รายละเอียดของเสียแยกตามชิ้นงาน / Details of waste separated by work piece
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                รายการรายละเอียดของเสียแยกตามชิ้นงาน / Detailed list of waste separated by work piece
-              </p>
-            </div>
-            {(partSummaryList?.length ?? 0) !== 0 && (
-              <SelectForm
-                value={part}
-                className="w-full md:w-[9rem] lg:w-[9rem]"
-                onChange={(e) => setPart(e.target.value)}
-                options={defectDataPartSummary()?.map((process) => ({
-                  label: process?.label,
-                  value: process?.label,
-                }))}
-              />
-            )}
-          </div>
-          {partSummaryList?.length === 0 ? (
-            <div className="flex w-full justify-center">
-              <p className="text-xs">
-                {isLoadingSummaryDefectsByPartGraph ? "กำลังโหลดข้อมูล / Loading data" : "ไม่พบข้อมูล / No data found"}
-              </p>
-            </div>
-          ) : (
-            <HorizontalBarChart
-              data={
-                defectDataPartSummary()
-                  ?.find((info) => info?.label === part)
-                  ?.details?.map(({ case_name, ng_quantity }) => ({
-                    label: case_name ?? "",
-                    value: ng_quantity ?? 0,
-                  }))
-                  ?.sort((a, b) => b?.value - a?.value) ??
-                ([] as {
-                  label: string;
-                  value: number | string;
-                }[])
-              }
-            />
-          )}
-        </div>
+        <div className="flex w-full flex-col space-y-2 overflow-hidden rounded-md border p-2 shadow md:h-full"></div>
       </div>
     </div>
   );

@@ -1,10 +1,22 @@
-import { CreateUpdateDefect } from "@/components/form";
+import { CreateUpdateDefect, CreateUpdateDefectMultiple } from "@/components/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FC } from "react";
 
 const HomePage: FC = () => {
   return (
     <div className="container mx-auto flex h-full w-full flex-col overflow-y-auto p-2">
-      <CreateUpdateDefect />
+      <Tabs defaultValue="multiple-case">
+        <TabsList className="max-w-max">
+          <TabsTrigger value="multiple-case">บันทึกข้อมูลแบบหลายสาเหตุ</TabsTrigger>
+          <TabsTrigger value="one-case">บันทึกข้อมูลแบบสาเหตุเดียว</TabsTrigger>
+        </TabsList>
+        <TabsContent value="multiple-case">
+          <CreateUpdateDefectMultiple />
+        </TabsContent>
+        <TabsContent value="one-case">
+          <CreateUpdateDefect />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -23,6 +23,34 @@ export type TCreateUpdateDefect = {
   remarks: string;
 };
 
+
+export type TCreateUpdateDefectMultiple = {
+  defects_log_id?: string;
+  datetime: string;
+  date?: string;
+  time_slot?: string;
+  defects_type: "S" | "P";
+  process_id: string;
+  part_id: string;
+  defects: {
+    case_id: string;
+    ng_quantity: number | null;
+  }[];
+
+  // Optional
+  machine_id?: string;
+  operator_id?: string;
+  production_quantity?: number | null;
+  rework_quantity?: number | null;
+  scrap_quantity?: number | null;
+  claim_supplier_quantity?: number | null;
+  scrap_approval_sheet_no: string;
+  car_no?: string;
+  image: string | null;
+  solve_problem: string;
+  remarks: string;
+};
+
 export type TDefect = {
   defects_log_id: string;
   datetime: string;

@@ -8,6 +8,7 @@ import {
   TPartSummary,
   TResponse,
   TTopDefect,
+  TCreateUpdateDefectMultiple
 } from "@/types";
 import { AxiosError } from "axios";
 import { APIService } from "./api.service";
@@ -21,6 +22,31 @@ export class DefectService extends APIService {
   public createDefect = async (data: TCreateUpdateDefect): Promise<TResponse<unknown>> => {
     try {
       const { data: res } = await this.post<TResponse<unknown>>("/defects-logging", data);
+      return res;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("CREATE_DEFECT_ERROR", error);
+        return {
+          message: error.response?.data?.message || "Failed to create defect",
+          statusCode: error.response?.status || 500,
+          status: "error",
+          data: [],
+        };
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return {
+          message: "Failed to create defect",
+          statusCode: 500,
+          status: "error",
+          data: [],
+        };
+      }
+    }
+  };
+
+  public createDefectMultiple = async (data: TCreateUpdateDefectMultiple): Promise<TResponse<unknown>> => {
+    try {
+      const { data: res } = await this.post<TResponse<unknown>>("/defects-logging/more-defects", data);
       return res;
     } catch (error) {
       if (error instanceof AxiosError) {
