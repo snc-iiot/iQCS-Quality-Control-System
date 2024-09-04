@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TGraphSummary, TPartSummary } from "@/types";
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const DashboardPage: FC = () => {
@@ -146,13 +146,20 @@ export const DashboardPage: FC = () => {
   const getPartSummaryList = (partSummaryList: TPartSummary[], partSelected: string) => {
     return (
       partSummaryList
-        ?.find((item) => item?.part_code === partSelected)
+        ?.find((item) => item?.part_name === partSelected)
         ?.details?.map((item) => ({
           label: item?.case_name,
           ng_quantity: item?.ng_quantity ?? 0,
         })) ?? []
     );
   };
+
+  useEffect(() => {
+    setProcessPartSelected(graphSummaryList?.find((info) => info?.ng_quantity > 0)?.process_id ?? "");
+  }, [isLoadingSummaryDefectsByDateGraph === false]);
+  useEffect(() => {
+    setPartSelected(partSummaryList[0]?.part_name ?? "");
+  }, [isLoadingSummaryDefectsByPartGraph === false]);
 
   return (
     <div className="flex h-full w-full flex-col space-y-2 overflow-y-auto p-2">
@@ -437,7 +444,7 @@ export const DashboardPage: FC = () => {
                 <BarChart
                   accessibilityLayer
                   data={partSummaryList?.map((item) => ({
-                    label: item?.part_code,
+                    label: item?.part_name,
                     ng_quantity: item?.ng_quantity ?? 0,
                   }))}
                 >
@@ -471,8 +478,8 @@ export const DashboardPage: FC = () => {
             <SelectForm
               className="w-full md:w-[14rem] lg:w-[14rem]"
               options={partSummaryList?.map((part) => ({
-                label: part?.part_code,
-                value: part?.part_code,
+                label: part?.part_name,
+                value: part?.part_name,
               }))}
               placeholder="เลือกชิ้นงาน / Select part"
               onChange={(e) => setPartSelected(e.target.value)}
@@ -522,9 +529,9 @@ export const DashboardPage: FC = () => {
             </div>
             <SelectForm
               className="w-full md:w-[14rem] lg:w-[14rem]"
-              options={partSummaryList?.map((part) => ({
-                label: part?.part_code,
-                value: part?.part_code,
+              options={getPartSummaryList(partSummaryList, partSelected)?.map((part) => ({
+                label: part?.label,
+                value: part?.label,
               }))}
               placeholder="เลือกชิ้นงาน / Select part"
               onChange={(e) => setPartSelected(e.target.value)}
