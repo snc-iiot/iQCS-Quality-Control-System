@@ -23,7 +23,6 @@ export type TCreateUpdateDefect = {
   remarks: string;
 };
 
-
 export type TCreateUpdateDefectMultiple = {
   defects_log_id?: string;
   datetime: string;
@@ -88,6 +87,11 @@ export type TDefect = {
   claim_supplier_quantity?: number | null;
   scrap_approval_sheet_no: string;
   car_no?: string;
+  customers?: string[];
+  machine_no?: string;
+  operator_name?: string;
+  plant_code?: string;
+  creator_name?: string;
 };
 
 export type TDefectSummary = {

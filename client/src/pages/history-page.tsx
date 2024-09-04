@@ -328,8 +328,6 @@ export const HistoryPage: FC = () => {
     [defectList, allFilter]
   );
 
-  console.log(defectMapped);
-
   const productivityMapped = useMemo(
     () =>
       productivityList
@@ -493,6 +491,8 @@ export const HistoryPage: FC = () => {
       }, 0) ?? 0
     );
   };
+
+  console.log(defectMapped);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
@@ -987,7 +987,7 @@ export const HistoryPage: FC = () => {
                     </TableBody>
                     <TableFooter>
                       <TableRow>
-                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 7}>Total Summary</TableCell>
+                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 8}>Total Summary</TableCell>
                         <TableCell className="text-right">{summaryProductivityMapped("ng_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryProductivityMapped("quantity")}</TableCell>
                         <TableCell colSpan={8}></TableCell>
@@ -1215,11 +1215,32 @@ export const HistoryPage: FC = () => {
                       ID: info?.defects_log_id,
                       Shift: info?.shift,
                       Time: info?.datetime,
-                      Date: info?.datetime,
-                      Line: "",
+                      Date: `${new Date(String(info?.date)).getDate()}/${
+                        new Date(String(info?.date)).getMonth() + 1
+                      }/${new Date(String(info?.date)).getFullYear()}`,
+                      Line: info?.plant_code,
                       "Part No.": info?.part_code,
                       "Part Name": info?.part_name,
-                      Customer: "info?.customers",
+                      Customer: info?.customers?.join(", "),
+                      "Process Name": info?.process_id,
+                      "Sub Process Name": "",
+                      "M/C No.": info?.machine_no,
+                      "Operator Name": info?.operator_name,
+                      "Production Q'ty": info?.production_quantity,
+                      "NG Q'ty": info?.ng_quantity,
+                      "Part or Shop defect": info?.defects_type,
+                      "NG Details": info?.ng_description,
+                      "Reworked Q'ty": info?.rework_quantity,
+                      "Rework Cost/Unit (Baht)": info?.rework_cost_per_unit,
+                      "Scrap Q'ty": info?.scrap_quantity,
+                      "Scrap Cost/Unit (Baht)": info?.scrap_cost_per_unit,
+                      "Scrap Approval Sheet No.": info?.scrap_approval_sheet_no,
+                      "Claim to supplier Q'Ty": info?.claim_supplier_quantity,
+                      "QA Inspector": info?.creator_name,
+                      "CAR No.": info?.car_no,
+                      "Total Defect Cost (Baht)":
+                        Number(info?.rework_cost_per_unit ?? 0) + Number(info?.scrap_cost_per_unit ?? 0),
+                      "QCS No.": "",
                     }));
                     excelHelper.downloadExcelData(exportData, "defects");
                   }}
@@ -1277,7 +1298,7 @@ export const HistoryPage: FC = () => {
                     </TableBody>
                     <TableFooter>
                       <TableRow>
-                        <TableCell colSpan={historyFilter?.mode == "daily" ? 6 : 8}>Total Summary</TableCell>
+                        <TableCell colSpan={historyFilter?.mode == "daily" ? 7 : 8}>Total Summary 5</TableCell>
                         <TableCell className="text-right">{summaryMapped("production_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("ng_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("rework_quantity")}</TableCell>
