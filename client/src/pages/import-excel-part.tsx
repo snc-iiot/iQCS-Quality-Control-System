@@ -30,6 +30,7 @@ import { usePart } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TCreateUpdatePart } from "@/types";
 import { FC, useRef, useState } from "react";
+import Swal from "sweetalert2";
 
 type TGenerateExcelTemplate = {
   process_id: string;
@@ -67,6 +68,67 @@ export const ImportExcelPart: FC = () => {
   const getProcessName = (processId: string) => {
     const process = processList?.find((process) => process?.process_id === processId);
     return process?.process_name ?? processId;
+  };
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    enum Schema {
+      PART_CODE = "part_code",
+      PART_NAME = "part_name",
+      PROCESSES = "processes",
+      PRICE = "price",
+      SAP_CODE = "sap_code",
+      PART_DESCRIPTION = "part_description",
+      CUSTOMERS = "customers",
+    }
+
+    const schemaKeys = new Set(Object.values(Schema));
+    const excelData = await excelHelper.parseExcelData(file);
+
+    const mapPartToSchema = (part: any): TCreateUpdatePart | null => {
+      const newPart = {} as TCreateUpdatePart;
+
+      for (const key of Object.keys(part)) {
+        if (!schemaKeys.has(key as Schema)) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `Invalid key "${key}" in Excel file`,
+          });
+          return null; // Return null to exclude invalid parts
+        }
+
+        switch (key) {
+          case Schema.PART_CODE:
+            newPart.part_code = part[key];
+            break;
+          case Schema.PART_NAME:
+            newPart.part_name = part[key];
+            break;
+          case Schema.PROCESSES:
+            newPart.processes = [part[key]];
+            break;
+          case Schema.PRICE:
+            newPart.price = part[key] === 0 ? null : part[key];
+            break;
+          case Schema.SAP_CODE:
+            newPart.sap_code = part[key];
+            break;
+          case Schema.PART_DESCRIPTION:
+            newPart.part_description = part[key];
+            break;
+          case Schema.CUSTOMERS:
+            newPart.customers = [part[key]];
+            break;
+        }
+      }
+
+      return newPart;
+    };
+    const importPart = excelData?.map(mapPartToSchema).filter(Boolean) as TCreateUpdatePart[];
+    setImportPart(importPart);
   };
 
   const HEADER = [
@@ -307,23 +369,25 @@ export const ImportExcelPart: FC = () => {
         type="file"
         accept=".xlsx, .xls .csv"
         className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            excelHelper.parseExcelData(file).then((data) => {
-              const importPart = data.map((part) => ({
-                part_code: part?.part_code,
-                part_name: part?.part_name,
-                processes: [part?.processes],
-                price: part?.price == 0 ? null : part?.price,
-                sap_code: part?.sap_code,
-                part_description: part?.part_description,
-                customers: [part?.customers],
-              }));
-
-              setImportPart(importPart);
-            });
-          }
+        // onChange={(e) => {
+        //   const file = e.target.files?.[0];
+        //   if (file) {
+        //     excelHelper.parseExcelData(file).then((data) => {
+        //       const importPart = data.map((part) => ({
+        //         part_code: part?.part_code,
+        //         part_name: part?.part_name,
+        //         processes: [part?.processes],
+        //         price: part?.price == 0 ? null : part?.price,
+        //         sap_code: part?.sap_code,
+        //         part_description: part?.part_description,
+        //         customers: [part?.customers],
+        //       }));
+        //       setImportPart(importPart);
+        //     });
+        //   }
+        // }}
+        onChange={async (e) => {
+          await handleChange(e);
         }}
       />
     </div>

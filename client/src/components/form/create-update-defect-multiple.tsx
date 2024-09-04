@@ -264,7 +264,7 @@ export const CreateUpdateDefectMultiple: FC = () => {
                 onBlur={handleBlur}
                 value={values?.production_quantity ?? ""}
                 error={errors.production_quantity}
-                labelOptional="(Optional)"
+                required
               />
               {/*//! Select multiple case */}
               <Button variant="outline" type="button" className="w-full" onClick={() => setIsSheetOpen(true)}>
