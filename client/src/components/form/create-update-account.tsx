@@ -48,7 +48,6 @@ export const CreateUpdateAccount: FC<CreateUpdateAccountProps> = ({
       setSubmitting: (isSubmitting: boolean) => void;
     }
   ) => {
-    console.log(values);
     setSubmitting(true);
     if (data) {
       const res = await mutateUpdateAccount({

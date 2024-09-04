@@ -161,7 +161,6 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
         validationSchema={validationDefectSchema}
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => {
-          console.log("errors", errors);
           return (
             <div className="space-y-5">
               <DateInputForm

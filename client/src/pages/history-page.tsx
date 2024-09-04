@@ -290,7 +290,6 @@ export const HistoryPage: FC = () => {
               <button
                 className="text-yellow-500 hover:underline"
                 onClick={() => {
-                  console.log("defect", defect);
                   setSelectedDefect(defect);
                   setIsOpenDefectEdit(true);
                 }}
@@ -492,8 +491,6 @@ export const HistoryPage: FC = () => {
       }, 0) ?? 0
     );
   };
-
-  console.log(historyFilter);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">

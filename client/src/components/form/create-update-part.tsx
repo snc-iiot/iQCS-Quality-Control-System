@@ -130,6 +130,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.price}
+              readOnly={data?.part_id !== undefined}
               required
             />
 

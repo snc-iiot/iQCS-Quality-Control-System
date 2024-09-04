@@ -42,7 +42,7 @@ export type THorizontalBarChart = {
 };
 
 const HorizontalBarChart: FC<THorizontalBarChart> = ({ data }) => {
-  const getBarColor = (index: number) => colors[(index + (data.length <= 10 ? 1 : 0)) % colors.length];
+  const getBarColor = (index: number) => colors[(index * (data.length <= 10 ? 2 : 1)) % colors.length];
 
   return (
     <ChartContainer config={chartConfig} className="h-full w-full">
