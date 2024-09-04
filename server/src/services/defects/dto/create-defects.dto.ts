@@ -7,6 +7,7 @@ import {
   IsUUID,
   IsNumber,
   Min,
+  // ValidateIf,
 } from 'class-validator';
 
 export class CreateDefectsDto {
@@ -39,9 +40,10 @@ export class CreateDefectsDto {
   @Min(1)
   production_quantity: number;
 
-  // @IsNumber()
-  // @IsNotEmpty()
-  // @Min(0)
+  // @ValidateIf((o) => o.case_id !== null || o.case_id !== undefined || o.case_id !== '')
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
   ng_quantity: number;
 
   machine_id: string;
