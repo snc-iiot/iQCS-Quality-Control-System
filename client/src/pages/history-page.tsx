@@ -328,6 +328,8 @@ export const HistoryPage: FC = () => {
     [defectList, allFilter]
   );
 
+  console.log(defectMapped);
+
   const productivityMapped = useMemo(
     () =>
       productivityList
@@ -1209,7 +1211,16 @@ export const HistoryPage: FC = () => {
                 </Popover>
                 <Button
                   onClick={() => {
-                    const exportData = defectMapped;
+                    const exportData = defectMapped?.map((info) => ({
+                      ID: info?.defects_log_id,
+                      Shift: info?.shift,
+                      Time: info?.datetime,
+                      Date: info?.datetime,
+                      Line: "",
+                      "Part No.": info?.part_code,
+                      "Part Name": info?.part_name,
+                      Customer: "info?.customers",
+                    }));
                     excelHelper.downloadExcelData(exportData, "defects");
                   }}
                   className="w-full md:w-max"

@@ -71,7 +71,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
     const Values = {
       ...values,
       document_id: data?.document_id,
-      document_data: initialValues?.document_data === data?.source_file ? "" : initialValues?.document_data,
+      document_data: initialValues?.document_data === data?.source_file ? null : initialValues?.document_data,
     };
 
     if (data) {
