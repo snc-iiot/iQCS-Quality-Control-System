@@ -36,27 +36,6 @@ export const LoginPage: FC = () => {
           }}
           className="w-full space-y-2 py-2"
         >
-          {/* <div>
-            <p className="text-lg font-semibold text-primary">Quality Control System</p>
-            <p className="text-xs text-muted-foreground">ระบบบันทึกข้อมูลยอดงาน NG</p>
-          </div> */}
-          {/* <InputForm
-            label="Username"
-            required
-            placeholder="Username"
-            name="username"
-            value={form.username}
-            onChange={handleInputChange}
-          />
-          <InputForm
-            label="Password"
-            required
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={form.password}
-            onChange={handleInputChange}
-          /> */}
           <div className="flex flex-col text-center">
             <h3 className="text-center text-lg font-bold">กรุณาระบุรหัสพนักงาน</h3>
             <h3 className="text-center text-lg font-bold">(Please Identify ID)</h3>

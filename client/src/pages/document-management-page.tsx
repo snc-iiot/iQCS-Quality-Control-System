@@ -13,7 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { renderFormattedDate } from "@/helpers/date-time.helper";
+import { cn } from "@/lib/utils";
 import { useDocument } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TDocument } from "@/types";
@@ -35,6 +37,8 @@ const DocumentManagementPage = () => {
       part?.document_name?.toLowerCase().includes(search.toLowerCase()) ||
       part?.creator_name?.toLowerCase().includes(search.toLowerCase())
   );
+
+  console.log("filteredDocument", filteredDocument);
 
   return (
     <>
@@ -75,7 +79,6 @@ const DocumentManagementPage = () => {
                   <div className="flex-1 overflow-hidden">
                     <p className="truncate text-sm font-medium">{document_name}</p>
                   </div>
-
                   <Dropdown
                     icon={<Ellipsis size={28} className="w-min rounded-full p-1 hover:bg-gray-300" />}
                     content={
@@ -143,7 +146,37 @@ const DocumentManagementPage = () => {
                   )}
                   <div className="absolute left-0 top-0 h-full w-full" />
                 </a>
-
+                <div
+                  className={cn(
+                    "rounded-md bg-white p-2",
+                    (info?.expire_date != "" && info?.expire_date != null) ||
+                      (info?.effective_date != "" && info?.effective_date != null) ||
+                      (info?.document_description != "" && info?.document_description != null)
+                      ? "block"
+                      : "hidden"
+                  )}
+                >
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="line-clamp-2 text-xs font-medium">
+                          {info?.document_description ?? "No description"}
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[300px] rounded-md bg-white p-2 shadow-md">
+                        <p className="text-xs font-medium">
+                          {info?.document_description ? info?.document_description : "No description for this document"}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <p className="text-xs font-medium">
+                    {info?.effective_date ? `Effective Date: ${renderFormattedDate(info?.effective_date)}` : ""}
+                  </p>
+                  <p className="text-xs font-medium">
+                    {info?.expire_date ? `Expire Date: ${renderFormattedDate(info?.expire_date)}` : ""}
+                  </p>
+                </div>
                 <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00000020]">
                     <User size={20} />
