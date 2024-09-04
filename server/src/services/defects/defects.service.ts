@@ -1030,32 +1030,36 @@ export class DefectService {
             ng_quantity: number;
           }[];
         }) => {
-          const details = item.details.reduce((acc, cur) => {
-            const allCase = acc.map(
-              (item: { case_id: string }) => item.case_id,
-            );
-            if (!allCase.includes(cur.case_id)) {
-              return [
-                ...acc,
-                {
-                  case_id: cur.case_id,
-                  case_name: cur.case_name,
-                  ng_quantity: Number(cur.ng_quantity),
-                },
-              ];
-            }
-
-            return acc.map((item: { case_id: string; ng_quantity: number }) => {
-              if (item.case_id === cur.case_id) {
-                return {
-                  ...item,
-                  ng_quantity: item.ng_quantity + cur.ng_quantity,
-                };
+          const details = item.details
+            .filter((x) => Boolean(x.case_id))
+            .reduce((acc, cur) => {
+              const allCase = acc.map(
+                (item: { case_id: string }) => item.case_id,
+              );
+              if (!allCase.includes(cur.case_id)) {
+                return [
+                  ...acc,
+                  {
+                    case_id: cur.case_id,
+                    case_name: cur.case_name,
+                    ng_quantity: Number(cur.ng_quantity),
+                  },
+                ];
               }
 
-              return item;
-            });
-          }, []);
+              return acc.map(
+                (item: { case_id: string; ng_quantity: number }) => {
+                  if (item.case_id === cur.case_id) {
+                    return {
+                      ...item,
+                      ng_quantity: item.ng_quantity + cur.ng_quantity,
+                    };
+                  }
+
+                  return item;
+                },
+              );
+            }, []);
 
           return {
             ...item,
