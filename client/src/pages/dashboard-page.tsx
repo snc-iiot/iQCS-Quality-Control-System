@@ -1,15 +1,17 @@
 import { PageHeader } from "@/components/common/page-header";
+import LineBarComposedChart from "@/components/dashboard/line-bar-composed-chart";
 import { CardProcess } from "@/components/ui-pattern";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { HorizontalBarChart } from "@/components/ui/horizontal-bar-chart";
 import { Input } from "@/components/ui/input";
+import { groupByField } from "@/helpers/array.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
 import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
-import { TDefectsTypeReq, TGraphSummary, TPartSummary } from "@/types";
+import { TDefectsTypeReq, TGraphSummary, TPartSummary, TPartSummaryDetails } from "@/types";
 import { FC, Fragment, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -141,15 +143,27 @@ export const DashboardPage: FC = () => {
       ngTypeSelected
     );
 
-  const getPartSummaryList = (partSummaryList: TPartSummary[], partSelected: string) => {
-    return (
-      partSummaryList
-        ?.find((item) => item?.part_name === partSelected)
-        ?.details?.map((item) => ({
-          label: item?.case_name,
-          ng_quantity: item?.ng_quantity ?? 0,
-        })) ?? []
-    );
+  const getPartSummaryList = (partSummaryList: TPartSummary[]) => {
+    const dataPartName = groupByField(partSummaryList, "part_name");
+
+    return Object.keys(dataPartName).map((label) => {
+      const ng_quantity = dataPartName[label].reduce((sum, item) => sum + item.ng_quantity, 0);
+      const dataDetails = groupByField(
+        dataPartName[label].reduce<TPartSummaryDetails[]>((sum, item) => sum.concat(item?.details ?? []), []),
+        "case_name"
+      );
+
+      const details = Object.keys(dataDetails)?.map((case_name) => ({
+        case_name,
+        ng_quantity: dataDetails[case_name].reduce((sum, item) => sum + item.ng_quantity, 0),
+      }));
+
+      return {
+        label,
+        ng_quantity,
+        details,
+      };
+    });
   };
 
   useEffect(() => {
@@ -444,7 +458,7 @@ export const DashboardPage: FC = () => {
             />
           </div>
           <div className="flex h-0 flex-grow flex-col">
-            {partSummaryList?.length === 0 ? (
+            {getPartSummaryList(partSummaryList)?.length === 0 ? (
               <div className="flex w-full justify-center">
                 <p className="text-xs">
                   {isLoadingSummaryDefectsByPartGraph
@@ -454,13 +468,7 @@ export const DashboardPage: FC = () => {
               </div>
             ) : (
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
-                <BarChart
-                  accessibilityLayer
-                  data={partSummaryList?.map((item) => ({
-                    label: item?.part_name,
-                    ng_quantity: item?.ng_quantity ?? 0,
-                  }))}
-                >
+                <BarChart accessibilityLayer data={getPartSummaryList(partSummaryList)}>
                   <CartesianGrid vertical={true} />
                   <YAxis />
                   <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
@@ -468,6 +476,8 @@ export const DashboardPage: FC = () => {
                   <Bar
                     dataKey={"ng_quantity"}
                     fill={processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color}
+                    className=" cursor-pointer"
+                    onClick={(e) => setPartSelected(e?.label)}
                   />
                 </BarChart>
               </ChartContainer>
@@ -490,9 +500,9 @@ export const DashboardPage: FC = () => {
             </div>
             <SelectForm
               className="w-full md:w-[14rem] lg:w-[14rem]"
-              options={partSummaryList?.map((part) => ({
-                label: part?.part_name,
-                value: part?.part_name,
+              options={getPartSummaryList(partSummaryList)?.map(({ label }) => ({
+                label,
+                value: label,
               }))}
               placeholder="เลือกชิ้นงาน / Select part"
               onChange={(e) => setPartSelected(e.target.value)}
@@ -500,7 +510,7 @@ export const DashboardPage: FC = () => {
             />
           </div>
           <div className="flex h-0 flex-grow flex-col">
-            {getPartSummaryList(partSummaryList, partSelected)?.length === 0 ? (
+            {getPartSummaryList(partSummaryList)?.find(({ label }) => label === partSelected)?.details?.length === 0 ? (
               <div className="flex w-full justify-center">
                 <p className="text-xs">
                   {isLoadingSummaryDefectsByPartGraph
@@ -512,10 +522,13 @@ export const DashboardPage: FC = () => {
               </div>
             ) : (
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
-                <BarChart accessibilityLayer data={getPartSummaryList(partSummaryList, partSelected)}>
+                <BarChart
+                  accessibilityLayer
+                  data={getPartSummaryList(partSummaryList)?.find(({ label }) => label === partSelected)?.details}
+                >
                   <CartesianGrid vertical={true} />
                   <YAxis />
-                  <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
+                  <XAxis dataKey="case_name" tickLine={true} tickMargin={10} axisLine={false} />
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                   <Bar
                     dataKey={"ng_quantity"}
@@ -527,57 +540,7 @@ export const DashboardPage: FC = () => {
           </div>
         </div>
         {/*//! Summary Defects By Part Chart */}
-        <div className="flex h-[25rem] flex-col gap-2 rounded-md border p-2">
-          <div className="flex flex-col justify-between gap-2 md:flex-row lg:flex-row">
-            <div className={cn("w-full")}>
-              <h1 className="text-sm font-semibold">
-                ปริมาณการผลิตและความบกพร่องของผลิตภัณฑ์ / Production volume and product defects
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                รายการสาเหตุที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name} / List of
-                reasons for the work of each piece in the process{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
-              </p>
-            </div>
-            <SelectForm
-              className="w-full md:w-[14rem] lg:w-[14rem]"
-              options={getPartSummaryList(partSummaryList, partSelected)?.map((part) => ({
-                label: part?.label,
-                value: part?.label,
-              }))}
-              placeholder="เลือกชิ้นงาน / Select part"
-              onChange={(e) => setPartSelected(e.target.value)}
-              value={partSelected}
-            />
-          </div>
-          <div className="flex h-0 flex-grow flex-col">
-            {getPartSummaryList(partSummaryList, partSelected)?.length === 0 ? (
-              <div className="flex w-full justify-center">
-                <p className="text-xs">
-                  {isLoadingSummaryDefectsByPartGraph
-                    ? "กำลังโหลดข้อมูล / Loading data"
-                    : partSelected
-                      ? "เลือกชิ้นงานที่ต้องการดู / Select the part you want to see"
-                      : "ไม่พบข้อมูล / No data found"}
-                </p>
-              </div>
-            ) : (
-              <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
-                <BarChart accessibilityLayer data={getPartSummaryList(partSummaryList, partSelected)}>
-                  <CartesianGrid vertical={true} />
-                  <YAxis />
-                  <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
-                  <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                  <Bar
-                    dataKey={"ng_quantity"}
-                    fill={processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color}
-                  />
-                </BarChart>
-              </ChartContainer>
-            )}
-          </div>
-        </div>
+        <LineBarComposedChart />
       </div>
     </div>
   );

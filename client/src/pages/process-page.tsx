@@ -220,6 +220,7 @@ export const ProcessPage: FC = () => {
             data={{
               process_id: selectedProcess?.process_id,
               process_name: selectedProcess?.process_name,
+              process_color: selectedProcess?.process_color,
               process_description: selectedProcess?.process_description || "",
             }}
             onClose={() => {
