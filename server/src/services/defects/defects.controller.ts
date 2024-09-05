@@ -147,6 +147,16 @@ export class DefectController {
     return res.status(result.statusCode).json(result);
   }
 
+  @Get('parts-summary-all-plant')
+  async partSummaryAllPlantByDateRange(
+    @Query() query: FindByDateRangeDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.defectService.partSummaryAllPlantByDateRange(query);
+    return res.status(result.statusCode).json(result);
+  }
+
   @Get('top-rank-by-date-range')
   async findTopRankByDateRange(
     @Query() query: FindTopRankDateRangeDto,

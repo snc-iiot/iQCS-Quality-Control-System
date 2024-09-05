@@ -1102,14 +1102,14 @@ export class DefectService {
     }
   }
 
-  async graphSummaryPartDefectsAllPlantByDateRange(
-    input: FindByProcessDateRangeDto,
+  async partSummaryAllPlantByDateRange(
+    input: FindByDateRangeDto,
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-summary-part-all-plant-by-date-range_${input.start_date}_${input.end_date}_${input.defects_type}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/part-summary-all-plant_${input.start_date}_${input.end_date}_${input.defects_type}`;
       // console.log(cacheKey);
-      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheTTL = 3 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
       if (cacheValue !== undefined) {
         return {
@@ -1162,13 +1162,13 @@ export class DefectService {
           `t1.plant_code,t1.process_id,t3.process_name,t3.process_description,t1.part_id,t2.part_code,t2.part_name
           ,sum(t1.production_quantity) as production_quantity
           ,sum(t1.ng_quantity) as ng_quantity
-          ,array_agg(
+          /*,array_agg(
             jsonb_build_object(
                 'case_id', t1.case_id,
                 'case_name', t4.case_name,
                 'ng_quantity', t1.ng_quantity
               )
-          ) as details`,
+          ) as details*/`,
         )
         .groupBy(
           't1.plant_code,t1.process_id,t3.process_name,t3.process_description,t1.part_id,t2.part_code,t2.part_name',
@@ -1202,10 +1202,11 @@ export class DefectService {
               part_id: cur.part_id,
               part_code: cur.part_code,
               part_name: cur.part_name,
+              plant_code: cur.plant_code,
               // process_name: cur.process_name,
               production_quantity: Number(cur.production_quantity),
               ng_quantity: Number(cur.ng_quantity),
-              details: cur.details,
+              // details: cur.details,
             },
           ];
         }
@@ -1231,6 +1232,7 @@ export class DefectService {
       }, []);
 
       // Sum details
+      /*
       const summaryDetails = summary.map(
         (item: {
           production_quantity: number;
@@ -1275,9 +1277,24 @@ export class DefectService {
           return {
             ...item,
             defects_percentage:
+              100 -
               ((item.production_quantity - item.ng_quantity) * 100) /
-              item.production_quantity,
+                item.production_quantity,
             details: details,
+          };
+        },
+      );
+      */
+
+      //! Calculate Defects Percentage
+      const summaryDetails = summary.map(
+        (item: { production_quantity: number; ng_quantity: number }) => {
+          return {
+            ...item,
+            defects_percentage:
+              100 -
+              ((item.production_quantity - item.ng_quantity) * 100) /
+                item.production_quantity,
           };
         },
       );
