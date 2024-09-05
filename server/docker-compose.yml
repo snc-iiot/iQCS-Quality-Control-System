@@ -5,6 +5,6 @@ services:
     build: .
     # container_name: my_nest_app
     ports:
-      - '30114:3000' # DEV
-      # - '30115:3000' # PROD
+      # - '30114:3000' # DEV
+      - '30115:3000' # PROD
     restart: always

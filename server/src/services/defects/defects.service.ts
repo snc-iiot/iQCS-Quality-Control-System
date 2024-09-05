@@ -1373,6 +1373,17 @@ export class DefectService {
         ? ['P', 'S']
         : [input.defects_type];
 
+      const allProcesses = await this.processRepository.find({
+        select: [
+          'process_id',
+          'process_name',
+          'process_description',
+          'process_order',
+          'process_color',
+          'plant_code',
+        ],
+      });
+
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
         .andWhere('t1.defects_type in (:...defects_type)', {
@@ -1384,7 +1395,7 @@ export class DefectService {
         })
         // .leftJoin('tb_processes', 't2', 't1.process_id = t2.process_id')
         .leftJoin('tb_part_material', 't2', 't1.part_id = t2.part_id')
-        // .leftJoin('tb_processes', 't3', 't1.process_id = t3.process_id')
+        // .leftJoin('tb_processes', 't3', 't1.plant_code = t3.plant_code')
         .leftJoin('tb_ng_cases', 't4', 't1.case_id = t4.case_id')
         .select(
           `t1.plant_code,t1.part_id,t2.part_code,t2.part_name,t2.processes
@@ -1432,7 +1443,9 @@ export class DefectService {
               part_id: cur.part_id,
               part_code: cur.part_code,
               part_name: cur.part_name,
-              processes: cur.processes,
+              processes: cur.processes.map((x: string) => {
+                return allProcesses.find((y) => y.process_id === x);
+              }),
               plant_code: cur.plant_code,
               production_quantity: Number(cur.production_quantity),
               ng_quantity: Number(cur.ng_quantity),
