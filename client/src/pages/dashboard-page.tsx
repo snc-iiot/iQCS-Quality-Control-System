@@ -148,6 +148,7 @@ export const DashboardPage: FC = () => {
 
     return Object.keys(dataPartName).map((label) => {
       const ng_quantity = dataPartName[label].reduce((sum, item) => sum + item.ng_quantity, 0);
+      const production_quantity = dataPartName[label].reduce((sum, item) => sum + item.production_quantity, 0);
       const dataDetails = groupByField(
         dataPartName[label].reduce<TPartSummaryDetails[]>((sum, item) => sum.concat(item?.details ?? []), []),
         "case_name"
@@ -162,6 +163,8 @@ export const DashboardPage: FC = () => {
         label,
         ng_quantity,
         details,
+        production_quantity,
+        defect: Math.ceil((ng_quantity / production_quantity) * 100),
       };
     });
   };
@@ -540,7 +543,15 @@ export const DashboardPage: FC = () => {
           </div>
         </div>
         {/*//! Summary Defects By Part Chart */}
-        <LineBarComposedChart />
+        <LineBarComposedChart
+          data={getPartSummaryList(partSummaryList)?.map(({ label, ng_quantity, production_quantity, defect }) => ({
+            label,
+            production_quantity,
+            ng_quantity,
+            defect,
+          }))}
+          isLoading={isLoadingSummaryDefectsByPartGraph}
+        />
       </div>
     </div>
   );

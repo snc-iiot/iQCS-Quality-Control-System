@@ -15,7 +15,6 @@ import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { renderFormattedDate } from "@/helpers/date-time.helper";
-import { cn } from "@/lib/utils";
 import { useDocument } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TDocument } from "@/types";

@@ -304,15 +304,16 @@ interface CustomizedLabelProps {
   y?: number;
   stroke?: string;
   value?: string | number;
+  unit?: string;
 }
 
 class CustomizedLabel extends React.PureComponent<CustomizedLabelProps> {
   render() {
-    const { x, y, stroke, value } = this.props;
+    const { x, y, stroke, value, unit } = this.props;
 
     return (
       <text x={x} y={y} dy={-4} fill={stroke || "#000"} fontSize={10} textAnchor="middle">
-        {value}
+        {`${value} ${unit}`}
       </text>
     );
   }
