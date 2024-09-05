@@ -153,7 +153,7 @@ export class DefectController {
     @Res() res: Response,
   ) {
     const result =
-      await this.defectService.partSummaryAllPlantByDateRange(query);
+      await this.defectService.partSummaryAllPlantByDateRange2(query);
     return res.status(result.statusCode).json(result);
   }
 
