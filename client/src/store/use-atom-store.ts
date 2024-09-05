@@ -5,6 +5,7 @@ import {
   defectSummaryAtom,
   documentAtom,
   graphSummaryAtom,
+  historyUpdatePriceAtom,
   machineAtom,
   ngCauseAtom,
   partAtom,
@@ -14,8 +15,8 @@ import {
   processAtom,
   productivityAtom,
   productivitySummaryAtom,
+  sncOverviewAtom,
   topDefectAtom,
-  historyUpdatePriceAtom,
 } from "./atom";
 
 export const useAtomStore = () => {
@@ -35,6 +36,7 @@ export const useAtomStore = () => {
   const [accountList, setAccountList] = useAtom(accountAtom);
   const [priceRatioList, setPriceRatioList] = useAtom(priceRatioAtom);
   const [historyUpdatePriceList, setHistoryUpdatePriceList] = useAtom(historyUpdatePriceAtom);
+  const [sncOverviewList, setSNCOverviewList] = useAtom(sncOverviewAtom);
 
   return {
     plantList,
@@ -69,5 +71,7 @@ export const useAtomStore = () => {
     setPriceRatioList,
     historyUpdatePriceList,
     setHistoryUpdatePriceList,
+    sncOverviewList,
+    setSNCOverviewList,
   };
 };

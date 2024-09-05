@@ -29,3 +29,37 @@ export const DEFECT_TYPE = [
     value: "P",
   },
 ];
+
+export const MODE_OPTIONS = [
+  {
+    label: "รายวัน / Daily",
+    value: "daily",
+  },
+  {
+    label: "ช่วงวัน / Period",
+    value: "period",
+  },
+  {
+    label: "สัปดาห์ / Week",
+    value: "week",
+  },
+  {
+    label: "รายเดือน / Monthly",
+    value: "monthly",
+  },
+];
+
+export const DEFECTION_TYPE_OPTIONS = [
+  {
+    label: "Part + Shop (All)",
+    value: "ALL",
+  },
+  {
+    label: "Part (Incoming)",
+    value: "P",
+  },
+  {
+    label: "Shop (In-process)",
+    value: "S",
+  },
+];

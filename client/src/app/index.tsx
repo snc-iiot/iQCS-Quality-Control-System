@@ -1,4 +1,5 @@
 import { HomeLayout, RootLayout, SettingWrapper } from "@/layout";
+import { OverviewLayout } from "@/layout/overview-layout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   AccountSettingPage,
@@ -13,6 +14,7 @@ import {
   PartPage,
   ProcessPage,
   SettingMachinePage,
+  SNCOverview,
 } from "../pages";
 import DocumentManagementPage from "../pages/document-management-page";
 import LoggingProductivityPage from "../pages/logging-productivity-page";
@@ -27,6 +29,9 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/snc-overview" element={<OverviewLayout />}>
+            <Route index element={<SNCOverview />} />
+          </Route>
           <Route element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="/logging">

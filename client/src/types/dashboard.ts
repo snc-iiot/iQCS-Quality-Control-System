@@ -27,3 +27,16 @@ export type TPartSummary = {
 };
 
 export type TDefectsTypeReq = "ALL" | "P" | "S";
+
+export type TSNCOverview = {
+  process_id: string;
+  process_name: string;
+  process_description: string;
+  part_id: string;
+  part_code: string;
+  part_name: string;
+  plant_code: string;
+  production_quantity: number;
+  ng_quantity: number;
+  defects_percentage: number;
+};
