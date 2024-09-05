@@ -119,6 +119,7 @@ export class AppModule implements NestModule {
         //   '/defects-logging/graph-summary-by-date-range',
         //   '/defects-logging/top-rank-by-date-range',
         '/defects-logging/parts-summary-all-plant',
+        '/defects-logging/part-details',
       )
       .forRoutes({
         path: '/defects-logging*',

@@ -16,6 +16,7 @@ import {
   FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
   CreateDefectsMoreNgCasesDto,
+  FindPartByDateRangeDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
 import { FtpUploadFileFromBase64 } from 'src/common/utils';
@@ -187,7 +188,7 @@ export class DefectService {
         };
         const created = await this.defectsLoggingRepository.save(record);
       } else {
-        const records = input.defects.map((item) => ({
+        const records = input.defects.map((item, index) => ({
           datetime: input.datetime,
           defects_type: input.defects_type,
           process_id: input.process_id,
@@ -197,7 +198,8 @@ export class DefectService {
           //! Not required
           machine_id: !Boolean(input.machine_id) ? null : input.machine_id,
           operator_id: !Boolean(input.operator_id) ? null : input.operator_id,
-          production_quantity: input.production_quantity ?? 0,
+          production_quantity:
+            index == 0 ? (input.production_quantity ?? 0) : 0,
           rework_quantity: input.rework_quantity ?? 0,
           scrap_quantity: input.scrap_quantity ?? 0,
           claim_supplier_quantity: input.claim_supplier_quantity ?? 0,
@@ -1147,7 +1149,7 @@ export class DefectService {
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .andWhere('t1.defects_type in (:...defects_type)', {
+        .where('t1.defects_type in (:...defects_type)', {
           defects_type: filterDefectsType,
         })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -1386,7 +1388,7 @@ export class DefectService {
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
-        .andWhere('t1.defects_type in (:...defects_type)', {
+        .where('t1.defects_type in (:...defects_type)', {
           defects_type: filterDefectsType,
         })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
@@ -1564,6 +1566,101 @@ export class DefectService {
         // data: summary,
         data: summaryDetails,
         // data: [input],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async partDefectsDetailsByDateRange(
+    input: FindPartByDateRangeDto,
+  ): Promise<TServiceResponse> {
+    try {
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/part-details_${input.start_date}_${input.end_date}_${input.part_id}_${input.process_id}_${input.defects_type ?? 'ALL'}`;
+      // console.log(cacheKey);
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
+
+      const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
+      const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
+      endDatetime.setHours(endDatetime.getHours() + 23);
+
+      // return {
+      //   status: 'success',
+      //   statusCode: 200,
+      //   message: 'Demo',
+      //   // data: [input],
+      //   data: [
+      //     {
+      //       start_datetime: startDatetime,
+      //       end_datetime: endDatetime,
+      //     },
+      //   ],
+      // };
+      // /*
+
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
+      const allProcesses = await this.processRepository.find({
+        select: [
+          'process_id',
+          'process_name',
+          'process_description',
+          'process_order',
+          'process_color',
+          'plant_code',
+        ],
+      });
+
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
+        .where('t1.part_id = :part_id', { part_id: input.part_id })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
+        })
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+          start_datetime: startDatetime,
+          end_datetime: endDatetime,
+        })
+        .leftJoin('tb_part_material', 't2', 't1.part_id = t2.part_id')
+        .leftJoin('tb_ng_cases', 't3', 't1.case_id = t3.case_id')
+        .select(
+          `t1.part_id,t2.part_code,t2.part_name,t1.case_id,t3.case_name
+          ,sum(t1.production_quantity) as production_quantity
+          ,sum(t1.ng_quantity) as ng_quantity`,
+        )
+        .groupBy('t1.part_id,t2.part_code,t2.part_name,t1.case_id,t3.case_name')
+        .orderBy('ng_quantity', 'DESC')
+        .getRawMany();
+
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, results, cacheTTL);
+      //! ./Check Cache
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Gert part defects details by date range',
+        data: results,
       };
     } catch (error) {
       return {

@@ -22,6 +22,7 @@ import {
   FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
   CreateDefectsMoreNgCasesDto,
+  FindPartByDateRangeDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
 
@@ -153,7 +154,17 @@ export class DefectController {
     @Res() res: Response,
   ) {
     const result =
-      await this.defectService.partSummaryAllPlantByDateRange2(query);
+      await this.defectService.partSummaryAllPlantByDateRange(query);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('part-details')
+  async partDefectsDetailsByDateRange(
+    @Query() query: FindPartByDateRangeDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.defectService.partDefectsDetailsByDateRange(query);
     return res.status(result.statusCode).json(result);
   }
 
