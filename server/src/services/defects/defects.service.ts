@@ -1109,7 +1109,7 @@ export class DefectService {
       //! Check Cache
       const cacheKey = `/iqcs/dev/v1/defects-logging/part-summary-all-plant_${input.start_date}_${input.end_date}_${input.defects_type}`;
       // console.log(cacheKey);
-      const cacheTTL = 3 * 1000; // 30 seconds
+      const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
       if (cacheValue !== undefined) {
         return {
