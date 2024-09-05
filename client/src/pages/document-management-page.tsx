@@ -15,7 +15,6 @@ import { Dropdown } from "@/components/ui/drop-down";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { renderFormattedDate } from "@/helpers/date-time.helper";
-import { cn } from "@/lib/utils";
 import { useDocument } from "@/services/hooks";
 import { useAtomStore } from "@/store";
 import { TDocument } from "@/types";
@@ -71,123 +70,111 @@ const DocumentManagementPage = () => {
             const { document_name, creator_name, updated_at, source_file, document_id } = info;
             const typeFile = source_file?.split(".")[source_file?.split(".")?.length - 1];
             return (
-              <div
-                key={i}
-                className="flex h-[16rem] w-full cursor-pointer flex-col gap-1 overflow-clip rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
-              >
-                <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip">
-                  <div className="flex-1 overflow-hidden">
-                    <p className="truncate text-sm font-medium">{document_name}</p>
-                  </div>
-                  <Dropdown
-                    icon={<Ellipsis size={28} className="w-min rounded-full p-1 hover:bg-gray-300" />}
-                    content={
-                      <div className="flex flex-col">
-                        <div
-                          className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
-                          onClick={() => {
-                            setIsDialogUpdateOpen(true);
-                            setSelectedDocument(info);
-                          }}
-                        >
-                          <Pencil size={18} />
-                          <p className="text-sm font-medium">Edit</p>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div
+                      key={i}
+                      className="flex h-[16rem] w-full cursor-pointer flex-col gap-1 overflow-clip rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
+                    >
+                      <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip">
+                        <div className="flex-1 overflow-hidden">
+                          <p className="truncate text-sm font-medium">{document_name}</p>
                         </div>
-                        <div
-                          className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
-                          onClick={() => navigator.clipboard.writeText(source_file)}
-                        >
-                          <Copy size={18} />
-                          <p className="text-sm font-medium">Copy link</p>
-                        </div>
-
-                        <AlertDialog>
-                          <AlertDialogTrigger>
-                            <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
-                              <Trash2 size={18} />
-                              <p className="text-sm font-medium">Delete</p>
-                            </div>
-                          </AlertDialogTrigger>{" "}
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={async () => {
-                                  const res = await mutateDeleteDocument(document_id);
-                                  console.log(res);
+                        <Dropdown
+                          icon={<Ellipsis size={28} className="w-min rounded-full p-1 hover:bg-gray-300" />}
+                          content={
+                            <div className="flex flex-col">
+                              <div
+                                className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
+                                onClick={() => {
+                                  setIsDialogUpdateOpen(true);
+                                  setSelectedDocument(info);
                                 }}
                               >
-                                ลบ / Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                <Pencil size={18} />
+                                <p className="text-sm font-medium">Edit</p>
+                              </div>
+                              <div
+                                className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100"
+                                onClick={() => navigator.clipboard.writeText(source_file)}
+                              >
+                                <Copy size={18} />
+                                <p className="text-sm font-medium">Copy link</p>
+                              </div>
+
+                              <AlertDialog>
+                                <AlertDialogTrigger>
+                                  <div className="flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-100">
+                                    <Trash2 size={18} />
+                                    <p className="text-sm font-medium">Delete</p>
+                                  </div>
+                                </AlertDialogTrigger>{" "}
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={async () => {
+                                        const res = await mutateDeleteDocument(document_id);
+                                        console.log(res);
+                                      }}
+                                    >
+                                      ลบ / Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          }
+                        />
                       </div>
-                    }
-                  />
-                </div>
-                <a
-                  href={source_file}
-                  target="_blank"
-                  className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white"
-                >
-                  {typeFile === "pdf" ? (
-                    <iframe src={source_file} />
-                  ) : (
-                    <div className="p-20">
-                      <img src="https://cdn-icons-png.freepik.com/512/8361/8361467.png" alt="xlsx" />
+                      <a
+                        href={source_file}
+                        target="_blank"
+                        className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-white"
+                      >
+                        {typeFile === "pdf" ? (
+                          <iframe src={source_file} />
+                        ) : (
+                          <div className="p-20">
+                            <img src="https://cdn-icons-png.freepik.com/512/8361/8361467.png" alt="xlsx" />
+                          </div>
+                        )}
+                        <div className="absolute left-0 top-0 h-full w-full" />
+                      </a>
+
+                      <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00000020]">
+                          <User size={20} />
+                        </div>
+                        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+                          <p className="truncate text-xs font-medium">{creator_name}</p>
+                          <div className="min-h-[4px] min-w-[4px] rounded-full bg-black" />
+                          <p className="whitespace-nowrap text-xs font-medium">{renderFormattedDate(updated_at)}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div className="absolute left-0 top-0 h-full w-full" />
-                </a>
-                <div
-                  className={cn(
-                    "rounded-md bg-white p-2",
-                    (info?.expire_date != "" && info?.expire_date != null) ||
-                      (info?.effective_date != "" && info?.effective_date != null) ||
-                      (info?.document_description != "" && info?.document_description != null)
-                      ? "block"
-                      : "hidden"
-                  )}
-                >
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <p className="line-clamp-2 text-xs font-medium">
-                          {info?.document_description ?? "No description"}
-                        </p>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] rounded-md bg-white p-2 shadow-md">
-                        <p className="text-xs font-medium">
-                          {info?.document_description ? info?.document_description : "No description for this document"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <p className="text-xs font-medium">
-                    {info?.effective_date ? `Effective Date: ${renderFormattedDate(info?.effective_date)}` : ""}
-                  </p>
-                  <p className="text-xs font-medium">
-                    {info?.expire_date ? `Expire Date: ${renderFormattedDate(info?.expire_date)}` : ""}
-                  </p>
-                </div>
-                <div className="flex h-max w-full items-center justify-center gap-1 overflow-clip pt-1">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00000020]">
-                    <User size={20} />
-                  </div>
-                  <div className="flex flex-1 items-center gap-1 overflow-hidden">
-                    <p className="truncate text-xs font-medium">{creator_name}</p>
-                    <div className="min-h-[4px] min-w-[4px] rounded-full bg-black" />
-                    <p className="whitespace-nowrap text-xs font-medium">{renderFormattedDate(updated_at)}</p>
-                  </div>
-                </div>
-              </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-[300px] rounded-md bg-white p-2 shadow-md">
+                    <p className="text-xs font-medium">
+                      {info?.document_description ? info?.document_description : "No description for this document"}
+                    </p>
+
+                    <p className="text-xs font-medium">
+                      {info?.effective_date ? `Effective Date: ${renderFormattedDate(info?.effective_date)}` : ""}
+                    </p>
+                    <p className="text-xs font-medium">
+                      {info?.expire_date ? `Expire Date: ${renderFormattedDate(info?.expire_date)}` : ""}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             );
           })}
         </div>
