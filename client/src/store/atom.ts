@@ -15,6 +15,7 @@ import {
   TProductivity,
   TProductivitySummary,
   TSNCOverview,
+  TSNCPartDetail,
   TTopDefect,
 } from "@/types";
 import { atom } from "jotai";
@@ -36,3 +37,4 @@ export const accountAtom = atom<TAccount[]>([]);
 export const priceRatioAtom = atom<TPriceRatio[]>([]);
 export const historyUpdatePriceAtom = atom<THistoryUpdatePrice[]>([]);
 export const sncOverviewAtom = atom<TSNCOverview[]>([]);
+export const sncPartDetailAtom = atom<TSNCPartDetail[]>([]);

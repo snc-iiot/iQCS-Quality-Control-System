@@ -4,6 +4,7 @@ import { AuthService } from "@/services/auth.service";
 import { LogOut } from "lucide-react";
 import { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 import { Icons } from "./icons";
 
 interface Props {
@@ -68,15 +69,28 @@ const Header: FC<Props> = ({ isAvatar = false, disableNav = false }) => {
           })}
         </div>
       )}
-      <button
-        className="flex items-center gap-1 md:hidden lg:hidden"
-        onClick={async () => {
-          const isLogged = await authService.signOut();
-          isLogged && navigate("/login");
-        }}
-      >
-        <LogOut size={20} className="text-red-500" />
-      </button>
+      {!disableNav && (
+        <button
+          className="flex items-center gap-1 md:hidden lg:hidden"
+          onClick={async () => {
+            const isLogged = await authService.signOut();
+            isLogged && navigate("/login");
+          }}
+        >
+          <LogOut size={20} className="text-red-500" />
+        </button>
+      )}
+      {disableNav && (
+        <Button
+          variant="link"
+          className="flex items-center gap-1"
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
+          เข้าสู่ระบบ / Sign In
+        </Button>
+      )}
     </div>
   );
 };

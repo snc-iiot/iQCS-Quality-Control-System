@@ -165,7 +165,6 @@ const DocumentManagementPage = () => {
                     <p className="text-xs font-medium">
                       {info?.document_description ? info?.document_description : "No description for this document"}
                     </p>
-
                     <p className="text-xs font-medium">
                       {info?.effective_date ? `Effective Date: ${renderFormattedDate(info?.effective_date)}` : ""}
                     </p>

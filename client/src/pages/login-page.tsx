@@ -133,6 +133,12 @@ export const LoginPage: FC = () => {
                   เข้าสู่ระบบ / Sign In{" "}
                 </Button>
               </div>
+              <div className="h-[1px] w-full border-dashed bg-border" />
+              <div>
+                <Button variant="outline" className="w-full" type="button" onClick={() => navigate("/snc-overview")}>
+                  ภาพรวมของระบบ / Overview
+                </Button>
+              </div>
             </div>
           )}
         </FormField>

@@ -16,6 +16,7 @@ import {
   productivityAtom,
   productivitySummaryAtom,
   sncOverviewAtom,
+  sncPartDetailAtom,
   topDefectAtom,
 } from "./atom";
 
@@ -37,6 +38,7 @@ export const useAtomStore = () => {
   const [priceRatioList, setPriceRatioList] = useAtom(priceRatioAtom);
   const [historyUpdatePriceList, setHistoryUpdatePriceList] = useAtom(historyUpdatePriceAtom);
   const [sncOverviewList, setSNCOverviewList] = useAtom(sncOverviewAtom);
+  const [sncPartDetailList, setSNCPartDetailList] = useAtom(sncPartDetailAtom);
 
   return {
     plantList,
@@ -73,5 +75,7 @@ export const useAtomStore = () => {
     setHistoryUpdatePriceList,
     sncOverviewList,
     setSNCOverviewList,
+    sncPartDetailList,
+    setSNCPartDetailList,
   };
 };

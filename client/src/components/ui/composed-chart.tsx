@@ -1,5 +1,6 @@
+import { FileChartPie } from "lucide-react";
 import { FC } from "react";
-import { Area, Bar, CartesianGrid, ComposedChart as ComposedRechart, Line, XAxis, YAxis } from "recharts";
+import { Area, Bar, CartesianGrid, ComposedChart as ComposedRechart, LabelList, Line, XAxis, YAxis } from "recharts";
 import { CurveType } from "recharts/types/shape/Curve";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, CustomizedLabel } from "./chart";
 
@@ -12,9 +13,16 @@ type TComposedChart = {
     | { chart?: "Ber"; type?: string }
     | { chart?: "Line" | "Area"; type?: CurveType }
   ))[];
+  enableLabelList?: boolean;
+  emptyLabel?: string;
 };
 
-const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
+const ComposedChart: FC<TComposedChart> = ({
+  data,
+  Config,
+  enableLabelList = false,
+  emptyLabel = "No data available for this period of time or defect type",
+}) => {
   const chartConfig = {
     desktop: {
       label: "Desktop",
@@ -26,7 +34,16 @@ const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
     },
   } satisfies ChartConfig;
 
-  const dataObjectKeys = Object?.keys(data[0]);
+  if (data?.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-2 text-sm">
+        <FileChartPie className="h-10 w-10 text-gray-400" strokeWidth={1.5} />
+        {emptyLabel}
+      </div>
+    );
+  }
+
+  const dataObjectKeys = Object?.keys(data?.[0]);
   const YAxisRight = Config?.find(({ yAxisId }) => yAxisId === "right");
 
   return (
@@ -50,9 +67,9 @@ const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
         <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
         {dataObjectKeys?.slice(1)?.map((key) => {
           const configItem = Config?.find((k) => k?.key === key);
-
           return configItem?.chart === "Line" ? (
             <Line
+              key={`line-${key}`}
               type={configItem?.type}
               dataKey={key}
               stroke={configItem?.color ?? "#102693"}
@@ -67,6 +84,7 @@ const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
             />
           ) : configItem?.chart === "Area" ? (
             <Area
+              key={`area-${key}`}
               type={configItem?.type}
               dataKey={key}
               stroke={configItem?.color ?? "#102693"}
@@ -81,6 +99,7 @@ const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
             />
           ) : (
             <Bar
+              key={`bar-${key}`}
               type={`${configItem?.type}`}
               dataKey={key}
               fill={configItem?.color ?? "#102693"}
@@ -92,7 +111,9 @@ const ComposedChart: FC<TComposedChart> = ({ data, Config }) => {
                 )
               }
               yAxisId={configItem?.yAxisId}
-            />
+            >
+              {enableLabelList && <LabelList dataKey={key} position="top" fontSize={10} />}
+            </Bar>
           );
         })}
       </ComposedRechart>

@@ -25,11 +25,55 @@ interface IFilteredProps {
   }) => void;
 }
 
+const handleModeChange = (
+  selectValue: string,
+  value: IFilteredProps["value"],
+  onChange: IFilteredProps["onChange"]
+) => {
+  const { start_date } = value;
+
+  switch (selectValue) {
+    case "week": {
+      const [year, week] = getWeekString(new Date(start_date)).split("-W");
+      const YEAR = parseInt(year);
+      const WEEK = parseInt(week);
+      const { startDate, endDate } = getStartDateEndDateOfWeek(WEEK, YEAR);
+
+      onChange({
+        ...value,
+        mode: selectValue as "week",
+        start_date: renderFormattedPayloadDate(new Date(startDate)) ?? "",
+        end_date: renderFormattedPayloadDate(new Date(endDate)) ?? "",
+      });
+      break;
+    }
+    case "period": {
+      onChange({
+        ...value,
+        mode: selectValue as "period",
+        end_date: start_date,
+      });
+      break;
+    }
+    default: {
+      onChange({
+        ...value,
+        mode: selectValue as "daily" | "monthly",
+      });
+    }
+  }
+};
+
 export const Filtered: FC<IFilteredProps> = ({ modeOptions, defectTypeOptions, value, onChange }) => {
   const { mode, defect_type, start_date, end_date } = value;
 
+  const handleDateChange = (newStartDate: string, newEndDate: string = end_date) => {
+    onChange({ ...value, start_date: newStartDate, end_date: newEndDate });
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex w-full flex-col items-start gap-2 md:w-max md:flex-row">
+      {/* Defect Type Selection */}
       <SelectForm
         options={defectTypeOptions}
         className="w-full md:w-[10rem] lg:w-[10rem]"
@@ -41,82 +85,61 @@ export const Filtered: FC<IFilteredProps> = ({ modeOptions, defectTypeOptions, v
         }
         value={defect_type}
       />
+
+      {/* Mode Selection */}
       <SelectForm
         options={modeOptions}
         className="w-full md:w-[10rem] lg:w-[10rem]"
-        onChange={(e) => {
-          const selectValue = e.target.value;
-          if (selectValue === "week") {
-            const [year, week] = getWeekString(new Date(value?.start_date)).split("-W");
-            const YEAR = parseInt(year);
-            const WEEK = parseInt(week);
-            const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
-            onChange({
-              ...value,
-              mode: e.target.value as "daily" | "period" | "week" | "monthly",
-              start_date: renderFormattedPayloadDate(new Date(start_date)) ?? "",
-              end_date: renderFormattedPayloadDate(new Date(end_date)) ?? "",
-            });
-          } else if (selectValue == "period") {
-            onChange({
-              ...value,
-              mode: e.target.value as "daily" | "period" | "week" | "monthly",
-              end_date: start_date,
-            });
-          } else {
-            onChange({
-              ...value,
-              mode: e.target.value as "daily" | "period" | "week" | "monthly",
-            });
-          }
-        }}
+        onChange={(e) => handleModeChange(e.target.value, value, onChange)}
         value={mode}
       />
+
+      {/* Week Input */}
       {mode === "week" && (
         <DateInputForm
           onChange={(e) => {
-            const dateValue = e.target.value;
-            const [year, week] = dateValue.split("-W");
+            const [year, week] = e.target.value.split("-W");
             const YEAR = parseInt(year);
             const WEEK = parseInt(week);
-            const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
-            onChange({
-              ...value,
-              start_date: renderFormattedPayloadDate(new Date(start_date)) ?? "",
-              end_date: renderFormattedPayloadDate(new Date(end_date)) ?? "",
-            });
+            const { startDate, endDate } = getStartDateEndDateOfWeek(WEEK, YEAR);
+            handleDateChange(
+              renderFormattedPayloadDate(new Date(startDate)) ?? "",
+              renderFormattedPayloadDate(new Date(endDate)) ?? ""
+            );
           }}
           value={getWeekString(new Date(start_date))}
           className="block w-full md:w-[14rem] lg:w-[10rem]"
           type="week"
         />
       )}
+
+      {/* Daily, Period, Monthly Date Input */}
       {(mode === "daily" || mode === "period" || mode === "monthly") && (
         <DateInputForm
           className="block w-full md:w-[14rem] lg:w-[10rem]"
-          value={start_date?.slice(0, mode === "monthly" ? 7 : 10)}
+          value={start_date.slice(0, mode === "monthly" ? 7 : 10)}
           onChange={(e) => {
-            const start_date = e.target.value + (mode === "monthly" ? "-01" : "");
-            let new_end_date = end_date;
+            const newStartDate = e.target.value + (mode === "monthly" ? "-01" : "");
+            let newEndDate = end_date;
+
             if (mode === "monthly") {
-              const [year, month] = start_date.split("-");
+              const [year, month] = newStartDate.split("-");
               const endOfMonth = new Date(Number(year), Number(month), 0);
-              new_end_date = `${year}-${month}-${endOfMonth.getDate()}`;
+              newEndDate = `${year}-${month}-${endOfMonth.getDate()}`;
             }
-            onChange({
-              ...value,
-              start_date,
-              end_date: new_end_date,
-            });
+
+            handleDateChange(newStartDate, newEndDate);
           }}
           type={mode === "monthly" ? "month" : "date"}
         />
       )}
+
+      {/* End Date for Period Mode */}
       {mode === "period" && (
         <DateInputForm
           className="block w-full md:w-[14rem] lg:w-[10rem]"
           value={end_date}
-          onChange={(e) => onChange({ ...value, end_date: e.target.value })}
+          onChange={(e) => handleDateChange(start_date, e.target.value)}
           type="date"
           min={start_date}
         />

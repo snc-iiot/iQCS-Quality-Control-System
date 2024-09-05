@@ -60,3 +60,4 @@ export const DELETE_PRICE_RATIO = "DELETE_PRICE_RATIO";
 
 //snc overview
 export const GET_SNC_OVERVIEW = "GET_SNC_OVERVIEW";
+export const GET_SNC_PART_DETAIL = "GET_SNC_PART_DETAIL";

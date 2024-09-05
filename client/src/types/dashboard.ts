@@ -41,3 +41,14 @@ export type TSNCOverview = {
   ng_quantity: number;
   defects_percentage: number;
 };
+
+export type TSNCPartDetail = {
+  part_id: string;
+  part_code: string;
+  part_name: string;
+  case_id: string;
+  case_name: string;
+  description: string;
+  production_quantity: number;
+  ng_quantity: number;
+};
