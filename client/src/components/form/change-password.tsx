@@ -81,17 +81,17 @@ export const ChangePassword: FC<ChangePasswordProps> = ({ isTitleVisible, classN
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={errors.old_password}
-                type={view?.old_password ? "" : "old_password"}
+                type={view?.old_password ? "" : "password"}
                 required
               />
               {view?.old_password ? (
                 <EyeOff
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, old_password: false })}
                 />
               ) : (
                 <Eye
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, old_password: true })}
                 />
               )}
@@ -111,12 +111,12 @@ export const ChangePassword: FC<ChangePasswordProps> = ({ isTitleVisible, classN
               />
               {view?.new_password ? (
                 <EyeOff
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, new_password: false })}
                 />
               ) : (
                 <Eye
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, new_password: true })}
                 />
               )}
@@ -136,12 +136,12 @@ export const ChangePassword: FC<ChangePasswordProps> = ({ isTitleVisible, classN
               />
               {view?.confirm_new_password ? (
                 <EyeOff
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, confirm_new_password: false })}
                 />
               ) : (
                 <Eye
-                  className=" absolute bottom-2 right-2 cursor-pointer text-gray-400 hover:text-black"
+                  className=" absolute right-2 top-[2.1rem] cursor-pointer text-gray-400 hover:text-black"
                   onClick={() => setView({ ...view, confirm_new_password: true })}
                 />
               )}

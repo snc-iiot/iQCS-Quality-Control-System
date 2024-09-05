@@ -36,11 +36,22 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
-      "application/pdf": [],
-      "application/msword": [],
-      "application/csv": [],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
+      // "application/pdf": [],
+      // "application/csv": [],
+      // "application/msword": [],
+      // "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+      // "application/vnd.ms-excel": [],
+      // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
+      // "application/vnd.ms-powerpoint": [],
+      // "application/vnd.openxmlformats-officedocument.presentationml.presentation": [],
+      "application/pdf": [".pdf"],
+      "text/csv": [".csv"],
+      "application/msword": [".doc"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+      "application/vnd.ms-powerpoint": [".ppt"],
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
     },
     maxSize: 5242880, // 5MB
     maxFiles: 1,
@@ -143,9 +154,10 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
             />
 
             <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <label className="text-sm font-semibold">Document</label>
                 <p className="text-red-500">*</p>
+                <p className="text-xs text-red-500">( pdf, csv, doc, docx, xls, xlsx, ppt, pptx )</p>
               </div>
 
               {initialValues?.document_data ? (

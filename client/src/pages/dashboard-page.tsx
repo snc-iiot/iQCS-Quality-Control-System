@@ -513,7 +513,8 @@ export const DashboardPage: FC = () => {
             />
           </div>
           <div className="flex h-0 flex-grow flex-col">
-            {getPartSummaryList(partSummaryList)?.find(({ label }) => label === partSelected)?.details?.length === 0 ? (
+            {(getPartSummaryList(partSummaryList)?.find(({ label }) => label === partSelected)?.details?.length ??
+              0) === 0 ? (
               <div className="flex w-full justify-center">
                 <p className="text-xs">
                   {isLoadingSummaryDefectsByPartGraph

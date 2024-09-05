@@ -1239,7 +1239,8 @@ export const HistoryPage: FC = () => {
                       "QA Inspector": info?.creator_name,
                       "CAR No.": info?.car_no,
                       "Total Defect Cost (Baht)":
-                        Number(info?.rework_cost_per_unit ?? 0) + Number(info?.scrap_cost_per_unit ?? 0),
+                        Number(info?.rework_cost_per_unit ?? 0) * Number(info?.rework_quantity ?? 0) +
+                        Number(info?.scrap_cost_per_unit ?? 0) * Number(info?.scrap_quantity ?? 0),
                       "QCS No.": "",
                     }));
                     excelHelper.downloadExcelData(exportData, "defects");
