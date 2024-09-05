@@ -1107,7 +1107,7 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/part-summary-all-plant_${input.start_date}_${input.end_date}_${input.defects_type}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/parts-summary-all-plant_${input.start_date}_${input.end_date}_${input.defects_type ?? 'ALL'}`;
       // console.log(cacheKey);
       const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
