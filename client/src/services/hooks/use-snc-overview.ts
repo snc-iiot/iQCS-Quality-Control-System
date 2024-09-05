@@ -15,7 +15,7 @@ export const useSNCOverview = () => {
     defect_type: "ALL" | "P" | "S";
   }) => {
     return useQuery({
-      queryKey: [GET_SNC_OVERVIEW],
+      queryKey: [GET_SNC_OVERVIEW, start_date, end_date, defect_type],
       queryFn: (): Promise<TSNCOverview[]> =>
         getSNCOverview({
           start_date,

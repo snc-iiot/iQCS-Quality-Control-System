@@ -46,7 +46,7 @@ export class LocalStorageManager {
   static getItem(key: string): any {
     const encryptedValue = localStorage.getItem(key);
     if (!encryptedValue) {
-      console.warn(`No value found in localStorage for key: ${key}`);
+      // console.warn(`No value found in localStorage for key: ${key}`);
       return null;
     }
 

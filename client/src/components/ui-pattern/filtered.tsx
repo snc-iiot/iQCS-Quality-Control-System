@@ -44,7 +44,32 @@ export const Filtered: FC<IFilteredProps> = ({ modeOptions, defectTypeOptions, v
       <SelectForm
         options={modeOptions}
         className="w-full md:w-[10rem] lg:w-[10rem]"
-        onChange={(e) => onChange({ ...value, mode: e.target.value as "daily" | "period" | "week" | "monthly" })}
+        onChange={(e) => {
+          const selectValue = e.target.value;
+          if (selectValue === "week") {
+            const [year, week] = getWeekString(new Date(value?.start_date)).split("-W");
+            const YEAR = parseInt(year);
+            const WEEK = parseInt(week);
+            const { startDate: start_date, endDate: end_date } = getStartDateEndDateOfWeek(WEEK, YEAR);
+            onChange({
+              ...value,
+              mode: e.target.value as "daily" | "period" | "week" | "monthly",
+              start_date: renderFormattedPayloadDate(new Date(start_date)) ?? "",
+              end_date: renderFormattedPayloadDate(new Date(end_date)) ?? "",
+            });
+          } else if (selectValue == "period") {
+            onChange({
+              ...value,
+              mode: e.target.value as "daily" | "period" | "week" | "monthly",
+              end_date: start_date,
+            });
+          } else {
+            onChange({
+              ...value,
+              mode: e.target.value as "daily" | "period" | "week" | "monthly",
+            });
+          }
+        }}
         value={mode}
       />
       {mode === "week" && (
@@ -81,7 +106,7 @@ export const Filtered: FC<IFilteredProps> = ({ modeOptions, defectTypeOptions, v
             onChange({
               ...value,
               start_date,
-              end_date,
+              end_date: new_end_date,
             });
           }}
           type={mode === "monthly" ? "month" : "date"}
