@@ -73,6 +73,7 @@ export class UsersService {
         message: 'Login successfully',
         data: [
           {
+            user_id: user.user_id,
             email: user.email,
             name: user.name,
             role: user.role,

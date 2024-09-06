@@ -271,21 +271,33 @@ export class DefectService {
         .leftJoin('tb_part_material', 't4', 't1.part_id = t4.part_id')
         .leftJoin('tb_machines', 't5', 't1.machine_id = t5.machine_id')
         .leftJoin('tb_operators', 't6', 't1.operator_id = t6.operator_id')
+        .leftJoin(
+          'vw_update_prices',
+          't7',
+          't1.part_id=t7.part_id and t1.plant_code=t7.plant_code and t1.datetime between t7.start_effective_date and t7.end_effective_date',
+        )
         .select(
           `t1.*
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
           ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name,t4.customers
-          ,t5.machine_no,t5.machine_name,t6.employee_id,t6.operator_name`,
+          ,t5.machine_no,t5.machine_name,t6.employee_id,t6.operator_name
+          ,coalesce(t7.price,t4.price,0) as price,coalesce(t7.ng_price,t4.price * 1,0) as ng_price,coalesce(t7.scrap_price,t4.price * 1,0) as scrap_price,coalesce(t7.rework_price,t4.price * 0.5,0) as rework_price`,
         )
         .orderBy('t1.created_at', 'DESC')
         .getRawMany();
 
-      // const data = results.map((item) => ({
-      //   ...item,
-      //   rework_cost_per_unit: Number(item.rework_cost_per_unit),
-      //   scrap_cost_per_unit: Number(item.scrap_cost_per_unit),
-      // }));
+      const data = results.map((item) => ({
+        ...item,
+        // price: 10,
+        // ng_price: 10,
+        // scrap_price: 10,
+        // rework_price: 5,
+        price: Number(item.price),
+        ng_price: Number(item.ng_price),
+        scrap_price: Number(item.scrap_price),
+        rework_price: Number(item.rework_price),
+      }));
 
       //! Check Cache
       await this.cacheManager.set(cacheKey, results, cacheTTL);
@@ -295,8 +307,8 @@ export class DefectService {
         status: 'success',
         statusCode: 200,
         message: 'Defects raw data by datetime range',
-        // data: data,
-        data: results,
+        data: data,
+        // data: results,
         // data: [input],
       };
     } catch (error) {
