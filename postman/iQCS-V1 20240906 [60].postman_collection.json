@@ -1,0 +1,2250 @@
+{
+	"info": {
+		"_postman_id": "d84b6aec-29a6-4e0f-bfce-cd997e8e8d9b",
+		"name": "iQCS-V1 20240902 [60] ------------",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31779005",
+		"_collection_link": "https://planetary-water-657265.postman.co/workspace/SNC-ALL~754fd94d-339c-4b9d-ad0a-afe7838d4fe7/collection/31779005-d84b6aec-29a6-4e0f-bfce-cd997e8e8d9b?action=share&source=collection_link&creator=31779005"
+	},
+	"item": [
+		{
+			"name": "users [3]",
+			"item": [
+				{
+					"name": "for Maintain",
+					"item": [
+						{
+							"name": "Generate Password",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/gen-pass?password=0000",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"gen-pass"
+									],
+									"query": [
+										{
+											"key": "password",
+											"value": "0000"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"A\",\r\n    \"username\": \"A\",\r\n    \"password\": \"abcd\",\r\n    \"role\": \"USER\",\r\n    \"plant_code\": \"PLANT_TEST1\",\r\n\r\n    //! Not required\r\n    \"email\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Plants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/plants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"plants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { data: x } = pm.response.json();\r",
+									"if (x && x.length > 0) {\r",
+									"    const [{ token }] = x;\r",
+									"    pm.collectionVariables.set(\"auth_token\", `Bearer ${token}`);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"tester1\",\r\n    \"password\": \"0000\",\r\n    // \"plant_code\": \"PLANT_TEST1\"\r\n    \"plant_code\": \"TOOLBOX\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"old_password\": \"0000\",\r\n    \"new_password\": \"1111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "processes [6]",
+			"item": [
+				{
+					"name": "Create Process",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"process_name\": \"ASSEMBLY\",\r\n\r\n    //! Not required\r\n    \"process_description\": \"ASSEMBLY PROCESS\",\r\n    \"process_color\": \"#f00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/processes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Process",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"process_id\": \"4ea7fb81-dbb3-4399-b270-a9490786337d\",\r\n    \"process_name\": \"SPOT\",\r\n\r\n    //! Not required\r\n    \"process_description\": \"SPOT\",\r\n    \"process_color\": \"#f00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/processes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Process Order",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"processes\": [\r\n        \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n        \"b23d6394-1eb7-4c14-a688-c4e9d884a940\",\r\n        \"8832ed07-221b-4b04-ba9f-88c0f212662b\",\r\n        \"8ee1b9f7-8686-43c4-8480-dcd624e8a3ce\",\r\n        \"4c972945-4676-479d-a20b-057156438263\",\r\n        \"b7e9972d-d43f-43c0-a953-e671ed9acff9\",\r\n        \"784e1652-03ff-4282-aac5-23952ed182e1\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/processes/order",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Processes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/processes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Process",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/processes/info?process_id=b7e9972d-d43f-43c0-a953-e671ed9acff9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes",
+								"info"
+							],
+							"query": [
+								{
+									"key": "process_id",
+									"value": "b7e9972d-d43f-43c0-a953-e671ed9acff9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Process",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/processes?process_id=4ea7fb81-dbb3-4399-b270-a9490786337d",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"processes"
+							],
+							"query": [
+								{
+									"key": "process_id",
+									"value": "4ea7fb81-dbb3-4399-b270-a9490786337d"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ng-cases [5]",
+			"item": [
+				{
+					"name": "Create NG Case",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"case_name\": \"เสีย 1\",\r\n    \"processes\": [\"4ea7fb81-dbb3-4399-b270-a9490786337d\"], // array of process_id\r\n\r\n    //! Not required\r\n    \"description\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/ng-cases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ng-cases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update NG Case",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"case_id\": \"f5bc7d8f-d19a-403f-8763-e36a24c9d36e\",\r\n    \"case_name\": \"เสีย 1\",\r\n    \"processes\": [\"4ea7fb81-dbb3-4399-b270-a9490786337d\"], // array of process_id\r\n    \"description\": \"รายละเอียด\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/ng-cases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ng-cases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All NG Cases",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ng-cases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ng-cases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One NG Case",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ng-cases/info?case_id=37c9a002-4a88-45b0-b8a4-900bb9a7ce21",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ng-cases",
+								"info"
+							],
+							"query": [
+								{
+									"key": "case_id",
+									"value": "37c9a002-4a88-45b0-b8a4-900bb9a7ce21"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete NG Case",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ng-cases?case_id=e0038d77-7d28-4cca-ba8f-a522d3c6d34c",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ng-cases"
+							],
+							"query": [
+								{
+									"key": "case_id",
+									"value": "e0038d77-7d28-4cca-ba8f-a522d3c6d34c"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "parts [6]",
+			"item": [
+				{
+					"name": "Create Part",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"part_code\": \"ABCD\",\r\n    \"part_name\": \"Part ABCD\",\r\n    \"processes\": [\r\n        \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n        \"8832ed07-221b-4b04-ba9f-88c0f212662b\",\r\n        \"b23d6394-1eb7-4c14-a688-c4e9d884a940\",\r\n        \"784e1652-03ff-4282-aac5-23952ed182e1\",\r\n        \"b7e9972d-d43f-43c0-a953-e671ed9acff9\",\r\n        \"8ee1b9f7-8686-43c4-8480-dcd624e8a3ce\",\r\n        \"4c972945-4676-479d-a20b-057156438263\"\r\n    ],\r\n    \"price\": 1,\r\n    \r\n    //! Not required\r\n    \"sap_code\": \"\",\r\n    \"part_description\": \"\",\r\n    \"customers\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/parts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Parts (Import excel)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"part_code\": \"ABCD 1\",\r\n            \"part_name\": \"Part ABCD 1\",\r\n            \"processes\": [\"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\"],\r\n            \"price\": 1,\r\n            //! Not required\r\n            \"sap_code\": \"\",\r\n            \"part_description\": \"\",\r\n            \"customers\": [\"DAIKIN\"]\r\n        },\r\n        {\r\n            \"part_code\": \"ABCD 2\",\r\n            \"part_name\": \"Part ABCD 2\",\r\n            \"processes\": [\"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\"],\r\n            \"price\": 1,\r\n            //! Not required\r\n            \"sap_code\": \"\",\r\n            \"part_description\": \"\",\r\n            \"customers\": [\"DAIKIN\"]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/parts/import-excel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts",
+								"import-excel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Part",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"part_code\": \"A_BCD\",\r\n    \"part_name\": \"Part ABCD\",\r\n    \"processes\": [\r\n        \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n        \"8832ed07-221b-4b04-ba9f-88c0f212662b\",\r\n        \"b23d6394-1eb7-4c14-a688-c4e9d884a940\",\r\n        \"784e1652-03ff-4282-aac5-23952ed182e1\",\r\n        \"b7e9972d-d43f-43c0-a953-e671ed9acff9\",\r\n        \"8ee1b9f7-8686-43c4-8480-dcd624e8a3ce\",\r\n        \"4c972945-4676-479d-a20b-057156438263\"\r\n    ],\r\n    \"price\": 1,\r\n\r\n    //! Not required\r\n    \"sap_code\": \"\",\r\n    \"part_description\": \"\",\r\n    \"customers\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/parts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Parts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Part",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/info?part_id=95b35aa6-bfb9-433b-a94f-576feb5126a0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts",
+								"info"
+							],
+							"query": [
+								{
+									"key": "part_id",
+									"value": "95b35aa6-bfb9-433b-a94f-576feb5126a0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Part",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts?part_id=884eee28-807f-4ff5-a22c-9a25f839eed9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"parts"
+							],
+							"query": [
+								{
+									"key": "part_id",
+									"value": "884eee28-807f-4ff5-a22c-9a25f839eed9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "machines [5]",
+			"item": [
+				{
+					"name": "Create Machine",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"machine_name\": \"Cutting 2\",\r\n\r\n    //! Not required\r\n    \"machine_no\": \"\",\r\n    \"description\": \"\",\r\n    \"location\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/machines",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"machines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Machines",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/machines",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"machines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Machine",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/machines/info?machine_id=4f5875ae-160a-40b9-925d-ed7ed9339654",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"machines",
+								"info"
+							],
+							"query": [
+								{
+									"key": "machine_id",
+									"value": "4f5875ae-160a-40b9-925d-ed7ed9339654"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Machine",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"machine_id\": \"e5c39ffb-3580-44c6-aaee-11e45fff490f\",\r\n    \"machine_name\": \"Cutting 1\",\r\n\r\n    //! Not required\r\n    \"machine_no\": \"\",\r\n    \"description\": \"\",\r\n    \"location\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/machines",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"machines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Machine",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/machines?machine_id=e5c39ffb-3580-44c6-aaee-11e45fff490f",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"machines"
+							],
+							"query": [
+								{
+									"key": "machine_id",
+									"value": "e5c39ffb-3580-44c6-aaee-11e45fff490f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "operators [5]",
+			"item": [
+				{
+					"name": "Create Operator",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"operator_name\": \"A\",\r\n\r\n    //! Not required\r\n    \"employee_id\": \"\",\r\n    \"position\": \"\",\r\n    \"responsibility\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/operators",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"operators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Operator",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"operator_id\": \"3b340b3a-a543-4b5a-bd16-8d7570a21e68\",\r\n    \"operator_name\": \"A B\",\r\n\r\n    //! Not required\r\n    \"employee_id\": \"\",\r\n    \"position\": \"\",\r\n    \"responsibility\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/operators",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"operators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Operators",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/operators",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"operators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Operator",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/operators/info?operator_id=20a9ca25-0ce1-4850-8a5f-fda9eeb61fae",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"operators",
+								"info"
+							],
+							"query": [
+								{
+									"key": "operator_id",
+									"value": "20a9ca25-0ce1-4850-8a5f-fda9eeb61fae"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Operator",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/operators?operator_id=20a9ca25-0ce1-4850-8a5f-fda9eeb61fae",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"operators"
+							],
+							"query": [
+								{
+									"key": "operator_id",
+									"value": "20a9ca25-0ce1-4850-8a5f-fda9eeb61fae"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "update-price [3]",
+			"item": [
+				{
+					"name": "Save Update Price",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"effective_date\": \"2024-08-01\",\r\n    \"part_id\": \"c49d88ef-160d-4616-ad02-690008027499\",\r\n    \"price\": 10.5,\r\n\r\n    //! Not required\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/update-prices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"update-prices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Update Prices",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/update-prices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"update-prices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Update Price",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/update-prices?update_price_id=50536ef0-c6b1-4a2d-a1be-e31d5fd404f6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"update-prices"
+							],
+							"query": [
+								{
+									"key": "update_price_id",
+									"value": "50536ef0-c6b1-4a2d-a1be-e31d5fd404f6"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "price-ratios [3]",
+			"item": [
+				{
+					"name": "Save Price Ratio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"effective_date\": \"2024-01-01\",\r\n    \"ng_ratio\": 1,\r\n    \"scrap_ratio\": 0.8,\r\n    \"rework_ratio\": 0.5,\r\n\r\n    //! Not required\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/price-ratios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"price-ratios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Price Ratios",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/price-ratios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"price-ratios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Price Ratio",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/price-ratios?ratio_id=3f5ba950-ccc0-4efb-b77a-8d63fe3b105b",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"price-ratios"
+							],
+							"query": [
+								{
+									"key": "ratio_id",
+									"value": "3f5ba950-ccc0-4efb-b77a-8d63fe3b105b"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "documents [5]",
+			"item": [
+				{
+					"name": "Create Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"document_name\": \"Doc001\",\r\n    \"document_data\": \"data:application/pdf;base64,JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgPDwgL1R5cGUgL1BhZ2VzCiAgICAgL0tpZHMgWzMgMCBSXQogICAgIC9Db3VudCAxCiAgICAgL01lZGlhQm94IFswIDAgMzAwIDE0NF0KICA+PgplbmRvYmoKCjMgMCBvYmoKICA8PCAgL1R5cGUgL1BhZ2UKICAgICAgL1BhcmVudCAyIDAgUgogICAgICAvUmVzb3VyY2VzCiAgICAgICA8PCAvRm9udAogICAgICAgICAgIDw8IC9GMQogICAgICAgICAgICAgICA8PCAvVHlwZSAvRm9udAogICAgICAgICAgICAgICAgICAvU3VidHlwZSAvVHlwZTEKICAgICAgICAgICAgICAgICAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgogICAgICAgICAgICAgICA+PgogICAgICAgICAgID4+CiAgICAgICA+PgogICAgICAvQ29udGVudHMgNCAwIFIKICA+PgplbmRvYmoKCjQgMCBvYmoKICA8PCAvTGVuZ3RoIDU1ID4+CnN0cmVhbQogIEJUCiAgICAvRjEgMTggVGYKICAgIDAgMCBUZAogICAgKEhlbGxvIFdvcmxkKSBUagogIEVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxOCAwMDAwMCBuIAowMDAwMDAwMDc3IDAwMDAwIG4gCjAwMDAwMDAxNzggMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBuIAp0cmFpbGVyCiAgPDwgIC9Sb290IDEgMCBSCiAgICAgIC9TaXplIDUKICA+PgpzdGFydHhyZWYKNTY1CiUlRU9GCg==\",\r\n\r\n    //! Not required\r\n    \"document_description\": \"\",\r\n    \"effective_date\": \"\",\r\n    \"expire_date\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/documents",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Document",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"document_id\": \"f83d20b9-30b1-402b-8b4f-34e97efa09f0\",\r\n    \"document_name\": \"Test #3\",\r\n    \"document_data\": null,\r\n\r\n    //! Not required\r\n    \"document_description\": \"\",\r\n    \"effective_date\": \"\",\r\n    \"expire_date\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/documents",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update Document",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"document_id\": \"f83d20b9-30b1-402b-8b4f-34e97efa09f0\",\r\n    \"document_name\": \"Test #3\",\r\n    \"document_data\": \"data:application/pdf;base64,JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgPDwgL1R5cGUgL1BhZ2VzCiAgICAgL0tpZHMgWzMgMCBSXQogICAgIC9Db3VudCAxCiAgICAgL01lZGlhQm94IFswIDAgMzAwIDE0NF0KICA+PgplbmRvYmoKCjMgMCBvYmoKICA8PCAgL1R5cGUgL1BhZ2UKICAgICAgL1BhcmVudCAyIDAgUgogICAgICAvUmVzb3VyY2VzCiAgICAgICA8PCAvRm9udAogICAgICAgICAgIDw8IC9GMQogICAgICAgICAgICAgICA8PCAvVHlwZSAvRm9udAogICAgICAgICAgICAgICAgICAvU3VidHlwZSAvVHlwZTEKICAgICAgICAgICAgICAgICAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgogICAgICAgICAgICAgICA+PgogICAgICAgICAgID4+CiAgICAgICA+PgogICAgICAvQ29udGVudHMgNCAwIFIKICA+PgplbmRvYmoKCjQgMCBvYmoKICA8PCAvTGVuZ3RoIDU1ID4+CnN0cmVhbQogIEJUCiAgICAvRjEgMTggVGYKICAgIDAgMCBUZAogICAgKEhlbGxvIFdvcmxkKSBUagogIEVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxOCAwMDAwMCBuIAowMDAwMDAwMDc3IDAwMDAwIG4gCjAwMDAwMDAxNzggMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBuIAp0cmFpbGVyCiAgPDwgIC9Sb290IDEgMCBSCiAgICAgIC9TaXplIDUKICA+PgpzdGFydHhyZWYKNTY1CiUlRU9GCg==\",\r\n\r\n    //! Not required\r\n    \"document_description\": \"\",\r\n    \"effective_date\": \"\",\r\n    \"expire_date\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/documents",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"documents"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Get All Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/documents",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Document",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/documents/info?document_id=12aad197-92e2-4667-b1ef-707302624c09",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"documents",
+								"info"
+							],
+							"query": [
+								{
+									"key": "document_id",
+									"value": "12aad197-92e2-4667-b1ef-707302624c09"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Document",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/documents?document_id=12aad197-92e2-4667-b1ef-707302624c09",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "document_id",
+									"value": "12aad197-92e2-4667-b1ef-707302624c09"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "defects-logging [11]",
+			"item": [
+				{
+					"name": "Create Defects",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"datetime\": \"2024-08-31T17:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"a9e240b5-0942-4e4a-98cb-016a61329d93\",\r\n    \"case_id\": \"e7e3a8a4-9639-4a1b-9fa7-bf083cf6e5db\",\r\n    \"ng_quantity\": 2,\r\n\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"production_quantity\": 0,\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": 0,\r\n    \"image\": \"\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/defects-logging",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Defects",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"datetime\": \"2024-08-31T17:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"a9e240b5-0942-4e4a-98cb-016a61329d93\",\r\n    \"case_id\": \"e7e3a8a4-9639-4a1b-9fa7-bf083cf6e5db\",\r\n    \"production_quantity\": 0,\r\n    \"ng_quantity\": 2,\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": 0,\r\n    \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/defects-logging",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"defects-logging"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Create Defects (More Defects Cases)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"datetime\": \"2024-08-01T17:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"production_quantity\": 10,\r\n    \"defects\": [\r\n        {\r\n            \"case_id\": \"592641f9-77cf-41c8-a412-33b7f34937a4\",\r\n            \"ng_quantity\": 1\r\n        },\r\n        {\r\n            \"case_id\": \"734227b5-067d-4652-9e15-ba87692ca07b\",\r\n            \"ng_quantity\": 2\r\n        }\r\n    ],\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": 0,\r\n    \"image\": \"\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/defects-logging/more-defects",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"more-defects"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Defects (More Defects Cases)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"datetime\": \"2024-08-01T17:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"production_quantity\": 10,\r\n    \"defects\": [\r\n        {\r\n            \"case_id\": \"592641f9-77cf-41c8-a412-33b7f34937a4\",\r\n            \"ng_quantity\": 1\r\n        },\r\n        {\r\n            \"case_id\": \"734227b5-067d-4652-9e15-ba87692ca07b\",\r\n            \"ng_quantity\": 2\r\n        }\r\n    ],\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": 0,\r\n    \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/defects-logging/more-defects",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"defects-logging",
+										"more-defects"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Create Defects (More Defects Cases)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"datetime\": \"2024-07-01T17:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"production_quantity\": 10,\r\n    \"defects\": [],\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": 0,\r\n    \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/defects-logging/more-defects",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"defects-logging",
+										"more-defects"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update Defects",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"datetime\": \"2024-08-02T01:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"defects_type\": \"S\", // P | S\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"case_id\": \"592641f9-77cf-41c8-a412-33b7f34937a4\",\r\n    \"ng_quantity\": 1,\r\n\r\n    //! Not reuired\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"production_quantity\": 0,\r\n    \"rework_quantity\": 0,\r\n    \"scrap_quantity\": 0,\r\n    \"claim_supplier_quantity\": 0,\r\n    \"scrap_approval_sheet_no\": \"\",\r\n    \"car_no\": \"\",\r\n    \"image\": \"\",\r\n    \"solve_problem\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/defects-logging",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Raw Data Defects By Datetime Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/raw-data-by-datetime-range?start_datetime=2024-08-01T17:00:00Z&end_datetime=2024-08-10T17:00:00Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"raw-data-by-datetime-range"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-08-01T17:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-08-10T17:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Summary Defects By Datetime Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/summary-by-datetime-range?start_datetime=2024-07-01T17:00:00Z&end_datetime=2024-07-01T17:00:00Z&defects_type=P",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"summary-by-datetime-range"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-07-01T17:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-07-01T17:00:00Z"
+								},
+								{
+									"key": "defects_type",
+									"value": "P",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Summary Defects By Date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/summary-by-date?date=2024-08-01&defects_type=P",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"summary-by-date"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-08-01"
+								},
+								{
+									"key": "defects_type",
+									"value": "P",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Graph Summary Defects By Date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/graph-summary-by-date?date=2024-08-01&defects_type=P",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"graph-summary-by-date"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-08-01"
+								},
+								{
+									"key": "defects_type",
+									"value": "P",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Graph Summary Defects By Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/graph-summary-by-date-range?start_date=2024-07-01&end_date=2024-07-01&defects_type=P",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"graph-summary-by-date-range"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-07-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-07-01"
+								},
+								{
+									"key": "defects_type",
+									"value": "P",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Graph Summary Part Defects By Date Range **New",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/graph-summary-part-by-date-range?start_date=2024-07-01&end_date=2024-09-03&process_id=f44b9400-71e5-456f-88cc-c58e2e1f9fe5&defects_type=ALL",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"graph-summary-part-by-date-range"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-07-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-09-03"
+								},
+								{
+									"key": "process_id",
+									"value": "f44b9400-71e5-456f-88cc-c58e2e1f9fe5",
+									"description": "Process Id"
+								},
+								{
+									"key": "defects_type",
+									"value": "ALL",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get NG Top Rank By Date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/top-rank-by-date?date=2024-08-01&process_id=ALL&shift=ALL&ranking=10&defects_type=P",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"top-rank-by-date"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-08-01"
+								},
+								{
+									"key": "process_id",
+									"value": "ALL"
+								},
+								{
+									"key": "shift",
+									"value": "ALL"
+								},
+								{
+									"key": "ranking",
+									"value": "10"
+								},
+								{
+									"key": "defects_type",
+									"value": "P",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get NG Top Rank By Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/top-rank-by-date-range?start_date=2024-08-01&end_date=2024-09-02&process_id=ALL&shift=ALL&ranking=10&defects_type=S",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"top-rank-by-date-range"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-08-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-09-02"
+								},
+								{
+									"key": "process_id",
+									"value": "ALL"
+								},
+								{
+									"key": "shift",
+									"value": "ALL"
+								},
+								{
+									"key": "ranking",
+									"value": "10"
+								},
+								{
+									"key": "defects_type",
+									"value": "S",
+									"description": "P or S (Not required)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Defects",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/defects-logging?defects_log_id=0ba94d5e-4b7e-4e0f-975e-548f0215493c",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging"
+							],
+							"query": [
+								{
+									"key": "defects_log_id",
+									"value": "0ba94d5e-4b7e-4e0f-975e-548f0215493c"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "productivity-logging [6]",
+			"item": [
+				{
+					"name": "Create Productivity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"datetime\": \"2024-08-02T01:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"quantity\": 1,\r\n\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/productivity-logging",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Productivity",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prod_log_id\": \"61d17797-33b1-4589-9aaf-414e4cc86bad\",\r\n    \"datetime\": \"2024-08-02T00:00:00Z\", // \"yyyy-dd-mmTH:00:00.000Z\"\r\n    \"process_id\": \"f44b9400-71e5-456f-88cc-c58e2e1f9fe5\",\r\n    \"part_id\": \"ba30e794-6ab0-46c2-aff9-ccc6e0210a8b\",\r\n    \"quantity\": 1,\r\n\r\n    //! Not required\r\n    \"machine_id\": \"\",\r\n    \"operator_id\": \"\",\r\n    \"remarks\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/productivity-logging",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Raw Data Productivity By Datetime Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/productivity-logging/raw-data-by-datetime-range?start_datetime=2024-08-01T02:00:00Z&end_datetime=2024-08-02T01:00:00Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging",
+								"raw-data-by-datetime-range"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-08-01T02:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-08-02T01:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sumarry Productivity By Datetime Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/productivity-logging/summary-by-datetime-range?start_datetime=2024-08-01T02:00:00Z&end_datetime=2024-08-01T02:00:00Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging",
+								"summary-by-datetime-range"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-08-01T02:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-08-01T02:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sumarry Productivity By Date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/productivity-logging/summary-by-date?date=2024-08-01",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging",
+								"summary-by-date"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-08-01"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Productivity",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/productivity-logging?prod_log_id=61d17797-33b1-4589-9aaf-414e4cc86bad",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"productivity-logging"
+							],
+							"query": [
+								{
+									"key": "prod_log_id",
+									"value": "61d17797-33b1-4589-9aaf-414e4cc86bad"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dashboard [2]",
+			"item": [
+				{
+					"name": "Get Parts Summary All Plant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/parts-summary-all-plant?start_date=2024-01-01&end_date=2024-12-03&defects_type=ALL",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"parts-summary-all-plant"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-03"
+								},
+								{
+									"key": "defects_type",
+									"value": "ALL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Parts Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/defects-logging/part-details?start_date=2024-01-01&end_date=2024-12-03&process_id=4984ab65-e61d-44b1-99e8-f607f8ac99b9&part_id=14d8fe5d-9153-4fcb-bda3-e2530a586c49&defects_type=ALL",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"defects-logging",
+								"part-details"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01",
+									"description": "yyyy-mm-dd"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-03",
+									"description": "yyyy-mm-dd"
+								},
+								{
+									"key": "process_id",
+									"value": "4984ab65-e61d-44b1-99e8-f607f8ac99b9",
+									"description": "UUID"
+								},
+								{
+									"key": "part_id",
+									"value": "14d8fe5d-9153-4fcb-bda3-e2530a586c49",
+									"description": "UUID"
+								},
+								{
+									"key": "defects_type",
+									"value": "ALL",
+									"description": "Not required"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "auth_token",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": "http://10.1.8.175:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "base_url",
+			"value": "https://api-gateway-v1.sncformer.com/iqcs/dev/v1",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
