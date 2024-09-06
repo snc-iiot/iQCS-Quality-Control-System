@@ -67,3 +67,9 @@ export const orderGroupedDataByField = <T>(groupedData: GroupedItems<T>, orderBy
   });
   return groupedData;
 };
+
+export const deleteDuplicates = (array: any[]): any[] => Array.from(new Set(array));
+
+export const filterDuplicates = <T>(array: T[], field: keyof T): T[] => {
+  return array?.filter((v, i, a) => a.findIndex((t) => t[field] === v[field]) === i);
+};

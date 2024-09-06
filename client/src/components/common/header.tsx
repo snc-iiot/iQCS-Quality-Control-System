@@ -4,6 +4,7 @@ import { AuthService } from "@/services/auth.service";
 import { LogOut } from "lucide-react";
 import { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 import { Icons } from "./icons";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   isAvatar?: boolean;
   input?: JSX.Element;
   isShowInput?: boolean;
+  disableNav?: boolean;
 }
 
 const Icon = ({ icon, className = "", ...props }: any) => {
@@ -21,7 +23,7 @@ const Icon = ({ icon, className = "", ...props }: any) => {
   return <IconComponent className={`h-4 w-4 ${className}`} {...props} />;
 };
 
-const Header: FC<Props> = ({ isAvatar = false }) => {
+const Header: FC<Props> = ({ isAvatar = false, disableNav = false }) => {
   const authService = new AuthService();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -35,45 +37,60 @@ const Header: FC<Props> = ({ isAvatar = false }) => {
           <h1 className="text-xs">SNC Former Company Limited and subsidiaries</h1>
         </div>
       </div>
-      <div className="hidden w-max items-center gap-2 md:flex">
-        {menuItems?.map((item, index) => {
-          const isActive =
-            item.href === "/settings"
-              ? pathname.includes(item.href)
-              : pathname.split("?")[0] === item.href?.split("?")[0];
-          return (
-            <button
-              key={index}
-              className={cn(
-                "hover-underline-animation rounded-md bg-transparent px-4 py-2 text-sm font-normal text-secondary-foreground hover:text-line-green",
-                isActive ? "hover-underline-animation--hover-on font-semibold text-line-green" : ""
-              )}
-              onClick={() => {
-                if (item.href === "/log-out") {
-                  authService.signOut();
-                  navigate("/login");
-                } else {
-                  navigate(item.href);
-                }
-              }}
-            >
-              <div className="flex items-center gap-1">
-                <Icon icon={item?.icon} />
-                <p className="text-sm">{item?.title}</p>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-      <button
-        className="flex items-center gap-1 md:hidden lg:hidden"
-        onClick={async () => {
-          const isLogged = await authService.signOut();
-          isLogged && navigate("/login");
-        }}
-      >
-        <LogOut size={20} className="text-red-500" />
-      </button>
+      {!disableNav && (
+        <div className={cn("hidden w-max items-center gap-2 md:flex")}>
+          {menuItems?.map((item, index) => {
+            const isActive =
+              item.href === "/settings"
+                ? pathname.includes(item.href)
+                : pathname.split("?")[0] === item.href?.split("?")[0];
+            return (
+              <button
+                key={index}
+                className={cn(
+                  "hover-underline-animation rounded-md bg-transparent px-4 py-2 text-sm font-normal text-secondary-foreground hover:text-line-green",
+                  isActive ? "hover-underline-animation--hover-on font-semibold text-line-green" : ""
+                )}
+                onClick={() => {
+                  if (item.href === "/log-out") {
+                    authService.signOut();
+                    navigate("/login");
+                  } else {
+                    navigate(item.href);
+                  }
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  <Icon icon={item?.icon} />
+                  <p className="text-sm">{item?.title}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {!disableNav && (
+        <button
+          className="flex items-center gap-1 md:hidden lg:hidden"
+          onClick={async () => {
+            const isLogged = await authService.signOut();
+            isLogged && navigate("/login");
+          }}
+        >
+          <LogOut size={20} className="text-red-500" />
+        </button>
+      )}
+      {disableNav && (
+        <Button
+          variant="link"
+          className="flex items-center gap-1"
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
+          เข้าสู่ระบบ / Sign In
+        </Button>
+      )}
     </div>
   );
 };
