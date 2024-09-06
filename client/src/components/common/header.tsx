@@ -44,7 +44,6 @@ const Header: FC<Props> = ({ isAvatar = false }) => {
           return (
             <button
               key={index}
-              // to={item.href}
               className={cn(
                 "hover-underline-animation rounded-md bg-transparent px-4 py-2 text-sm font-normal text-secondary-foreground hover:text-line-green",
                 isActive ? "hover-underline-animation--hover-on font-semibold text-line-green" : ""
