@@ -52,3 +52,38 @@ export type TSNCPartDetail = {
   production_quantity: number;
   ng_quantity: number;
 };
+
+// export interface TSNCOverview {
+//   part_id: string;
+//   part_code: string;
+//   part_name: string;
+//   processes: string[];
+//   plant_code: string;
+//   production_quantity: number;
+//   ng_quantity: number;
+//   details: {
+//     case_id: string;
+//     case_name: string;
+//     processes: string[];
+//     ng_quantity: number;
+//   }[];
+//   defects_percentage: number | null;
+// }
+
+export interface ProcessSelection {
+  plant_code: string;
+  process_id: string;
+}
+
+export interface SNCOverviewItem extends TSNCOverview {}
+
+export interface SNCOverviewProcess {
+  process_id: string;
+  process_name: string;
+  data: SNCOverviewItem[];
+}
+
+export interface SNCOverviewData {
+  plant_code: string;
+  process: SNCOverviewProcess[];
+}

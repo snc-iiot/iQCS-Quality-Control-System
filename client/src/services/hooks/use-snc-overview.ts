@@ -21,7 +21,6 @@ export const useSNCOverview = () => {
           end_date,
           defect_type,
         }),
-      refetchInterval: 20000,
     });
   };
 
@@ -45,7 +44,6 @@ export const useSNCOverview = () => {
           part_id,
           process_id,
         }),
-      refetchInterval: 20000,
     });
   };
 

@@ -44,6 +44,11 @@ export class SNCDashboardService extends APIService {
     part_id: string;
     process_id: string;
   }): Promise<TSNCPartDetail[]> => {
+    if (!part_id || !process_id) {
+      this.store.setSNCPartDetailList([]);
+      return [];
+    }
+
     try {
       const { data } = await this.get<TResponse<TSNCPartDetail[]>>(`/defects-logging/part-details`, {
         params: {

@@ -1,7 +1,7 @@
 import { useAtomStore } from "@/store";
-import { Formik, FormikHelpers } from "formik";
+import { FormikHelpers, useFormik } from "formik";
 import { Trash } from "lucide-react";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { ComboBoxResponsive, InputForm } from "../ui-pattern";
 import { Button } from "../ui/button";
 import { validationCaseMultipleSchema } from "../validations";
@@ -21,7 +21,7 @@ interface FormValues {
   defects: Defect[];
 }
 
-const DefectField: FC<{
+interface DefectFieldProps {
   defect: Defect;
   index: number;
   ngCaseByProcess: any[];
@@ -30,7 +30,18 @@ const DefectField: FC<{
   handleBlur: (e: React.FocusEvent<any>) => void;
   handleDeleteCase: (index: number) => void;
   errors: any;
-}> = ({ defect, index, ngCaseByProcess, onValueSelectChange, handleChange, handleBlur, handleDeleteCase, errors }) => (
+}
+
+const DefectField: FC<DefectFieldProps> = ({
+  defect,
+  index,
+  ngCaseByProcess,
+  onValueSelectChange,
+  handleChange,
+  handleBlur,
+  handleDeleteCase,
+  errors,
+}) => (
   <div className="grid grid-cols-2 gap-2">
     <ComboBoxResponsive
       label="สาเหตุ / Cause"
@@ -86,30 +97,29 @@ export const CaseMultipleForm: FC<CaseMultipleFormProps> = ({ processId, onSubmi
     ?.filter((ngCause, index, self) => self.findIndex((t) => t.case_name.trim() === ngCause.case_name.trim()) === index)
     ?.filter((ngCause) => !processId || ngCause.processes.includes(processId));
 
-  const [initialValues, setInitialValues] = useState<FormValues>({
-    defects: [{ case_id: "", ng_quantity: null }],
-  });
-
-  const handleAddCase = () => {
-    setInitialValues((prevValues) => ({
-      ...prevValues,
-      defects: [...prevValues.defects, { case_id: "", ng_quantity: null }],
-    }));
-  };
-
-  const handleDeleteCase = (index: number) => {
-    setInitialValues((prevValues) => ({
-      ...prevValues,
-      defects: prevValues.defects.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleValueSelectChange = (index: number, value: string) => {
-    setInitialValues((prevValues) => {
-      const newDefects = [...prevValues.defects];
-      newDefects[index].case_id = value;
-      return { ...prevValues, defects: newDefects };
+  const handleAddCase = (setValues: (values: FormValues) => void, currentValues: FormValues) => {
+    setValues({
+      ...currentValues,
+      defects: [...currentValues.defects, { case_id: "", ng_quantity: null }],
     });
+  };
+
+  const handleDeleteCase = (index: number, setValues: (values: FormValues) => void, currentValues: FormValues) => {
+    setValues({
+      ...currentValues,
+      defects: currentValues.defects.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleValueSelectChange = (
+    index: number,
+    value: string,
+    setValues: (values: FormValues) => void,
+    currentValues: FormValues
+  ) => {
+    const updatedDefects = [...currentValues.defects];
+    updatedDefects[index].case_id = value;
+    setValues({ ...currentValues, defects: updatedDefects });
   };
 
   const handleSubmitFormik = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
@@ -117,68 +127,54 @@ export const CaseMultipleForm: FC<CaseMultipleFormProps> = ({ processId, onSubmi
     setSubmitting(false);
   };
 
-  useEffect(() => {
-    if (values) setInitialValues(values);
-  }, [values]);
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: values || { defects: [{ case_id: "", ng_quantity: null }] },
+    validationSchema: validationCaseMultipleSchema,
+    onSubmit: handleSubmitFormik,
+  });
+
+  const { errors, handleChange, handleBlur, handleSubmit, isSubmitting, setValues, values: formikValues } = formik;
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={initialValues}
-      validationSchema={validationCaseMultipleSchema}
-      onSubmit={handleSubmitFormik}
-    >
-      {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {values.defects.map((defect, index) => (
-            <DefectField
-              key={index}
-              defect={defect}
-              index={index}
-              ngCaseByProcess={ngCaseByProcess}
-              onValueSelectChange={(index, value) => {
-                handleValueSelectChange(index, value);
-                handleChange({ target: { name: `defects[${index}].case_id`, value } });
-              }}
-              handleChange={(e) => {
-                handleChange(e);
-                setInitialValues((prevValues) => {
-                  const newDefects = [...prevValues.defects];
-                  newDefects[index].ng_quantity = parseInt(e.target.value);
-                  return { ...prevValues, defects: newDefects };
-                });
-              }}
-              handleBlur={handleBlur}
-              handleDeleteCase={handleDeleteCase}
-              errors={errors}
-            />
-          ))}
-          <Button
-            type="button"
-            className="w-full border border-dashed md:w-max lg:w-max"
-            variant="outline"
-            onClick={handleAddCase}
-          >
-            Add Case
-          </Button>
-          <div className="flex w-full gap-2">
-            <Button className="w-full" type="submit" disabled={isSubmitting}>
-              บันทึก / Save
-            </Button>
-            <Button
-              variant="secondary"
-              className="w-full"
-              type="reset"
-              onClick={() => {
-                handleReset();
-                setInitialValues({ defects: [{ case_id: "", ng_quantity: null }] });
-              }}
-            >
-              ล้างข้อมูล / Reset
-            </Button>
-          </div>
-        </form>
-      )}
-    </Formik>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {formikValues.defects.map((defect, index) => (
+        <DefectField
+          key={index}
+          defect={defect}
+          index={index}
+          ngCaseByProcess={ngCaseByProcess}
+          onValueSelectChange={(idx, value) => handleValueSelectChange(idx, value, setValues, formikValues)}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleDeleteCase={(idx) => handleDeleteCase(idx, setValues, formikValues)}
+          errors={errors}
+        />
+      ))}
+      <Button
+        type="button"
+        className="w-full border border-dashed md:w-max lg:w-max"
+        variant="outline"
+        onClick={() => handleAddCase(setValues, formikValues)}
+      >
+        Add Case
+      </Button>
+      <div className="flex w-full gap-2">
+        <Button className="w-full" type="submit" disabled={isSubmitting}>
+          บันทึก / Save
+        </Button>
+        <Button
+          variant="secondary"
+          className="w-full"
+          type="reset"
+          onClick={() => {
+            const resetValues = { defects: [{ case_id: "", ng_quantity: null }] };
+            setValues(resetValues);
+          }}
+        >
+          ล้างข้อมูล / Reset
+        </Button>
+      </div>
+    </form>
   );
 };
