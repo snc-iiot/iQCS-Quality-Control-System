@@ -214,7 +214,7 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({
           )}
         </PopoverContent>
       </Popover>
-      <Button onClick={onExport}>Export</Button>
+      <Button onClick={onExport}>Export Excel</Button>
     </div>
   );
 };
