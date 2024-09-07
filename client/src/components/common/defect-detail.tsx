@@ -18,29 +18,30 @@ export const DefectDetail: FC<DefectDetailProps> = ({ defect, isOpen, onClose })
   }
 
   const HEADER = useMemo(
-    () => [
+    (): {
+      label: string;
+      key: keyof TDefect;
+    }[] => [
       { label: "Date", key: "date" },
       { label: "Time Slot", key: "datetime" },
+      { label: "Shift", key: "shift" },
       { label: "Process", key: "process" },
       { label: "Machine Name", key: "machine_name" },
       { label: "Part Code", key: "part_code" },
+      { label: "Part Name", key: "part_name" },
       { label: "NG Quantity", key: "ng_quantity" },
+      { label: "Production Quantity", key: "production_quantity" },
       { label: "Rework Quantity", key: "rework_quantity" },
-      {
-        label: "Rework Cost Per Unit (USD)",
-        key: "rework_cost_per_unit",
-      },
+      { label: "Rework Cost Per Unit (USD)", key: "rework_cost_per_unit" },
       { label: "Scrap Quantity", key: "scrap_quantity" },
-      {
-        label: "Scrap Cost Per Unit (USD)",
-        key: "scrap_cost_per_unit",
-      },
+      { label: "Scrap Cost Per Unit (USD)", key: "scrap_cost_per_unit" },
+      { label: "NG Description", key: "ng_description" },
+      { label: "Inspector Name", key: "inspector_name" },
+      { label: "Operator", key: "operator_name" },
+      { label: "Case Name", key: "case_name" },
       { label: "Remarks", key: "remarks" },
       { label: "Created At", key: "created_at" },
       { label: "Updated At", key: "updated_at" },
-      { label: "Case Name", key: "case_name" },
-      { label: "NG Description", key: "ng_description" },
-      { label: "Inspector Name", key: "inspector_name" },
     ],
     []
   );
@@ -96,31 +97,6 @@ export const DefectDetail: FC<DefectDetailProps> = ({ defect, isOpen, onClose })
           <div className="space-y-1 rounded-md border p-2">
             <p className="text-sm font-semibold">รายละเอียด / Description</p>
             <div className="rounded-md">
-              {/* {HEADER.map((h, j) => (
-                <div
-                  key={`defect-detail-${j}`}
-                  className={cn(
-                    "grid w-full grid-cols-2 p-1",
-                    "border-b border-gray-100",
-                    j % 2 === 0 ? "bg-gray-50" : "bg-white",
-                    j === HEADER.length - 1
-                      ? "border-b-0"
-                      : ""
-                  )}
-                >
-                  <div className="flex flex-col">
-                    <p className="text-sm font-medium">
-                      {h.label}
-                    </p>
-                  </div>
-                  <div className="flex w-full justify-end">
-                    <p className="text-sm">
-                      {defect[h.key as keyof TDefect] ??
-                        "-"}
-                    </p>
-                  </div>
-                </div>
-              ))} */}
               {mapDefect?.map((h, j) => (
                 <div
                   key={`defect-detail-${j}`}

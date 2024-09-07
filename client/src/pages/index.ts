@@ -21,3 +21,4 @@ export * from "./setting-machine";
 export * from "./cost-page";
 export * from "./import-excel-part";
 export * from "./snc-overview";
+export * from "./defect-history";

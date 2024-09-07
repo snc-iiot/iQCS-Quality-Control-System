@@ -5,7 +5,16 @@ import { PartService } from "../part.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
 
 export const usePart = () => {
-  const { getParts, createPart, updatePart, deletePart,importExcelPart,getHistoryUpdatePrice,updatePartPrice,deleteUpdatePrice } = new PartService();
+  const {
+    getParts,
+    createPart,
+    updatePart,
+    deletePart,
+    importExcelPart,
+    getHistoryUpdatePrice,
+    updatePartPrice,
+    deleteUpdatePrice,
+  } = new PartService();
 
   const useGetParts = () => {
     return useQuery({
@@ -21,7 +30,7 @@ export const usePart = () => {
       queryFn: (): Promise<THistoryUpdatePrice[]> => getHistoryUpdatePrice(),
       refetchInterval: 10000,
     });
-  }
+  };
 
   const { mutateAsync: mutateUpdatePartPrice } = useMutationWithToast(
     async (data: TCreateUpdatePartPrice) => await updatePartPrice(data),
@@ -67,6 +76,6 @@ export const usePart = () => {
     mutateImportExcelPart,
     useGetHistoryUpdatePrice,
     mutateUpdatePartPrice,
-    mutateDeleteUpdatePrice
+    mutateDeleteUpdatePrice,
   };
 };

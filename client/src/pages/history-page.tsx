@@ -492,8 +492,6 @@ export const HistoryPage: FC = () => {
     );
   };
 
-  console.log(defectMapped);
-
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">

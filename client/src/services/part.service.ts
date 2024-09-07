@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/helpers/common.helper";
-import { TCreateUpdatePart, TPart, TResponse,THistoryUpdatePrice,TCreateUpdatePartPrice } from "@/types";
+import { TCreateUpdatePart, TCreateUpdatePartPrice, THistoryUpdatePrice, TPart, TResponse } from "@/types";
 import { AxiosError } from "axios";
 import { useAtomStore } from "./../store/use-atom-store";
 import { APIService } from "./api.service";
@@ -21,7 +21,6 @@ export class PartService extends APIService {
     }
   };
 
-
   public getHistoryUpdatePrice = async (): Promise<THistoryUpdatePrice[]> => {
     try {
       const { data } = await this.get<TResponse<THistoryUpdatePrice[]>>(`/update-prices`);
@@ -31,8 +30,7 @@ export class PartService extends APIService {
       console.error(error);
       return [];
     }
-  }
-
+  };
 
   public updatePartPrice = async (data: TCreateUpdatePartPrice): Promise<TResponse<unknown>> => {
     try {
@@ -57,7 +55,7 @@ export class PartService extends APIService {
         };
       }
     }
-  }
+  };
 
   public deleteUpdatePrice = async (update_price_id: string): Promise<TResponse<unknown>> => {
     try {
@@ -82,7 +80,7 @@ export class PartService extends APIService {
         };
       }
     }
-  }
+  };
 
   public createPart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {
@@ -134,8 +132,7 @@ export class PartService extends APIService {
         };
       }
     }
-  }
-
+  };
 
   public updatePart = async (data: TCreateUpdatePart): Promise<TResponse<unknown>> => {
     try {

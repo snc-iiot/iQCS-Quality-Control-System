@@ -1,1 +1,2 @@
-export * from "./defect-summary-date";
+export * from "./logging-tabs";
+export * from "./defect";

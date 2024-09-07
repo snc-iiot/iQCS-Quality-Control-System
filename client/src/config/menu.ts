@@ -11,7 +11,7 @@ export const menuItems = [
   },
   {
     title: "ประวัติการบันทึก",
-    href: "/history",
+    href: "/history/defect",
     icon: "history",
   },
   {

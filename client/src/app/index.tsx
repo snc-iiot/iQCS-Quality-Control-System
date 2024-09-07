@@ -6,7 +6,7 @@ import {
   CausePage,
   CostPage,
   DashboardPage,
-  HistoryPage,
+  DefectHistory,
   HomePage,
   ImportExcelPart,
   LoginPage,
@@ -39,7 +39,7 @@ const App = () => {
               <Route path="productivity" element={<LoggingProductivityPage />} />
               <Route path="ng-product" element={<HomePage />} />
             </Route>
-            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/history/defect" element={<DefectHistory />} />
             <Route path="/management">
               <Route index element={<MenuManagementPage />} />
               <Route path="document" element={<DocumentManagementPage />} />

@@ -3,7 +3,6 @@ import ComposedChart from "@/components/ui/composed-chart";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { mapCompositionData } from "@/helpers/dashboard.helper";
 import { ProcessSelection, SNCOverviewData, SNCOverviewItem } from "@/types"; // Adjust the import path as needed
-import { Info } from "lucide-react";
 import React, { FC, useEffect } from "react";
 
 interface OverviewCardProps {
@@ -75,12 +74,13 @@ export const OverviewCard: FC<OverviewCardProps> = ({
   return (
     <div className="flex flex-col gap-2 rounded-md border p-2">
       <div>
-        <div className="flex items-center gap-2 text-base font-semibold capitalize">
-          {plantCode}
+        <div className="flex items-center justify-between gap-2 text-base font-semibold capitalize">
+          <h3>{plantCode}</h3>
           <TooltipProvider>
             <Tooltip delayDuration={50}>
-              <TooltipTrigger asChild>
-                <Info onClick={handleInfoClick} className="h-4 w-4 cursor-pointer text-gray-400" strokeWidth={1.5} />
+              <TooltipTrigger className="text-xs text-blue-500" onClick={handleInfoClick}>
+                {/* <Info onClick={handleInfoClick} className="h-4 w-4 cursor-pointer text-gray-400" strokeWidth={1.5} /> */}
+                คลิกเพื่อดูข้อมูลเพิ่มเติม
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p className="text-xs">คลิกเพื่อดูข้อมูลเพิ่มเติมเกี่ยวกับโรงงาน {plantCode}</p>
