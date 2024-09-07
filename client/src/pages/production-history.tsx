@@ -141,6 +141,8 @@ export const ProductionHistory: FC = () => {
     );
   };
 
+  console.log(MapDataProductivity(values, productivityMapped));
+
   return (
     <div className="flex h-full flex-col gap-2">
       <LoggingTabs
@@ -212,7 +214,7 @@ export const ProductionHistory: FC = () => {
               <TableFooter>
                 <TableRow>
                   <TableCell>Total Summary</TableCell>
-                  {values.shift === "DAY" ? (
+                  {values?.shift === "DAY" ? (
                     <>
                       <TableCell className="text-right">{summary("08:00 - 09:00")}</TableCell>
                       <TableCell className="text-right">{summary("09:00 - 10:00")}</TableCell>
