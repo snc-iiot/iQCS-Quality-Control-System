@@ -181,7 +181,6 @@ export const ImportExcelPart: FC = () => {
                 validationSchema={validationImportExcelPartSchema}
               >
                 {({ values, errors, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
-                  console.log("errors", errors);
                   return (
                     <div className="space-y-4">
                       <SelectForm

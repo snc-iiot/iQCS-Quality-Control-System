@@ -17,9 +17,6 @@ export const CreateUpdateNg: FC<CreateUpdateNgProps> = ({ isTitleVisible = true 
     accept: {
       "image/*": [],
     },
-    onDrop: (acceptedFiles) => {
-      console.log(acceptedFiles);
-    },
   });
 
   return (

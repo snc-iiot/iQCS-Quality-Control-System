@@ -141,8 +141,6 @@ export const ProductionHistory: FC = () => {
     );
   };
 
-  console.log(MapDataProductivity(values, productivityMapped));
-
   return (
     <div className="flex h-full flex-col gap-2">
       <LoggingTabs
