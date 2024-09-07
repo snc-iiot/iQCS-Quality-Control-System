@@ -172,8 +172,6 @@ export class DefectService extends APIService {
     defects_type: "ALL" | "P" | "S"
   ): Promise<TGraphSummary[]> => {
     try {
-      console.log(start_date, end_date);
-
       const { data: res } = await this.get<TResponse<TGraphSummary[]>>(
         `/defects-logging/graph-summary-by-date-range?start_date=${start_date}&end_date=${end_date}&defects_type=${defects_type}`
       );

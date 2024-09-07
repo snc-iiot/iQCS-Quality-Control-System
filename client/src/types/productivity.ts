@@ -29,6 +29,7 @@ export type TProductivity = {
   datetime: string;
   process: string;
   process_id: string;
+  machine_id: string;
   machine_name: string;
   part_code: string;
   quantity: number;
@@ -39,6 +40,7 @@ export type TProductivity = {
   updated_at: string;
   time_slot: string;
   shift: string;
+  part_id: string;
   part_name: string;
   creator_name: string | null;
 };
@@ -52,4 +54,32 @@ export type TProductivitySummary = {
   part_name: string;
   quantity: number;
   ng_quantity: number;
+};
+
+export type TMapDataProductivity = {
+  part_name: string;
+  "08:00 - 09:00": number;
+  "09:00 - 10:00": number;
+  "10:00 - 11:00": number;
+  "11:00 - 12:00": number;
+  "12:00 - 13:00": number;
+  "13:00 - 14:00": number;
+  "14:00 - 15:00": number;
+  "15:00 - 16:00": number;
+  "16:00 - 17:00": number;
+  "17:00 - 18:00": number;
+  "18:00 - 19:00": number;
+  "19:00 - 20:00": number;
+  "20:00 - 21:00": number;
+  "21:00 - 22:00": number;
+  "22:00 - 23:00": number;
+  "23:00 - 24:00": number;
+  "24:00 - 01:00": number;
+  "01:00 - 02:00": number;
+  "02:00 - 03:00": number;
+  "03:00 - 04:00": number;
+  "04:00 - 05:00": number;
+  "05:00 - 06:00": number;
+  "06:00 - 07:00": number;
+  "07:00 - 08:00": number;
 };

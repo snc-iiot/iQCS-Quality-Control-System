@@ -17,7 +17,7 @@ export const validationDefectSchema = Yup.object({
 export const validationProductivitySchema = Yup.object({
   date: Yup.string().required("โปรดระบุวันที่"),
   time_slot: Yup.string().required("โปรดระบุช่วงเวลา"),
-  process: Yup.string().required("โปรดระบุ Process"),
+  process_id: Yup.string().required("โปรดระบุ Process"),
 });
 
 export const validationCauseSchema = Yup.object({

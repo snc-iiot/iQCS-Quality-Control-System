@@ -60,16 +60,6 @@ export const SNCOverview: FC = () => {
 
   const mapSncOverviewList = useMemo(() => groupSncOverviewList(sncOverviewList), [sncOverviewList]);
 
-  // useEffect(() => {
-  //   if (mapSncOverviewList.length > 0) {
-  //     setProcessSelected((prev) =>
-  //       prev.filter((process) => mapSncOverviewList.find((item) => item.plant_code === process.plant_code))
-  //     );
-  //   }
-  // }, [mapSncOverviewList]);
-
-  console.log("processSelected", processSelected);
-
   if (isOverviewLoading) {
     return (
       <div className="flex h-[25rem] items-center justify-center">

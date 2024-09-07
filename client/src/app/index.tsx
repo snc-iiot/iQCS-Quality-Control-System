@@ -13,6 +13,7 @@ import {
   NotFoundPage,
   PartPage,
   ProcessPage,
+  ProductionHistory,
   SettingMachinePage,
   SNCOverview,
 } from "../pages";
@@ -40,6 +41,7 @@ const App = () => {
               <Route path="ng-product" element={<HomePage />} />
             </Route>
             <Route path="/history/defect" element={<DefectHistory />} />
+            <Route path="/history/production" element={<ProductionHistory />} />
             <Route path="/management">
               <Route index element={<MenuManagementPage />} />
               <Route path="document" element={<DocumentManagementPage />} />

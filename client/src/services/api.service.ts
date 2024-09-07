@@ -52,7 +52,6 @@ export abstract class APIService {
       (response: AxiosResponse) => response,
       (error: AxiosError) => {
         if (error.response && error.response.status === 401) {
-          console.log("401 error");
           this.removeAccessToken();
         }
         return Promise.reject(error);

@@ -86,7 +86,6 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
     setInitialValues((prevValues) => ({
       ...prevValues,
       ...data,
-      image: null,
     }));
   }, [data]);
 

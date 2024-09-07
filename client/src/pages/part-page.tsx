@@ -215,8 +215,7 @@ export const PartPage: FC = () => {
                                 <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={async () => {
-                                    const res = await mutateDeletePart(part?.part_id);
-                                    console.log(res);
+                                    await mutateDeletePart(part?.part_id);
                                   }}
                                 >
                                   ลบ / Delete

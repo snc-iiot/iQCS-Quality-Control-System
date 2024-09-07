@@ -22,3 +22,4 @@ export * from "./cost-page";
 export * from "./import-excel-part";
 export * from "./snc-overview";
 export * from "./defect-history";
+export * from "./production-history";

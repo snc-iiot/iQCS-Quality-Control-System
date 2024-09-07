@@ -37,8 +37,6 @@ const DocumentManagementPage = () => {
       part?.creator_name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  console.log("filteredDocument", filteredDocument);
-
   const dataFileImg = {
     csv: "https://cdn-icons-png.freepik.com/512/8242/8242984.png",
     doc: "https://google.oit.ncsu.edu/wp-content/uploads/sites/6/2021/01/Google_Docs.max-2800x2800-1.png",
@@ -131,8 +129,7 @@ const DocumentManagementPage = () => {
                                     <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={async () => {
-                                        const res = await mutateDeleteDocument(document_id);
-                                        console.log(res);
+                                        await mutateDeleteDocument(document_id);
                                       }}
                                     >
                                       ลบ / Delete
