@@ -20,8 +20,6 @@ export const getRequiredRawDefects = (
   start_date_time: string;
   end_date_time: string;
 } => {
-  let start_date_time = covertToUTC(values?.start_date);
-  let end_date_time = covertToUTC(values?.end_date);
   const dateTime =
     values?.time_slot === "08:00 - 08:00"
       ? {
@@ -33,17 +31,49 @@ export const getRequiredRawDefects = (
           end: GET_TIME_SLOTS(values?.start_date)?.find((slot) => slot.value === values?.time_slot)?.date_time || "",
         };
 
-  if (values?.mode == "daily") {
-    start_date_time = dateTime.start;
-    end_date_time = dateTime.end;
-  } else {
-    start_date_time = covertToUTC(values?.start_date);
-    end_date_time = covertToUTC(values?.end_date);
-  }
+  //work time 08:00 - 07:59 (next day)
+  // example: getDateTime("2021-09-01", "2021-09-01") ==> {start: "2021-09-01T08:00:00.000Z", end: "2021-09-02T07:59:00.000Z"}
+  const getDateTime = (start_date: string, end_date: string) => {
+    const start = new Date(start_date);
+    const endNextDay = new Date(end_date);
+
+    start.setHours(8, 0, 0, 0); // Set start time to 08:00
+    endNextDay.setDate(endNextDay.getDate() + 1); // Move to the next day
+    endNextDay.setHours(7, 59, 0, 0); // Set end time to 07:59
+
+    return {
+      start: start.toISOString(),
+      end: endNextDay.toISOString(),
+    };
+  };
+
+  const mode: {
+    [key in TValue["mode"]]: {
+      start: string;
+      end: string;
+    };
+  } = {
+    daily: {
+      start: dateTime.start,
+      end: dateTime.end,
+    },
+    monthly: {
+      start: covertToUTC(values?.start_date),
+      end: covertToUTC(values?.end_date),
+    },
+    weekly: {
+      start: covertToUTC(values?.start_date),
+      end: covertToUTC(values?.end_date),
+    },
+    period: {
+      start: getDateTime(values?.start_date, values?.end_date).start,
+      end: getDateTime(values?.start_date, values?.end_date).end,
+    },
+  };
 
   return {
-    start_date_time,
-    end_date_time,
+    start_date_time: mode[values?.mode].start,
+    end_date_time: mode[values?.mode].end,
   };
 };
 

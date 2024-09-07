@@ -21,6 +21,7 @@ import {
   renderFormattedDateWithTime,
   renderFormattedPayloadDate,
 } from "@/helpers/date-time.helper";
+import { ExcelHelper } from "@/helpers/excel.helper";
 import { DEFECT_HEADER, getRequiredRawDefects, summaryMapped } from "@/helpers/history-defect.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
@@ -28,9 +29,9 @@ import { useAtomStore } from "@/store";
 import { TDefect } from "@/types";
 import { FC, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { HistoryPage } from "./history-page";
 
 export const DefectHistory: FC = () => {
+  const excelHelper = new ExcelHelper();
   const { defectList, processList, machineList } = useAtomStore();
   const { useGetRawDefects, mutateDeleteDefect } = useDefect();
   const { pathname } = useLocation();
@@ -40,12 +41,18 @@ export const DefectHistory: FC = () => {
   const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
   const [values, setValues] = useState<TValue>({
     mode: "daily",
-    shift: "DAY",
-    process_id: "",
     start_date: renderFormattedPayloadDate(new Date()) ?? "",
     end_date: renderFormattedPayloadDate(new Date()) ?? "",
     time_slot: "08:00 - 08:00",
   });
+  const [filterMapped, setFilterMapped] = useState<{
+    shift: string[];
+    process_id: string[];
+  }>({
+    shift: [],
+    process_id: [],
+  });
+
   const { start_date_time, end_date_time } = getRequiredRawDefects(values);
   const { refetch, isPending: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
   const defectMapped = useMemo(
@@ -53,16 +60,13 @@ export const DefectHistory: FC = () => {
       defectList
         ?.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
         ?.filter((defect) => {
-          if (values?.process_id?.length === 0) {
-            return true;
+          if (filterMapped?.shift.length > 0 && !filterMapped?.shift.includes(defect.shift)) {
+            return false;
           }
-          return values?.process_id?.includes(defect.process_id);
-        })
-        ?.filter((defect) => {
-          if (values?.shift?.length === 0) {
-            return true;
+          if (filterMapped?.process_id.length > 0 && !filterMapped?.process_id.includes(defect.process_id)) {
+            return false;
           }
-          return values?.shift?.includes(defect.shift);
+          return true;
         })
         ?.map((defect) => ({
           ...defect,
@@ -126,11 +130,10 @@ export const DefectHistory: FC = () => {
             </div>
           ),
         })),
-    [defectList]
+    [defectList, processList, machineList, filterMapped]
   );
   const HEADER = DEFECT_HEADER(values);
   const summary = (key: keyof TDefect) => summaryMapped(key, defectMapped as TDefect[]);
-
   return (
     <div className="flex h-full flex-col gap-2">
       <LoggingTabs
@@ -148,7 +151,47 @@ export const DefectHistory: FC = () => {
         ]}
       />
       <div className="flex h-full flex-col gap-2 p-2">
-        <DefectOptionFilter values={values} setValues={setValues} />
+        <DefectOptionFilter
+          values={values}
+          setValues={setValues}
+          filterMapped={filterMapped}
+          setFilterMapped={setFilterMapped}
+          onExport={() => {
+            const exportData = defectMapped?.map((info) => ({
+              ID: info?.defects_log_id,
+              Shift: info?.shift,
+              Time: info?.datetime,
+              Date: `${new Date(String(info?.date)).getDate()}/${
+                new Date(String(info?.date)).getMonth() + 1
+              }/${new Date(String(info?.date)).getFullYear()}`,
+              Line: info?.plant_code,
+              "Part No.": info?.part_code,
+              "Part Name": info?.part_name,
+              Customer: info?.customers?.join(", "),
+              "Process Name": info?.process_id,
+              "Sub Process Name": "",
+              "M/C No.": info?.machine_no,
+              "Operator Name": info?.operator_name,
+              "Production Q'ty": info?.production_quantity,
+              "NG Q'ty": info?.ng_quantity,
+              "Part or Shop defect": info?.defects_type,
+              "NG Details": info?.ng_description,
+              "Reworked Q'ty": info?.rework_quantity,
+              "Rework Cost/Unit (Baht)": info?.rework_cost_per_unit,
+              "Scrap Q'ty": info?.scrap_quantity,
+              "Scrap Cost/Unit (Baht)": info?.scrap_cost_per_unit,
+              "Scrap Approval Sheet No.": info?.scrap_approval_sheet_no,
+              "Claim to supplier Q'Ty": info?.claim_supplier_quantity,
+              "QA Inspector": info?.creator_name,
+              "CAR No.": info?.car_no,
+              "Total Defect Cost (Baht)":
+                Number(info?.rework_cost_per_unit ?? 0) * Number(info?.rework_quantity ?? 0) +
+                Number(info?.scrap_cost_per_unit ?? 0) * Number(info?.scrap_quantity ?? 0),
+              "QCS No.": "",
+            }));
+            excelHelper.downloadExcelData(exportData, `defect-history-${new Date().getTime}`);
+          }}
+        />
         {isPendingRawDefects ? (
           <div className="grid h-full place-items-center">
             <Spinner />
@@ -251,7 +294,6 @@ export const DefectHistory: FC = () => {
           </div>
         </DrawerContent>
       </Drawer>
-      <HistoryPage />
     </div>
   );
 };
