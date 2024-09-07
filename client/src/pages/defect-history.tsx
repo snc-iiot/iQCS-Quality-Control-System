@@ -28,7 +28,6 @@ import { useAtomStore } from "@/store";
 import { TDefect } from "@/types";
 import { FC, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { HistoryPage } from "./history-page";
 
 export const DefectHistory: FC = () => {
   const { defectList, processList, machineList } = useAtomStore();
@@ -251,7 +250,6 @@ export const DefectHistory: FC = () => {
           </div>
         </DrawerContent>
       </Drawer>
-      <HistoryPage />
     </div>
   );
 };
