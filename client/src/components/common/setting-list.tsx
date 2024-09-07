@@ -13,10 +13,10 @@ export const SettingList: FC = () => {
       disabled: false,
     },
     {
-      title: "ตั้งค่า Part ที่ใช้งาน /Setting Part",
+      title: "ตั้งค่าพาร์ทที่ใช้งาน /Setting Part",
       href: "/part",
       icon: Settings,
-      description: "ตั้งค่า Part ที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข",
+      description: "ตั้งค่าพาร์ทที่ใช้งาน เพิ่ม ลบ แก้ไข",
       disabled: false,
     },
     {

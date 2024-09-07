@@ -6,51 +6,54 @@ import MenuPage from "./menu-page";
 
 const menuItems = [
   {
-    title: "เปลี่ยนรหัสผ่าน / Change password",
+    title: "เปลี่ยนรหัสผ่าน / Change Password",
     icon: Settings,
-    description: "เปลี่ยนรหัสผ่านของคุณ",
+    description: "ปรับเปลี่ยนรหัสผ่านของคุณ / Change your password",
     disabled: false,
   },
   {
-    title: "ตั้งค่ากระบวนการผลิต / Process setting",
+    title: "การตั้งค่ากระบวนการผลิต / Process Settings",
     href: "process",
     icon: Settings,
-    description: "ตั้งค่ากระบวนการผลิตที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข",
+    description:
+      "จัดการการตั้งค่ากระบวนการผลิต รวมถึงการเพิ่ม ลบ และแก้ไข / Manage production process settings, including adding, deleting, and editing",
     disabled: false,
   },
   {
-    title: "ตั้งค่า Part ที่ใช้งาน / Part setting",
+    title: "การตั้งค่าพาร์ท / Part Settings",
     href: "part",
     icon: Settings,
-    description: "ตั้งค่า Part ที่ใช้งาน และ สามารถเพิ่ม ลบ แก้ไข",
+    description:
+      "จัดการการตั้งค่าพาร์ท รวมถึงการเพิ่ม ลบ และแก้ไข / Manage Part settings, including adding, deleting, and editing",
     disabled: false,
   },
   {
-    title: "ตั้งค่าสาเหตุการเสีย / Cause setting",
+    title: "การตั้งค่าสาเหตุการเสีย / Cause Settings",
     href: "cause",
     icon: Settings,
-    description: "ตั้งค่าสาเหตุการเสีย",
+    description: "จัดการการตั้งค่าสาเหตุการเสีย / Manage cause settings",
     disabled: false,
   },
   {
-    title: "ตั้งค่า Operator name / Operator name setting",
+    title: "การตั้งค่า Operator Name / Operator Name Settings",
     href: "account",
     icon: Settings,
-    description: "ตั้งค่าชื่อ Operator",
+    description: "จัดการการตั้งค่าชื่อ Operator / Manage operator name settings",
     disabled: false,
   },
   {
-    title: "ตั้งค่า เครื่องจักร / Machine setting",
+    title: "การตั้งค่าเครื่องจักร / Machine Settings",
     href: "machine",
     icon: Settings,
-    description: "เพิ่ม ลบ แก้ไข ชื่อเครื่องจักร",
+    description:
+      "จัดการการตั้งค่าชื่อเครื่องจักร รวมถึงการเพิ่ม ลบ และแก้ไข / Manage machine settings, including adding, deleting, and editing",
     disabled: false,
   },
   {
-    title: "ตั้งค่าอัตราส่วนค่าใช้จ่าย / Cost setting",
+    title: "การตั้งค่าอัตราส่วนค่าใช้จ่าย / Cost Settings",
     href: "cost",
     icon: Settings,
-    description: "จัดการอัตราส่วนค่าใช้จ่าย",
+    description: "จัดการอัตราส่วนค่าใช้จ่าย / Manage cost settings",
     disabled: false,
   },
 ];

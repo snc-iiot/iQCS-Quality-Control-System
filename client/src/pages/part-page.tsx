@@ -239,7 +239,9 @@ export const PartPage: FC = () => {
             <DialogTitle>เพิ่ม Part / Add Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
-          <CreateUpdatePart onClose={() => setIsDialogOpen(false)} />
+          <div className="max-h-[60vh] overflow-y-scroll">
+            <CreateUpdatePart onClose={() => setIsDialogOpen(false)} />
+          </div>
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>

@@ -12,7 +12,7 @@ const MenuLoggingPage: FC = () => {
       disabled: false,
     },
     {
-      title: "ยอดงาน NG / NG product",
+      title: "ยอดงานเสีย / NG product",
       href: "ng-product",
       icon: ClipboardPenLine,
       description: "บันทึกจำนวนผลิตภัณฑ์ที่ไม่ผ่านมาตรฐานคุณภาพ",

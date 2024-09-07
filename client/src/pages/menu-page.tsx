@@ -28,7 +28,7 @@ const MenuPage: FC<TMenuPage> = ({ data }) => {
           )}
           onClick={item.onClick}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex w-full items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2">
               {item.icon && <item.icon className="h-6 w-6" />}
             </div>

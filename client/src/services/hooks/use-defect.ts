@@ -86,7 +86,7 @@ export const useDefect = () => {
     defects_type: TDefectsTypeReq
   ) => {
     return useQuery({
-      queryKey: [GET_TOP_DEFECTS, start_date, end_date, process, shift, defects_type],
+      queryKey: [GET_TOP_DEFECTS, start_date, end_date, process, shift, defects_type,ranking],
       queryFn: (): Promise<TTopDefect[]> => getTopDefects(start_date, end_date, process, shift, ranking, defects_type),
     });
   };
