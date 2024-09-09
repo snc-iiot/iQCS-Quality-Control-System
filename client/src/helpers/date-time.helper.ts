@@ -373,3 +373,14 @@ export const getWeekString = (date: Date) => {
   const week = getWeekNumberOfDate(date);
   return `${date.getFullYear()}-W${week?.toString().padStart(2, "0")}`;
 };
+
+export const optionsYearly = (initialYear: number = 2019) => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+
+  for (let year = currentYear; year >= initialYear; year--) {
+    years.push({ label: `${year}`, value: `${year}` });
+  }
+
+  return years;
+};

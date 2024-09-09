@@ -11,7 +11,7 @@ import { ProcessSelection, SNCOverviewData, SNCOverviewItem } from "@/types";
 import { FC, useMemo, useState } from "react";
 
 export interface FilteredState {
-  mode: "daily" | "period" | "week" | "monthly";
+  mode: "daily" | "period" | "week" | "monthly" | "yearly";
   defect_type: "ALL" | "P" | "S";
   start_date: string;
   end_date: string;

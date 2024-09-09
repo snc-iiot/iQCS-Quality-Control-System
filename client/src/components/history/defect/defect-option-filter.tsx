@@ -2,12 +2,17 @@ import { DateInputForm } from "@/components/ui-pattern";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { Button } from "@/components/ui/button";
 import { GET_TIME_SLOTS } from "@/helpers";
-import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
+import {
+  getStartDateEndDateOfWeek,
+  getWeekString,
+  optionsYearly,
+  renderFormattedPayloadDate,
+} from "@/helpers/date-time.helper";
 import { formatDate } from "date-fns";
 import { FC } from "react";
 
 export type TValue = {
-  mode: "daily" | "period" | "weekly" | "monthly";
+  mode: "daily" | "period" | "weekly" | "monthly" | "yearly";
   shift?: "DAY" | "NIGHT";
   process_id: string;
   start_date: string;
@@ -92,6 +97,20 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({ values, setVal
         value={formatDate(new Date(values?.start_date), "yyyy-MM") ?? ""}
       />
     ),
+    yearly: (
+      <SelectForm
+        options={optionsYearly()}
+        className="w-[10rem]"
+        value={values?.start_date?.slice(0, 4)}
+        onChange={(e) => {
+          setValues((prev) => ({
+            ...prev,
+            start_date: `${e.target.value}-01-01`,
+            end_date: `${e.target.value}-12-31`,
+          }));
+        }}
+      />
+    ),
   };
 
   return (
@@ -113,6 +132,10 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({ values, setVal
           {
             label: "รายเดือน / Monthly",
             value: "monthly",
+          },
+          {
+            label: "รายปี / Yearly",
+            value: "yearly",
           },
         ]}
         className="w-full md:w-[14rem]"
@@ -146,6 +169,13 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({ values, setVal
                 renderFormattedPayloadDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)) ?? "",
               end_date:
                 renderFormattedPayloadDate(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)) ?? "",
+            }));
+          } else if (mode === "yearly") {
+            setValues((prev) => ({
+              ...prev,
+              mode,
+              start_date: `${new Date()?.getFullYear()}-01-01`,
+              end_date: `${new Date()?.getFullYear()}-12-31`,
             }));
           } else {
             setValues((prev) => ({
