@@ -239,7 +239,9 @@ export const PartPage: FC = () => {
             <DialogTitle>เพิ่ม Part / Add Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
-          <CreateUpdatePart onClose={() => setIsDialogOpen(false)} />
+          <div className="max-h-[60vh] overflow-y-scroll">
+            <CreateUpdatePart onClose={() => setIsDialogOpen(false)} />
+          </div>
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
@@ -248,22 +250,24 @@ export const PartPage: FC = () => {
             <DialogTitle>แก้ไข Part / Edit Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
-          <CreateUpdatePart
-            data={{
-              part_id: selectedPart?.part_id,
-              part_code: selectedPart?.part_code,
-              part_name: selectedPart?.part_name,
-              price: Number(selectedPart?.price),
-              processes: selectedPart?.processes,
-              sap_code: selectedPart?.sap_code || "",
-              part_description: selectedPart?.part_description || "",
-              customers: selectedPart?.customers || [],
-            }}
-            onClose={() => {
-              setIsDialogUpdateOpen(false);
-              setSelectedPart(null);
-            }}
-          />
+          <div className="max-h-[60vh] overflow-y-scroll">
+            <CreateUpdatePart
+              data={{
+                part_id: selectedPart?.part_id,
+                part_code: selectedPart?.part_code,
+                part_name: selectedPart?.part_name,
+                price: Number(selectedPart?.price),
+                processes: selectedPart?.processes,
+                sap_code: selectedPart?.sap_code || "",
+                part_description: selectedPart?.part_description || "",
+                customers: selectedPart?.customers || [],
+              }}
+              onClose={() => {
+                setIsDialogUpdateOpen(false);
+                setSelectedPart(null);
+              }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
       <Dialog

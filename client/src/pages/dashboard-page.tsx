@@ -2,10 +2,11 @@ import { PageHeader } from "@/components/common/page-header";
 import LineBarComposedChart from "@/components/dashboard/line-bar-composed-chart";
 import { CardProcess } from "@/components/ui-pattern";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
+import { AutoComplete } from "@/components/ui/autocomplete";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { HorizontalBarChart } from "@/components/ui/horizontal-bar-chart";
 import { Input } from "@/components/ui/input";
-import { groupByField } from "@/helpers/array.helper";
+import { filterDuplicates, groupByField } from "@/helpers/array.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
 import {
   getStartDateEndDateOfWeek,
@@ -40,6 +41,7 @@ export const DashboardPage: FC = () => {
   const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
   const [ngTypeSelected, setNgTypeSelected] = useState<TDefectsTypeReq>("ALL");
   const [ranking, setRanking] = useState<number>(10);
+  // const [partSelected, setPartSelected] = useState<string>("");
   const [partSelected, setPartSelected] = useState<string>("");
   const mapCardProcess = processList?.map((process) => {
     const data = groupProcess("process_name")[process?.process_name];
@@ -389,7 +391,7 @@ export const DashboardPage: FC = () => {
                 data={[
                   ...topDefectList?.map(({ case_name, ng_quantity }) => ({
                     label: case_name,
-                    value: ng_quantity,
+                    value: isNaN(ng_quantity) ? 0 : ng_quantity,
                   })),
                 ]}
               />
@@ -525,15 +527,19 @@ export const DashboardPage: FC = () => {
                 {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
               </p>
             </div>
-            <SelectForm
-              className="w-full md:w-[14rem] lg:w-[14rem]"
-              options={getPartSummaryList(partSummaryList)?.map(({ label }) => ({
-                label,
-                value: label,
+            {/* <ReactSearchAutocomplete
+              items={partSummaryList?.map((part) => ({
+                id: part?.part_id,
+                name: part?.part_name,
               }))}
-              placeholder="เลือกชิ้นงาน / Select part"
-              onChange={(e) => setPartSelected(e.target.value)}
+              className="w-full md:w-[14rem] lg:w-[14rem]"
+            /> */}
+            <AutoComplete
+              options={filterDuplicates(partSummaryList, "part_name")?.map((part) => part?.part_name)}
               value={partSelected}
+              onChange={(value) => setPartSelected(value)}
+              className="w-full md:w-[14rem] lg:w-[14rem]"
+              placeholder="ชิ้นงาน / Part"
             />
           </div>
           <div className="flex h-0 flex-grow flex-col">

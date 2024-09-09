@@ -21,47 +21,50 @@ import {
   renderFormattedDateWithTime,
   renderFormattedPayloadDate,
 } from "@/helpers/date-time.helper";
+import { ExcelHelper } from "@/helpers/excel.helper";
 import { DEFECT_HEADER, getRequiredRawDefects, summaryMapped } from "@/helpers/history-defect.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
-import { TDefect } from "@/types";
+import { TDefect, TMachine, TProcess } from "@/types";
 import { FC, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export const DefectHistory: FC = () => {
-  const { defectList, processList, machineList } = useAtomStore();
-  const { useGetRawDefects, mutateDeleteDefect } = useDefect();
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const [isOpenDefectDetail, setIsOpenDefectDetail] = useState<boolean>(false);
-  const [isOpenDefectEdit, setIsOpenDefectEdit] = useState<boolean>(false);
-  const [selectedDefect, setSelectedDefect] = useState<TDefect | null>(null);
+const useFilter = () => {
   const [values, setValues] = useState<TValue>({
     mode: "daily",
-    shift: "DAY",
-    process_id: "",
     start_date: renderFormattedPayloadDate(new Date()) ?? "",
     end_date: renderFormattedPayloadDate(new Date()) ?? "",
     time_slot: "08:00 - 08:00",
   });
-  const { start_date_time, end_date_time } = getRequiredRawDefects(values);
-  const { refetch, isPending: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
-  const defectMapped = useMemo(
+
+  const [filterMapped, setFilterMapped] = useState({
+    shift: [] as string[],
+    process_id: [] as string[],
+  });
+
+  return { values, setValues, filterMapped, setFilterMapped };
+};
+
+const useDefectHandlers = (
+  defectList: TDefect[],
+  processList: TProcess[],
+  machineList: TMachine[],
+  filterMapped: {
+    shift: string[];
+    process_id: string[];
+  },
+  refetch: () => void
+) => {
+  return useMemo(
     () =>
       defectList
         ?.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
         ?.filter((defect) => {
-          if (values?.process_id?.length === 0) {
-            return true;
-          }
-          return values?.process_id?.includes(defect.process_id);
-        })
-        ?.filter((defect) => {
-          if (values?.shift?.length === 0) {
-            return true;
-          }
-          return values?.shift?.includes(defect.shift);
+          if (filterMapped?.shift.length > 0 && !filterMapped?.shift.includes(defect.shift)) return false;
+          if (filterMapped?.process_id.length > 0 && !filterMapped?.process_id.includes(defect.process_id))
+            return false;
+          return true;
         })
         ?.map((defect) => ({
           ...defect,
@@ -71,64 +74,140 @@ export const DefectHistory: FC = () => {
           datetime: getTimeSlotByDateTimestamp(new Date(defect.datetime).getTime())?.label || "",
           created_at: renderFormattedDateWithTime(new Date(defect.created_at)) || "",
           updated_at: renderFormattedDateWithTime(new Date(defect.updated_at)) || "",
-          ng_quantity: defect?.ng_quantity == 0 ? "" : defect?.ng_quantity,
-          rework_quantity: defect?.rework_quantity || "",
-          scrap_quantity: defect?.scrap_quantity || "",
-          rework_cost_per_unit: parseFloat(defect?.rework_cost_per_unit?.toString() || "0") || "",
-          scrap_cost_per_unit: parseFloat(defect?.scrap_cost_per_unit?.toString() || "0") || "",
-          action: () => (
-            <div className="flex items-center gap-2">
-              <button
-                className="text-primary hover:underline"
-                onClick={() => {
-                  setSelectedDefect(defect);
-                  setIsOpenDefectDetail(true);
-                }}
-              >
-                View
-              </button>
-              <button
-                className="text-yellow-500 hover:underline"
-                onClick={() => {
-                  setSelectedDefect(defect);
-                  setIsOpenDefectEdit(true);
-                }}
-              >
-                Edit
-              </button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="text-red-500 hover:underline">Delete</button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>คุณต้องการลบข้อมูล {defect?.part_code} ใช่หรือไม่?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={async () => {
-                        const res = await mutateDeleteDefect(defect.defects_log_id);
-                        if (res) {
-                          refetch();
-                        }
-                      }}
-                    >
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          ),
+          action: <DefectActions defect={defect} refetch={refetch} />,
         })),
-    [defectList]
+    [defectList, processList, machineList, filterMapped]
   );
+};
+
+const DefectActions: FC<{
+  defect: TDefect;
+  refetch: () => void;
+}> = ({ defect, refetch }) => {
+  const { mutateDeleteDefect } = useDefect();
+  const [isOpenDefectDetail, setIsOpenDefectDetail] = useState(false);
+  const [isOpenDefectEdit, setIsOpenDefectEdit] = useState(false);
+
+  return (
+    <div className="flex items-center gap-2">
+      <button className="text-primary hover:underline" onClick={() => setIsOpenDefectDetail(true)}>
+        View
+      </button>
+      <button className="text-yellow-500 hover:underline" onClick={() => setIsOpenDefectEdit(true)}>
+        Edit
+      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button className="text-red-500 hover:underline">Delete</button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm deletion of {defect.part_code}?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                const res = await mutateDeleteDefect(defect.defects_log_id);
+                if (res) refetch();
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <DefectDetail defect={defect} isOpen={isOpenDefectDetail} onClose={() => setIsOpenDefectDetail(false)} />
+      <Drawer
+        open={isOpenDefectEdit}
+        onClose={() => setIsOpenDefectEdit(false)}
+        onOpenChange={(open) => setIsOpenDefectEdit(open)}
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>แก้ไขข้อมูล / Edit Defect</DrawerTitle>
+            <DrawerDescription>แก้ไขข้อมูลการบันทึกของเสีย / Edit defect information</DrawerDescription>
+          </DrawerHeader>
+          <div className="flex max-h-[60dvh] flex-col gap-4 overflow-y-auto p-4">
+            <CreateUpdateDefect
+              onClose={() => setIsOpenDefectEdit(false)}
+              isTitleVisible={false}
+              data={{
+                ...defect,
+                defects_log_id: defect?.defects_log_id,
+                datetime: "",
+                date: renderFormattedPayloadDate(defect?.datetime) ?? "",
+                time_slot: getTimeSlotByDateTimestamp(new Date(defect?.datetime ?? "")?.getTime())?.value,
+                process_id: defect?.process_id || "",
+                part_id: defect?.part_id || "",
+                case_id: defect?.case_id || "",
+                ng_quantity: defect?.ng_quantity || null,
+                machine_id: defect?.machine_id || "",
+                rework_quantity: defect?.rework_quantity || null,
+                scrap_quantity: defect?.scrap_quantity || null,
+                image: defect?.image || "",
+                remarks: defect?.remarks || "",
+              }}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  );
+};
+
+const useExport = (data: TDefect[]) => {
+  const excelHelper = new ExcelHelper();
+  const exportData = data.map((info) => ({
+    ID: info?.defects_log_id,
+    Shift: info?.shift,
+    Time: info?.datetime,
+    Date: `${new Date(String(info?.date)).getDate()}/${new Date(String(info?.date)).getMonth() + 1}/${new Date(
+      String(info?.date)
+    ).getFullYear()}`,
+    Line: info?.plant_code,
+    "Part No.": info?.part_code,
+    "Part Name": info?.part_name,
+    Customer: info?.customers?.join(", "),
+    "Process Name": info?.process_id,
+    "Sub Process Name": "",
+    "M/C No.": info?.machine_no,
+    "Operator Name": info?.operator_name,
+    "Production Q'ty": info?.production_quantity,
+    "NG Q'ty": info?.ng_quantity,
+    "Part or Shop defect": info?.defects_type,
+    "NG Details": info?.ng_description,
+    "Reworked Q'ty": info?.rework_quantity,
+    "Rework Cost/Unit (Baht)": info?.rework_cost_per_unit,
+    "Scrap Q'ty": info?.scrap_quantity,
+    "Scrap Cost/Unit (Baht)": info?.scrap_cost_per_unit,
+    "Scrap Approval Sheet No.": info?.scrap_approval_sheet_no,
+    "Claim to supplier Q'Ty": info?.claim_supplier_quantity,
+    "QA Inspector": info?.creator_name,
+    "CAR No.": info?.car_no,
+    "Total Defect Cost (Baht)":
+      Number(info?.rework_cost_per_unit ?? 0) * Number(info?.rework_quantity ?? 0) +
+      Number(info?.scrap_cost_per_unit ?? 0) * Number(info?.scrap_quantity ?? 0),
+    "QCS No.": "",
+  }));
+
+  return () => excelHelper.downloadExcelData(exportData, `defect-history-${new Date().getTime()?.toString()}`);
+};
+
+export const DefectHistory: FC = () => {
+  const { defectList, processList, machineList } = useAtomStore();
+  const { useGetRawDefects } = useDefect();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { values, setValues, filterMapped, setFilterMapped } = useFilter();
+  const { start_date_time, end_date_time } = getRequiredRawDefects(values);
+  const { refetch, isFetching: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
+  const defectMapped = useDefectHandlers(defectList, processList, machineList, filterMapped, refetch);
   const HEADER = DEFECT_HEADER(values);
   const summary = (key: keyof TDefect) => summaryMapped(key, defectMapped as TDefect[]);
+
+  const onExport = useExport(defectMapped as TDefect[]);
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -147,9 +226,15 @@ export const DefectHistory: FC = () => {
         ]}
       />
       <div className="flex h-full flex-col gap-2 p-2">
-        <DefectOptionFilter values={values} setValues={setValues} />
+        <DefectOptionFilter
+          values={values}
+          setValues={setValues}
+          filterMapped={filterMapped}
+          setFilterMapped={setFilterMapped}
+          onExport={onExport}
+        />
         {isPendingRawDefects ? (
-          <div className="grid h-full place-items-center">
+          <div className="grid place-items-center">
             <Spinner />
           </div>
         ) : (
@@ -187,7 +272,7 @@ export const DefectHistory: FC = () => {
                         key={`${defect?.defects_log_id}-${header_index}`}
                       >
                         {typeof defect?.[header?.key as keyof TDefect] === "function" && defect
-                          ? defect?.action()
+                          ? defect?.action
                           : defect && defect?.[header?.key as keyof TDefect]}
                       </TableCell>
                     ))}
@@ -210,46 +295,6 @@ export const DefectHistory: FC = () => {
           </div>
         )}
       </div>
-      <DefectDetail
-        defect={selectedDefect as TDefect}
-        isOpen={isOpenDefectDetail}
-        onClose={() => setIsOpenDefectDetail(false)}
-      />
-
-      <Drawer
-        open={isOpenDefectEdit}
-        onClose={() => setIsOpenDefectEdit(false)}
-        onOpenChange={(open) => setIsOpenDefectEdit(open)}
-      >
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>แก้ไขข้อมูล / Edit Defect</DrawerTitle>
-            <DrawerDescription>แก้ไขข้อมูลการบันทึกของเสีย / Edit defect information</DrawerDescription>
-          </DrawerHeader>
-          <div className="flex max-h-[60dvh] flex-col gap-4 overflow-y-auto p-4">
-            <CreateUpdateDefect
-              onClose={() => setIsOpenDefectEdit(false)}
-              isTitleVisible={false}
-              data={{
-                ...selectedDefect,
-                defects_log_id: selectedDefect?.defects_log_id,
-                datetime: "",
-                date: renderFormattedPayloadDate(selectedDefect?.datetime) ?? "",
-                time_slot: getTimeSlotByDateTimestamp(new Date(selectedDefect?.datetime ?? "")?.getTime())?.value,
-                process_id: selectedDefect?.process_id || "",
-                part_id: selectedDefect?.part_id || "",
-                case_id: selectedDefect?.case_id || "",
-                ng_quantity: selectedDefect?.ng_quantity || null,
-                machine_id: selectedDefect?.machine_id || "",
-                rework_quantity: selectedDefect?.rework_quantity || null,
-                scrap_quantity: selectedDefect?.scrap_quantity || null,
-                image: selectedDefect?.image || "",
-                remarks: selectedDefect?.remarks || "",
-              }}
-            />
-          </div>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 };
