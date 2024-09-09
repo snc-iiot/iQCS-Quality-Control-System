@@ -134,6 +134,7 @@ export const DashboardPage: FC = () => {
     selected?.type === "daily" ? selected?.start_date : selected?.end_date,
     ngTypeSelected
   );
+
   const { isFetching: isLoadingTopDefects } = useGetTopDefects(
     selected?.start_date,
     selected?.type === "daily" ? selected?.start_date : selected?.end_date,
@@ -142,6 +143,7 @@ export const DashboardPage: FC = () => {
     ranking,
     ngTypeSelected
   );
+
   const { isFetching: isLoadingSummaryDefectsByPartGraph, refetch: refetchSummaryDefectsByPartGraph } =
     useGetSummaryDefectsByPartGraph(
       selected?.start_date,
@@ -149,6 +151,10 @@ export const DashboardPage: FC = () => {
       processPartSelected,
       ngTypeSelected
     );
+
+  console.log(isLoadingSummaryDefectsByDateGraph);
+  console.log(isLoadingTopDefects);
+  console.log(isLoadingSummaryDefectsByPartGraph);
 
   const getPartSummaryList = (partSummaryList: TPartSummary[]) => {
     const dataPartName = groupByField(partSummaryList, "part_name");
@@ -228,6 +234,13 @@ export const DashboardPage: FC = () => {
                   ...selected,
                   type: e.target.value,
                   end_date: selected?.start_date,
+                });
+              } else if (value == "yearly") {
+                setSelected({
+                  ...selected,
+                  type: e.target.value,
+                  start_date: `${new Date()?.getFullYear()}-01-01`,
+                  end_date: `${new Date()?.getFullYear()}-12-31`,
                 });
               } else {
                 setSelected({
@@ -309,7 +322,6 @@ export const DashboardPage: FC = () => {
               min={selected?.start_date}
             />
           )}
-
           {selected?.type === "yearly" && (
             <SelectForm
               options={optionsYearly()}
