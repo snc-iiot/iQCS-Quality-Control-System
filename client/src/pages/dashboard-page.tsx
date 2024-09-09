@@ -8,7 +8,12 @@ import { HorizontalBarChart } from "@/components/ui/horizontal-bar-chart";
 import { Input } from "@/components/ui/input";
 import { filterDuplicates, groupByField } from "@/helpers/array.helper";
 import { useDashboardHelper } from "@/helpers/dashboard.helper";
-import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
+import {
+  getStartDateEndDateOfWeek,
+  getWeekString,
+  optionsYearly,
+  renderFormattedPayloadDate,
+} from "@/helpers/date-time.helper";
 import { cn } from "@/lib/utils";
 import { useDefect } from "@/services/hooks";
 import { useAtomStore } from "@/store";
@@ -248,6 +253,10 @@ export const DashboardPage: FC = () => {
                 label: "รายเดือน / Monthly",
                 value: "monthly",
               },
+              {
+                label: "รายปี / Yearly",
+                value: "yearly",
+              },
             ]}
             className="w-full md:w-[10rem] lg:w-[10rem]"
           />
@@ -298,6 +307,21 @@ export const DashboardPage: FC = () => {
               onChange={(e) => setSelected({ ...selected, end_date: e.target.value })}
               type="date"
               min={selected?.start_date}
+            />
+          )}
+
+          {selected?.type === "yearly" && (
+            <SelectForm
+              options={optionsYearly()}
+              className="w-[10rem]"
+              value={selected?.start_date?.slice(0, 4)}
+              onChange={(e) => {
+                setSelected((prev) => ({
+                  ...prev,
+                  start_date: `${e.target.value}-01-01`,
+                  end_date: `${e.target.value}-12-31`,
+                }));
+              }}
             />
           )}
         </div>

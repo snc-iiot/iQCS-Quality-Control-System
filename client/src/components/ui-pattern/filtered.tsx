@@ -1,4 +1,9 @@
-import { getStartDateEndDateOfWeek, getWeekString, renderFormattedPayloadDate } from "@/helpers/date-time.helper";
+import {
+  getStartDateEndDateOfWeek,
+  getWeekString,
+  optionsYearly,
+  renderFormattedPayloadDate,
+} from "@/helpers/date-time.helper";
 import { FC, ReactNode } from "react";
 import { DateInputForm } from "./form-field";
 import { SelectForm } from "./form-field/select-form";
@@ -12,13 +17,13 @@ interface IFilteredProps {
   modeOptions: TOption[];
   defectTypeOptions: TOption[];
   value: {
-    mode: "daily" | "period" | "week" | "monthly";
+    mode: "daily" | "period" | "week" | "monthly" | "yearly";
     defect_type: "ALL" | "P" | "S";
     start_date: string;
     end_date: string;
   };
   onChange: (value: {
-    mode: "daily" | "period" | "week" | "monthly";
+    mode: "daily" | "period" | "week" | "monthly" | "yearly";
     defect_type: "ALL" | "P" | "S";
     start_date: string;
     end_date: string;
@@ -142,6 +147,17 @@ export const Filtered: FC<IFilteredProps> = ({ modeOptions, defectTypeOptions, v
           onChange={(e) => handleDateChange(start_date, e.target.value)}
           type="date"
           min={start_date}
+        />
+      )}
+
+      {mode === "yearly" && (
+        <SelectForm
+          options={optionsYearly()}
+          className="w-[10rem]"
+          value={start_date?.slice(0, 4)}
+          onChange={(e) => {
+            handleDateChange(`${e.target.value}-01-01`, `${e.target.value}-12-31`);
+          }}
         />
       )}
     </div>

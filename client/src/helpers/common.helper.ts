@@ -47,6 +47,10 @@ export const MODE_OPTIONS = [
     label: "รายเดือน / Monthly",
     value: "monthly",
   },
+  {
+    label: "รายปี / Yearly",
+    value: "yearly",
+  },
 ];
 
 export const DEFECTION_TYPE_OPTIONS = [
