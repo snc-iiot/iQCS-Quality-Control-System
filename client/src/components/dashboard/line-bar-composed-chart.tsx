@@ -29,7 +29,7 @@ const LineBarComposedChart: FC<TLineBarComposedChart> = ({ data, isLoading = fal
 
       <div className=" flex h-0 flex-grow flex-col">
         {data?.length === 0 ? (
-          <div className="flex w-full justify-center">
+          <div className="flex h-full w-full justify-center">
             <p className="text-xs">
               {isLoading
                 ? "กำลังโหลดข้อมูล / Loading data"
@@ -61,6 +61,17 @@ const LineBarComposedChart: FC<TLineBarComposedChart> = ({ data, isLoading = fal
             ]}
           />
         )}
+
+        <div className="flex w-full justify-center gap-2 rounded text-xs">
+          <div>
+            <div className="mr-1 inline-block h-2 w-2 rounded-full bg-[#102693]" />
+            <span className="text-xs">จำนวนชิ้นงานที่ผลิต</span>
+          </div>
+          <div>
+            <div className="mr-1 inline-block h-2 w-2 rounded-full bg-[#FF0000]" />
+            <span className="text-xs">จำนวนชิ้นงานที่เสีย</span>
+          </div>
+        </div>
       </div>
     </div>
   );
