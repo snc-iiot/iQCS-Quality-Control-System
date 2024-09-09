@@ -62,7 +62,10 @@ export const validationDefectMultipleSchema = Yup.object<TCreateUpdateDefectMult
     .min(1),
   machine_id: Yup.string().notRequired(),
   operator_id: Yup.string().notRequired(),
-  production_quantity: Yup.number().required("โปรดระบุจำนวนผลิต").min(1),
+  production_quantity: Yup.number()
+    .required("โปรดระบุจำนวนผลิต")
+    .integer("จำนวนผลิตต้องเป็นจำนวนเต็ม")
+    .min(1, "จำนวนผลิตต้องไม่น้อยกว่า 1"),
   rework_quantity: Yup.number().notRequired(),
   scrap_quantity: Yup.number().notRequired(),
   claim_supplier_quantity: Yup.number().notRequired(),
