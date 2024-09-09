@@ -7,7 +7,7 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, Customi
 type TComposedChart = {
   data: {
     label: string;
-    [key: string]: string | number;
+    [key: string]: string | number | null;
   }[];
   Config?: ({ key: string; color?: string; yAxisId?: "right"; label?: true | string } & (
     | { chart?: "Ber"; type?: string }
@@ -43,23 +43,26 @@ const ComposedChart: FC<TComposedChart> = ({
     );
   }
 
-  const dataObjectKeys = Object?.keys(data?.[0]);
+  const dataObjectKeys = Object.keys(data?.[0] || { label: "No Data" });
   const YAxisRight = Config?.find(({ yAxisId }) => yAxisId === "right");
 
   return (
     <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
       <ComposedRechart accessibilityLayer data={data}>
         <CartesianGrid vertical={true} />
-        <YAxis
-          domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.1)]}
-          tickFormatter={(value) => `${value?.toLocaleString("en")}`}
-        />
+        {data?.length > 0 && (
+          <YAxis
+            domain={[0, (dataMax: number) => (isNaN(dataMax) ? 1 : Math.ceil(dataMax * 1.1))]} // Handle NaN
+            tickFormatter={(value) => (isNaN(value) ? "" : `${value.toLocaleString("en")}`)}
+          />
+        )}
+
         {YAxisRight && (
           <YAxis
             yAxisId="right"
             orientation="right"
             domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.1)]}
-            tickFormatter={(value) => `${value}`}
+            tickFormatter={(value) => (isNaN(value) ? "" : `${value.toLocaleString("en")}`)}
           />
         )}
         <XAxis dataKey={dataObjectKeys[0]} tickLine={true} tickMargin={10} axisLine={false} />

@@ -7,7 +7,7 @@ type TLineBarComposedChart = {
     label: string;
     production_quantity: number;
     ng_quantity: number;
-    defect: number;
+    defect: number | null;
   }[];
   isLoading?: boolean;
   selected?: string;

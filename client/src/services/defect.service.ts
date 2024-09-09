@@ -196,6 +196,10 @@ export class DefectService extends APIService {
     ranking: number,
     defects_type: "ALL" | "P" | "S"
   ): Promise<TTopDefect[]> => {
+    if ((process_id ?? "") == "") {
+      return [];
+    }
+
     try {
       const { data: res } = await this.get<TResponse<TTopDefect[]>>(
         `/defects-logging/top-rank-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&shift=${shift}&ranking=${ranking}&defects_type=${defects_type}`
@@ -219,6 +223,10 @@ export class DefectService extends APIService {
     process_id: string,
     defects_type: "ALL" | "P" | "S"
   ): Promise<TPartSummary[]> => {
+    if ((process_id ?? "") == "") {
+      return [];
+    }
+
     try {
       const { data: res } = await this.get<TResponse<TPartSummary[]>>(
         `/defects-logging/graph-summary-part-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&defects_type=${defects_type}`

@@ -152,16 +152,20 @@ export const DashboardPage: FC = () => {
       ngTypeSelected
     );
 
-  console.log(isLoadingSummaryDefectsByDateGraph);
-  console.log(isLoadingTopDefects);
-  console.log(isLoadingSummaryDefectsByPartGraph);
-
   const getPartSummaryList = (partSummaryList: TPartSummary[]) => {
     const dataPartName = groupByField(partSummaryList, "part_name");
 
     return Object.keys(dataPartName).map((label) => {
-      const ng_quantity = dataPartName[label].reduce((sum, item) => sum + item.ng_quantity, 0);
-      const production_quantity = dataPartName[label].reduce((sum, item) => sum + item.production_quantity, 0);
+      const ng_quantity = isNaN(dataPartName[label].reduce((sum, item) => sum + (item.ng_quantity || 0), 0))
+        ? 0
+        : dataPartName[label].reduce((sum, item) => sum + (item.ng_quantity || 0), 0);
+
+      const production_quantity = isNaN(
+        dataPartName[label].reduce((sum, item) => sum + (item.production_quantity || 0), 0)
+      )
+        ? 0
+        : dataPartName[label].reduce((sum, item) => sum + (item.production_quantity || 0), 0);
+
       const dataDetails = groupByField(
         dataPartName[label].reduce<TPartSummaryDetails[]>((sum, item) => sum.concat(item?.details ?? []), []),
         "case_name"
@@ -172,12 +176,14 @@ export const DashboardPage: FC = () => {
         ng_quantity: dataDetails[case_name].reduce((sum, item) => sum + item.ng_quantity, 0),
       }));
 
+      const defect = Math.ceil((ng_quantity / production_quantity) * 100);
+
       return {
         label,
-        ng_quantity,
+        ng_quantity: isNaN(ng_quantity) ? 0 : ng_quantity,
+        production_quantity: isNaN(production_quantity) ? 0 : production_quantity,
+        defect: defect === Infinity ? null : defect,
         details,
-        production_quantity,
-        defect: Math.ceil((ng_quantity / production_quantity) * 100),
       };
     });
   };
@@ -516,7 +522,10 @@ export const DashboardPage: FC = () => {
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                   <Bar
                     dataKey={"ng_quantity"}
-                    fill={processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color}
+                    fill={
+                      processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color ||
+                      "#000000"
+                    }
                     className=" cursor-pointer"
                     onClick={(e) => setPartSelected(e?.label)}
                   />
@@ -539,13 +548,6 @@ export const DashboardPage: FC = () => {
                 {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
               </p>
             </div>
-            {/* <ReactSearchAutocomplete
-              items={partSummaryList?.map((part) => ({
-                id: part?.part_id,
-                name: part?.part_name,
-              }))}
-              className="w-full md:w-[14rem] lg:w-[14rem]"
-            /> */}
             <AutoComplete
               options={filterDuplicates(partSummaryList, "part_name")?.map((part) => part?.part_name)}
               value={partSelected}
@@ -578,7 +580,10 @@ export const DashboardPage: FC = () => {
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                   <Bar
                     dataKey={"ng_quantity"}
-                    fill={processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color}
+                    fill={
+                      processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color ||
+                      "#000000"
+                    }
                   />
                 </BarChart>
               </ChartContainer>
