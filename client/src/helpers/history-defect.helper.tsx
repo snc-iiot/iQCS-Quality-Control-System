@@ -69,6 +69,10 @@ export const getRequiredRawDefects = (
       start: getDateTime(values?.start_date, values?.end_date).start,
       end: getDateTime(values?.start_date, values?.end_date).end,
     },
+    yearly: {
+      start: covertToUTC(values?.start_date),
+      end: covertToUTC(values?.end_date),
+    },
   };
 
   return {

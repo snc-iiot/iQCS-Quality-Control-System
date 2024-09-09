@@ -202,7 +202,7 @@ export const DefectHistory: FC = () => {
   const navigate = useNavigate();
   const { values, setValues, filterMapped, setFilterMapped } = useFilter();
   const { start_date_time, end_date_time } = getRequiredRawDefects(values);
-  const { refetch, isPending: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
+  const { refetch, isFetching: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
   const defectMapped = useDefectHandlers(defectList, processList, machineList, filterMapped, refetch);
   const HEADER = DEFECT_HEADER(values);
   const summary = (key: keyof TDefect) => summaryMapped(key, defectMapped as TDefect[]);
@@ -231,45 +231,10 @@ export const DefectHistory: FC = () => {
           setValues={setValues}
           filterMapped={filterMapped}
           setFilterMapped={setFilterMapped}
-          // onExport={() => {
-          //   const exportData = defectMapped?.map((info) => ({
-          //     ID: info?.defects_log_id,
-          //     Shift: info?.shift,
-          //     Time: info?.datetime,
-          //     Date: `${new Date(String(info?.date)).getDate()}/${
-          //       new Date(String(info?.date)).getMonth() + 1
-          //     }/${new Date(String(info?.date)).getFullYear()}`,
-          //     Line: info?.plant_code,
-          //     "Part No.": info?.part_code,
-          //     "Part Name": info?.part_name,
-          //     Customer: info?.customers?.join(", "),
-          //     "Process Name": info?.process_id,
-          //     "Sub Process Name": "",
-          //     "M/C No.": info?.machine_no,
-          //     "Operator Name": info?.operator_name,
-          //     "Production Q'ty": info?.production_quantity,
-          //     "NG Q'ty": info?.ng_quantity,
-          //     "Part or Shop defect": info?.defects_type,
-          //     "NG Details": info?.ng_description,
-          //     "Reworked Q'ty": info?.rework_quantity,
-          //     "Rework Cost/Unit (Baht)": info?.rework_cost_per_unit,
-          //     "Scrap Q'ty": info?.scrap_quantity,
-          //     "Scrap Cost/Unit (Baht)": info?.scrap_cost_per_unit,
-          //     "Scrap Approval Sheet No.": info?.scrap_approval_sheet_no,
-          //     "Claim to supplier Q'Ty": info?.claim_supplier_quantity,
-          //     "QA Inspector": info?.creator_name,
-          //     "CAR No.": info?.car_no,
-          //     "Total Defect Cost (Baht)":
-          //       Number(info?.rework_cost_per_unit ?? 0) * Number(info?.rework_quantity ?? 0) +
-          //       Number(info?.scrap_cost_per_unit ?? 0) * Number(info?.scrap_quantity ?? 0),
-          //     "QCS No.": "",
-          //   }));
-          //   excelHelper.downloadExcelData(exportData, `defect-history-${new Date().getTime}`);
-          // }}
           onExport={onExport}
         />
         {isPendingRawDefects ? (
-          <div className="grid h-full place-items-center">
+          <div className="grid place-items-center">
             <Spinner />
           </div>
         ) : (

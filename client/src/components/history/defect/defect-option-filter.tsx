@@ -10,7 +10,7 @@ import { formatDate } from "date-fns";
 import { FC } from "react";
 
 export type TValue = {
-  mode: "daily" | "period" | "weekly" | "monthly";
+  mode: "daily" | "period" | "weekly" | "monthly" | "yearly";
   start_date: string;
   end_date: string;
   time_slot: string;
@@ -59,6 +59,9 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({
     } else if (mode === "monthly") {
       start_date = renderFormattedPayloadDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)) ?? "";
       end_date = renderFormattedPayloadDate(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)) ?? "";
+    } else if (mode === "yearly") {
+      start_date = renderFormattedPayloadDate(new Date(new Date().getFullYear(), 0, 1)) ?? "";
+      end_date = renderFormattedPayloadDate(new Date(new Date().getFullYear(), 11, 31)) ?? "";
     }
 
     setValues((prev) => ({ ...prev, mode, start_date, end_date }));
@@ -125,6 +128,27 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({
             value={formatDate(new Date(values.start_date), "yyyy-MM") ?? ""}
           />
         );
+      case "yearly":
+        return (
+          <SelectForm
+            options={Array.from({ length: new Date().getFullYear() - 2019 + 1 }, (_, i) => {
+              const year = 2019 + i;
+              return { label: year.toString(), value: year.toString() };
+            })}
+            value={new Date(values.start_date).getFullYear().toString()}
+            onChange={(e) => {
+              const year = parseInt(e.target.value);
+              const start_date = new Date(year, 0, 1);
+              const end_date = new Date(year, 11, 31);
+              setValues((prev) => ({
+                ...prev,
+                start_date: renderFormattedPayloadDate(start_date) ?? "",
+                end_date: renderFormattedPayloadDate(end_date) ?? "",
+              }));
+            }}
+            className="w-full md:w-[5rem]"
+          />
+        );
     }
   };
 
@@ -170,6 +194,7 @@ export const DefectOptionFilter: FC<DefectOptionFilterProps> = ({
           { label: "ช่วงวัน / Period", value: "period" },
           { label: "สัปดาห์ / Week", value: "weekly" },
           { label: "รายเดือน / Monthly", value: "monthly" },
+          { label: "รายปี / Yearly", value: "yearly" },
         ]}
         className="w-full md:w-[14rem]"
         value={values.mode}

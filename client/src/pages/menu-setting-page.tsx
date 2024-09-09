@@ -62,14 +62,14 @@ const MenuSettingPage: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const handleClick = (title: string) => {
-    if (title === "เปลี่ยนรหัสผ่าน / Change password") {
+    if (title === "เปลี่ยนรหัสผ่าน / Change Password") {
       setIsDialogOpen(true);
     }
   };
 
   const mapMenuItems = menuItems.map((item) => ({
     ...item,
-    onClick: item.title === "เปลี่ยนรหัสผ่าน / Change password" ? () => handleClick(item.title) : undefined,
+    onClick: item.title === "เปลี่ยนรหัสผ่าน / Change Password" ? () => handleClick(item.title) : undefined,
   }));
 
   return (
