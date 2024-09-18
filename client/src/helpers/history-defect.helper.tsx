@@ -2,17 +2,17 @@ import { TValue } from "@/components/history";
 import { TDefect } from "@/types";
 import { GET_TIME_SLOTS } from "./time-slot";
 
-const covertToUTC = (date: string | null | undefined): string => {
-  if (date) {
-    const parsedDate = new Date(date);
-    if (!isNaN(parsedDate.getTime())) {
-      return parsedDate.toISOString();
-    } else {
-      return "";
-    }
-  }
-  return "";
-};
+// const covertToUTC = (date: string | null | undefined): string => {
+//   if (date) {
+//     const parsedDate = new Date(date);
+//     if (!isNaN(parsedDate.getTime())) {
+//       return parsedDate.toISOString();
+//     } else {
+//       return "";
+//     }
+//   }
+//   return "";
+// };
 
 export const getRequiredRawDefects = (
   values: TValue
@@ -58,20 +58,20 @@ export const getRequiredRawDefects = (
       end: dateTime.end,
     },
     monthly: {
-      start: covertToUTC(values?.start_date),
-      end: covertToUTC(values?.end_date),
+      start: getDateTime(values?.start_date, values?.end_date).start,
+      end: getDateTime(values?.start_date, values?.end_date).end,
     },
     weekly: {
-      start: covertToUTC(values?.start_date),
-      end: covertToUTC(values?.end_date),
+      start: getDateTime(values?.start_date, values?.end_date).start,
+      end: getDateTime(values?.start_date, values?.end_date).end,
     },
     period: {
       start: getDateTime(values?.start_date, values?.end_date).start,
       end: getDateTime(values?.start_date, values?.end_date).end,
     },
     yearly: {
-      start: covertToUTC(values?.start_date),
-      end: covertToUTC(values?.end_date),
+      start: getDateTime(values?.start_date, values?.end_date).start,
+      end: getDateTime(values?.start_date, values?.end_date).end,
     },
   };
 
@@ -97,17 +97,21 @@ export const DEFECT_HEADER = (values: TValue) => {
     },
     { label: "Part Code", key: "part_code" },
     { label: "Part Name", key: "part_name" },
+    {
+      label: "Price per unit (USD)",
+      key: "price",
+    },
     { label: "Production Quantity", key: "production_quantity" },
     { label: "Ng Quantity", key: "ng_quantity" },
     { label: "Rework Quantity", key: "rework_quantity" },
     { label: "Scrap Quantity", key: "scrap_quantity" },
     {
-      label: "Rework Cost Per Unit (USD)",
-      key: "rework_cost_per_unit",
+      label: "Rework Cost (USD)",
+      key: "rework_price",
     },
     {
-      label: "Scrap Cost Per Unit (USD)",
-      key: "scrap_cost_per_unit",
+      label: "Scrap Cost (USD)",
+      key: "scrap_price",
     },
     { label: "Case Name", key: "case_name" },
     { label: "NG Description", key: "ng_description" },

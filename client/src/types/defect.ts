@@ -53,45 +53,42 @@ export type TCreateUpdateDefectMultiple = {
 export type TDefect = {
   defects_log_id: string;
   datetime: string;
-  process: string;
-  machine_name: string;
-  part_code: string;
+  defects_type: "S" | "P";
+  process_id: string;
+  machine_id: any;
+  operator_id: any;
+  part_id: string;
   case_id: string;
+  production_quantity: number;
   ng_quantity: number;
   rework_quantity: number;
-  rework_cost_per_unit: number;
   scrap_quantity: number;
-  scrap_cost_per_unit: number;
+  claim_supplier_quantity: number;
+  scrap_approval_sheet_no: string;
+  car_no: string;
   image: string;
+  solve_problem: string;
   remarks: string;
-  inspector_id: string;
+  plant_code: string;
+  creator_id: string;
   created_at: string;
   updated_at: string;
-  solve_problem: string;
   time_slot: string;
   shift: string;
   case_name: string;
   ng_description: string;
-  inspector_name: string;
+  creator_name: string;
+  part_code: string;
   part_name: string;
-
-  date?: string;
-  defects_type: "S" | "P";
-  process_id: string;
-  part_id: string;
-
-  // Optional
-  machine_id?: string;
-  operator_id?: string;
-  production_quantity?: number | null;
-  claim_supplier_quantity?: number | null;
-  scrap_approval_sheet_no: string;
-  car_no?: string;
-  customers?: string[];
-  machine_no?: string;
-  operator_name?: string;
-  plant_code?: string;
-  creator_name?: string;
+  customers: any[];
+  machine_no: string;
+  machine_name: string;
+  employee_id: string;
+  operator_name: string;
+  price: number;
+  ng_price: number;
+  scrap_price: number;
+  rework_price: number;
 };
 
 export type TDefectSummary = {

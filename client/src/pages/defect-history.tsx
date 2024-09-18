@@ -68,6 +68,8 @@ const useDefectHandlers = (
         })
         ?.map((defect) => ({
           ...defect,
+          rework_price: defect?.rework_quantity * defect?.rework_price,
+          scrap_price: defect?.scrap_quantity * defect?.scrap_price,
           machine_id: machineList?.find((machine) => machine.machine_id === defect.machine_id)?.machine_name || "",
           process_id: processList?.find((process) => process.process_id === defect.process_id)?.process_name || "",
           date: renderFormattedDate(new Date(defect.datetime)),
@@ -163,8 +165,8 @@ const useExport = (data: TDefect[]) => {
     ID: info?.defects_log_id,
     Shift: info?.shift,
     Time: info?.datetime,
-    Date: `${new Date(String(info?.date)).getDate()}/${new Date(String(info?.date)).getMonth() + 1}/${new Date(
-      String(info?.date)
+    Date: `${new Date(String(info?.datetime)).getDate()}/${new Date(String(info?.datetime)).getMonth() + 1}/${new Date(
+      String(info?.datetime)
     ).getFullYear()}`,
     Line: info?.plant_code,
     "Part No.": info?.part_code,
@@ -179,16 +181,16 @@ const useExport = (data: TDefect[]) => {
     "Part or Shop defect": info?.defects_type,
     "NG Details": info?.ng_description,
     "Reworked Q'ty": info?.rework_quantity,
-    "Rework Cost/Unit (Baht)": info?.rework_cost_per_unit,
+    "Rework Cost/Unit (Baht)": info?.rework_price,
     "Scrap Q'ty": info?.scrap_quantity,
-    "Scrap Cost/Unit (Baht)": info?.scrap_cost_per_unit,
+    "Scrap Cost/Unit (Baht)": info?.scrap_price,
     "Scrap Approval Sheet No.": info?.scrap_approval_sheet_no,
     "Claim to supplier Q'Ty": info?.claim_supplier_quantity,
     "QA Inspector": info?.creator_name,
     "CAR No.": info?.car_no,
     "Total Defect Cost (Baht)":
-      Number(info?.rework_cost_per_unit ?? 0) * Number(info?.rework_quantity ?? 0) +
-      Number(info?.scrap_cost_per_unit ?? 0) * Number(info?.scrap_quantity ?? 0),
+      Number(info?.rework_price ?? 0) * Number(info?.rework_quantity ?? 0) +
+      Number(info?.scrap_price ?? 0) * Number(info?.scrap_quantity ?? 0),
     "QCS No.": "",
   }));
 
@@ -201,13 +203,17 @@ export const DefectHistory: FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { values, setValues, filterMapped, setFilterMapped } = useFilter();
+
   const { start_date_time, end_date_time } = getRequiredRawDefects(values);
+
   const { refetch, isFetching: isPendingRawDefects } = useGetRawDefects(start_date_time, end_date_time);
   const defectMapped = useDefectHandlers(defectList, processList, machineList, filterMapped, refetch);
   const HEADER = DEFECT_HEADER(values);
   const summary = (key: keyof TDefect) => summaryMapped(key, defectMapped as TDefect[]);
 
   const onExport = useExport(defectMapped as TDefect[]);
+
+  console.log(defectMapped);
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -281,13 +287,13 @@ export const DefectHistory: FC = () => {
               </TableBody>
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={values?.mode == "daily" ? 7 : 8}>Total Summary</TableCell>
+                  <TableCell colSpan={values?.mode == "daily" ? 7 : 9}>Total Summary</TableCell>
                   <TableCell className="text-right">{summary("production_quantity")}</TableCell>
                   <TableCell className="text-right">{summary("ng_quantity")}</TableCell>
                   <TableCell className="text-right">{summary("rework_quantity")}</TableCell>
                   <TableCell className="text-right">{summary("scrap_quantity")}</TableCell>
-                  <TableCell className="text-right">{summary("rework_cost_per_unit")}</TableCell>
-                  <TableCell className="text-right">{summary("scrap_cost_per_unit")}</TableCell>
+                  <TableCell className="text-right">{summary("rework_price")}</TableCell>
+                  <TableCell className="text-right">{summary("scrap_price")}</TableCell>
                   <TableCell colSpan={8}></TableCell>
                 </TableRow>
               </TableFooter>
