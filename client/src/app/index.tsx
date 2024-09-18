@@ -26,8 +26,8 @@ import MenuSettingPage from "../pages/menu-setting-page";
 const App = () => {
   return (
     <RootLayout>
-      {/* <BrowserRouter basename="/iqcs"> */}
-      <BrowserRouter>
+      <BrowserRouter basename="/iqcs">
+        {/* <BrowserRouter> */}
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/snc-overview" element={<OverviewLayout />}>
