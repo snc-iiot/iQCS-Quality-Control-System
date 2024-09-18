@@ -13,8 +13,8 @@ import { FC } from "react";
 
 export type TValue = {
   mode: "daily" | "period" | "weekly" | "monthly" | "yearly";
-  shift?: "DAY" | "NIGHT";
-  process_id: string;
+  shift?: string[];
+  process_id: string[];
   start_date: string;
   end_date: string;
   time_slot: string;
