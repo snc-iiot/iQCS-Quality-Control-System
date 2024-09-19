@@ -274,8 +274,8 @@ export const HistoryPage: FC = () => {
           ng_quantity: defect?.ng_quantity == 0 ? "" : defect?.ng_quantity,
           rework_quantity: defect?.rework_quantity || "",
           scrap_quantity: defect?.scrap_quantity || "",
-          rework_cost_per_unit: parseFloat(defect?.rework_cost_per_unit?.toString() || "0") || "",
-          scrap_cost_per_unit: parseFloat(defect?.scrap_cost_per_unit?.toString() || "0") || "",
+          rework_cost_per_unit: parseFloat(defect?.rework_price?.toString() || "0") || "",
+          scrap_cost_per_unit: parseFloat(defect?.scrap_price?.toString() || "0") || "",
           action: () => (
             <div className="flex items-center gap-2">
               <button
@@ -1302,8 +1302,8 @@ export const HistoryPage: FC = () => {
                         <TableCell className="text-right">{summaryMapped("ng_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("rework_quantity")}</TableCell>
                         <TableCell className="text-right">{summaryMapped("scrap_quantity")}</TableCell>
-                        <TableCell className="text-right">{summaryMapped("rework_cost_per_unit")}</TableCell>
-                        <TableCell className="text-right">{summaryMapped("scrap_cost_per_unit")}</TableCell>
+                        <TableCell className="text-right">{summaryMapped("rework_price")}</TableCell>
+                        <TableCell className="text-right">{summaryMapped("scrap_price")}</TableCell>
                         <TableCell colSpan={8}></TableCell>
                       </TableRow>
                     </TableFooter>
