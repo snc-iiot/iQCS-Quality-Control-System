@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not } from 'typeorm';
 import { Part } from './entities';
 import { TServiceResponse, TJwtPayload } from 'src/types';
-import { CreatePartDto, UpdatePartDto, FindPartDto } from './dto';
+import {
+  CreatePartDto,
+  CreatePartsDto,
+  UpdatePartDto,
+  FindPartDto,
+} from './dto';
 
 @Injectable()
 export class PartsService {
@@ -43,6 +48,8 @@ export class PartsService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
         processes: input.processes,
+        price: input.price,
+        customers: input.customers ?? [],
         plant_code: decoded.plant_code,
       };
 
@@ -58,6 +65,56 @@ export class PartsService {
         status: 'success',
         statusCode: 200,
         message: 'Part created successfully',
+        data: [created],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async createParts(
+    input: CreatePartsDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    // return {
+    //   status: 'success',
+    //   statusCode: 200,
+    //   message: 'Demo0',
+    //   data: [{ input, decoded }],
+    // };
+    try {
+      const allPartCode = await this.partRepository.find({
+        where: { plant_code: decoded.plant_code },
+      });
+
+      const partCodeExists = allPartCode.map((part) => part.part_code);
+
+      const newPartCode = input.data.filter(
+        (part) => !partCodeExists.includes(part.part_code),
+      );
+
+      const records = newPartCode.map((part) => ({
+        sap_code: part.sap_code ?? null,
+        part_code: part.part_code,
+        part_name: part.part_name,
+        part_description: part.part_description ?? '',
+        processes: part.processes,
+        price: part.price ?? 0,
+        customers: part.customers ?? [],
+        plant_code: decoded.plant_code,
+      }));
+
+      const created = await this.partRepository.save(records);
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Parts created successfully',
         data: [created],
       };
     } catch (error) {
@@ -99,6 +156,8 @@ export class PartsService {
         part_name: input.part_name,
         part_description: input.part_description ?? '',
         processes: input.processes,
+        price: input.price,
+        customers: input.customers ?? [],
       };
       const updated = await this.partRepository.update(
         { part_id: input.part_id },

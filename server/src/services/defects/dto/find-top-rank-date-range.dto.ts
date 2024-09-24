@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, Matches, IsIn } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Matches,
+  IsIn,
+  // IsNumber,
+  IsNumberString,
+  // Min,
+} from 'class-validator';
 
 export class FindTopRankDateRangeDto {
   @IsString()
@@ -23,20 +31,20 @@ export class FindTopRankDateRangeDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsIn([
-    'ALL',
-    'CUTTING',
-    'BENDING',
-    'PRESS',
-    'SPOT',
-    'PAINTING',
-    'PRE-ASSEMBLY',
-    'ASSEMBLY',
-  ])
-  process: string;
+  process_id: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
 
   @IsString()
   @IsNotEmpty()
   @IsIn(['ALL', 'DAY', 'NIGHT'])
   shift: string;
+
+  @IsNumberString()
+  @IsNotEmpty()
+  // @Min(1)
+  ranking: number;
 }

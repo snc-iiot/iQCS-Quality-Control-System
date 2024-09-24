@@ -8,4 +8,9 @@ export class FindByDatetimeRangeDto {
   @IsDateString()
   @IsNotEmpty()
   end_datetime: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsIn(['P', 'S', 'ALL'])
+  defects_type: string;
 }

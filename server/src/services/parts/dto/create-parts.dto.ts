@@ -5,9 +5,10 @@ import {
   ArrayMinSize,
   IsNumber,
   Min,
+  ValidateNested,
   // IsUUID,
 } from 'class-validator';
-// import { Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 // export class ProcessDto {
 //   @IsUUID()
@@ -15,7 +16,7 @@ import {
 //   process_id: string;
 // }
 
-export class CreatePartDto {
+export class PartsDto {
   @IsString()
   @IsNotEmpty()
   part_code: string;
@@ -26,7 +27,8 @@ export class CreatePartDto {
 
   @IsArray()
   @ArrayMinSize(1)
-  // @Type(() => ProcessDto)
+  // @ValidateNested()
+  // @Type(() => IsUUID)
   // processes: ProcessDto[];
   processes: string[];
 
@@ -38,4 +40,13 @@ export class CreatePartDto {
   sap_code: string;
   part_description: string;
   customers: string[];
+}
+
+export class CreatePartsDto {
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested()
+  @Type(() => PartsDto)
+  // processes: ProcessDto[];
+  data: PartsDto[];
 }

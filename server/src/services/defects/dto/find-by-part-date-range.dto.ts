@@ -1,6 +1,6 @@
-import { IsString, IsNotEmpty, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsUUID } from 'class-validator';
 
-export class FindByDateRangeDto {
+export class FindPartByDateRangeDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {
@@ -14,6 +14,14 @@ export class FindByDateRangeDto {
     message: 'date must be in the format yyyy-mm-dd',
   })
   end_date: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  part_id: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  process_id: string;
 
   // @IsString()
   // @IsNotEmpty()

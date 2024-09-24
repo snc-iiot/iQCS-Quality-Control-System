@@ -7,6 +7,7 @@ import {
   IsUUID,
   IsNumber,
   Min,
+  // ValidateIf,
 } from 'class-validator';
 
 export class CreateDefectsDto {
@@ -19,35 +20,40 @@ export class CreateDefectsDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsIn([
-    'CUTTING',
-    'BENDING',
-    'PRESS',
-    'SPOT',
-    'PAINTING',
-    'PRE-ASSEMBLY',
-    'ASSEMBLY',
-  ])
-  process: string;
-
-  @IsString()
-  @IsNotEmpty()
-  part_code: string;
+  @IsIn(['P', 'S'])
+  defects_type: string;
 
   @IsUUID()
   @IsNotEmpty()
-  ng_id: string;
+  process_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  part_id: string;
+
+  // @IsUUID()
+  // @IsNotEmpty()
+  case_id: string;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
+  production_quantity: number;
+
+  // @ValidateIf((o) => o.case_id !== null || o.case_id !== undefined || o.case_id !== '')
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
   ng_quantity: number;
 
-  machine_name: string;
+  machine_id: string;
+  operator_id: string;
+  // production_quantity: number;
   rework_quantity: number;
-  rework_cost_per_unit: number;
   scrap_quantity: number;
-  scrap_cost_per_unit: number;
+  claim_supplier_quantity: number;
+  scrap_approval_sheet_no: string;
+  car_no: string;
   image: string;
   solve_problem: string;
   remarks: string;

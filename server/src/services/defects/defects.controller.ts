@@ -16,10 +16,13 @@ import {
   UpdateDefectsDto,
   FindByDateDto,
   FindTopRankDto,
-  DeleteDefectsDto,
+  FindDefectsDto,
   FindByDatetimeRangeDto,
   FindByDateRangeDto,
+  FindByProcessDateRangeDto,
   FindTopRankDateRangeDto,
+  CreateDefectsMoreNgCasesDto,
+  FindPartByDateRangeDto,
 } from './dto';
 import { TJwtPayload } from 'src/types';
 
@@ -37,6 +40,16 @@ export class DefectController {
     return res.status(result.statusCode).json(result);
   }
 
+  @Post('more-defects')
+  async createMoreNgCase(
+    @Body() body: CreateDefectsMoreNgCasesDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.createMoreNgCase(body, req.decoded);
+    return res.status(result.statusCode).json(result);
+  }
+
   @Put()
   async update(
     @Body() body: UpdateDefectsDto,
@@ -50,65 +63,126 @@ export class DefectController {
   @Get('raw-data-by-datetime-range')
   async findRawDataByDatetimeRange(
     @Query() query: FindByDatetimeRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.findRawDataByDatetimeRange(query);
+    const result = await this.defectService.findRawDataByDatetimeRange(
+      query,
+      req.decoded,
+    );
     return res.status(result.statusCode).json(result);
   }
 
   @Get('summary-by-datetime-range')
   async summaryByDatetimeRange(
     @Query() query: FindByDatetimeRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.summaryByDatetimeRange(query);
+    const result = await this.defectService.summaryByDatetimeRange(
+      query,
+      req.decoded,
+    );
     return res.status(result.statusCode).json(result);
   }
 
   @Get('summary-by-date')
-  async summaryByDate(@Query() query: FindByDateDto, @Res() res: Response) {
-    const result = await this.defectService.summaryByDate(query);
+  async summaryByDate(
+    @Query() query: FindByDateDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.summaryByDate(query, req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
   @Get('graph-summary-by-date')
   async graphSummaryByDate(
     @Query() query: FindByDateDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.graphSummaryByDate(query);
+    const result = await this.defectService.graphSummaryByDate(
+      query,
+      req.decoded,
+    );
     return res.status(result.statusCode).json(result);
   }
 
   @Get('top-rank-by-date')
   async findTopRankByDate(
     @Query() query: FindTopRankDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.findTopRankByDate(query);
+    const result = await this.defectService.findTopRankByDate(
+      query,
+      req.decoded,
+    );
     return res.status(result.statusCode).json(result);
   }
 
   @Get('graph-summary-by-date-range')
   async graphSummaryByDateRange(
     @Query() query: FindByDateRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.graphSummaryByDateRange(query);
+    const result = await this.defectService.graphSummaryByDateRange(
+      query,
+      req.decoded,
+    );
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('graph-summary-part-by-date-range')
+  async graphSummaryPartDefectsByDateRange(
+    @Query() query: FindByProcessDateRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.graphSummaryPartDefectsByDateRange(
+      query,
+      req.decoded,
+    );
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('parts-summary-all-plant')
+  async partSummaryAllPlantByDateRange(
+    @Query() query: FindByDateRangeDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.defectService.partSummaryAllPlantByDateRange(query);
+    return res.status(result.statusCode).json(result);
+  }
+
+  @Get('part-details')
+  async partDefectsDetailsByDateRange(
+    @Query() query: FindPartByDateRangeDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.defectService.partDefectsDetailsByDateRange(query);
     return res.status(result.statusCode).json(result);
   }
 
   @Get('top-rank-by-date-range')
   async findTopRankByDateRange(
     @Query() query: FindTopRankDateRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
     @Res() res: Response,
   ) {
-    const result = await this.defectService.findTopRankByDateRange(query);
+    const result = await this.defectService.findTopRankByDateRange(
+      query,
+      req.decoded,
+    );
     return res.status(result.statusCode).json(result);
   }
 
   @Delete()
-  async delete(@Query() query: DeleteDefectsDto, @Res() res: Response) {
+  async delete(@Query() query: FindDefectsDto, @Res() res: Response) {
     const result = await this.defectService.delete(query);
     return res.status(result.statusCode).json(result);
   }

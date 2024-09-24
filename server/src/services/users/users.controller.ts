@@ -10,13 +10,19 @@ import {
   Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { LoginDto, ChangePasswordDto } from './dto';
+import { LoginDto, ChangePasswordDto, CreateUserDto } from './dto';
 import { TJwtPayload } from 'src/types';
 import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('add-user')
+  async create(@Body() body: CreateUserDto, @Res() res: Response) {
+    const result = await this.usersService.create(body);
+    return res.status(result.statusCode).json(result);
+  }
 
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response) {

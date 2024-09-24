@@ -19,6 +19,9 @@ import { ProcessesModule } from './services/processes/processes.module';
 import { ProductivityModule } from './services/productivity/productivity.module';
 import { OperatorsModule } from './services/operators/operators.module';
 import { DocumentsModule } from './services/documents/documents.module';
+import { UpdatePriceModule } from './services/update-price/update-price.module';
+import { PriceRatioModule } from './services/price-ratio/price-ratio.module';
+import { DashboardModule } from './services/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -43,6 +46,9 @@ import { DocumentsModule } from './services/documents/documents.module';
     ProcessesModule,
     OperatorsModule,
     DocumentsModule,
+    UpdatePriceModule,
+    PriceRatioModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -51,7 +57,12 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware)
-      .exclude('/users/login', '/users/gen-pass', '/users/plants')
+      .exclude(
+        '/users/login',
+        '/users/gen-pass',
+        '/users/plants',
+        '/users/add-user',
+      )
       .forRoutes({
         path: '/users*',
         method: RequestMethod.ALL,
@@ -87,16 +98,28 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/update-price*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/price-ratios*',
+      method: RequestMethod.ALL,
+    });
+
     consumer
       .apply(JwtMiddleware)
       .exclude(
-        '/defects-logging/raw-data-by-datetime-range',
-        '/defects-logging/summary-by-datetime-range',
-        '/defects-logging/summary-by-date',
-        '/defects-logging/graph-summary-by-date',
-        '/defects-logging/top-rank-by-date',
-        '/defects-logging/graph-summary-by-date-range',
-        '/defects-logging/top-rank-by-date-range',
+        //   '/defects-logging/raw-data-by-datetime-range',
+        //   '/defects-logging/summary-by-datetime-range',
+        //   '/defects-logging/summary-by-date',
+        //   '/defects-logging/graph-summary-by-date',
+        //   '/defects-logging/top-rank-by-date',
+        //   '/defects-logging/graph-summary-by-date-range',
+        //   '/defects-logging/top-rank-by-date-range',
+        '/defects-logging/parts-summary-all-plant',
+        '/defects-logging/part-details',
       )
       .forRoutes({
         path: '/defects-logging*',

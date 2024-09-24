@@ -4,6 +4,8 @@ import {
   IsUUID,
   IsArray,
   ArrayMinSize,
+  IsNumber,
+  Min,
 } from 'class-validator';
 // import { Type } from 'class-transformer';
 
@@ -31,6 +33,12 @@ export class UpdatePartDto {
   // @Type(() => IsUUID)
   processes: string[];
 
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  price: number;
+
   sap_code: string;
   part_description: string;
+  customers: string[];
 }

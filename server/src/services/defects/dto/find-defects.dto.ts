@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class DeleteDefectsDto {
+export class FindDefectsDto {
   @IsUUID()
   @IsNotEmpty()
   defects_log_id: string;
