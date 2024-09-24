@@ -6,6 +6,7 @@ import {
   TGraphSummary,
   THistoryUpdatePrice,
   TMachine,
+  TModel,
   TNGCause,
   TPart,
   TPartSummary,
@@ -38,3 +39,4 @@ export const priceRatioAtom = atom<TPriceRatio[]>([]);
 export const historyUpdatePriceAtom = atom<THistoryUpdatePrice[]>([]);
 export const sncOverviewAtom = atom<TSNCOverview[]>([]);
 export const sncPartDetailAtom = atom<TSNCPartDetail[]>([]);
+export const modelAtom = atom<TModel[]>([]);

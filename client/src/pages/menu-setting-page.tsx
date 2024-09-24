@@ -28,6 +28,14 @@ const menuItems = [
     disabled: false,
   },
   {
+    title: "การตั้งค่า Model / Model Settings",
+    href: "model",
+    icon: Settings,
+    description:
+      "จัดการการตั้งค่า Model รวมถึงการเพิ่ม ลบ และแก้ไข / Manage Model settings, including adding, deleting, and editing",
+    disabled: false,
+  },
+  {
     title: "การตั้งค่าสาเหตุการเสีย / Cause Settings",
     href: "cause",
     icon: Settings,

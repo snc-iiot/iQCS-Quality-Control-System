@@ -61,3 +61,9 @@ export const DELETE_PRICE_RATIO = "DELETE_PRICE_RATIO";
 //snc overview
 export const GET_SNC_OVERVIEW = "GET_SNC_OVERVIEW";
 export const GET_SNC_PART_DETAIL = "GET_SNC_PART_DETAIL";
+
+// Model
+export const GET_MODELS = "GET_MODELS";
+export const CREATE_MODEL = "CREATE_MODEL";
+export const UPDATE_MODEL = "UPDATE_MODEL";
+export const DELETE_MODEL = "DELETE_MODEL";

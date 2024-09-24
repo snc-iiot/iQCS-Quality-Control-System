@@ -1,5 +1,12 @@
-import { GET_HISTORY_UPDATE_PRICE, GET_PARTS } from "@/lib/constants";
-import { TCreateUpdatePart, TCreateUpdatePartPrice, THistoryUpdatePrice, TPart } from "@/types";
+import { GET_HISTORY_UPDATE_PRICE, GET_MODELS, GET_PARTS } from "@/lib/constants";
+import {
+  TCreateUpdateModel,
+  TCreateUpdatePart,
+  TCreateUpdatePartPrice,
+  THistoryUpdatePrice,
+  TModel,
+  TPart,
+} from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { PartService } from "../part.service";
 import { useMutationWithToast } from "./use-mutation-with-toast";
@@ -14,6 +21,11 @@ export const usePart = () => {
     getHistoryUpdatePrice,
     updatePartPrice,
     deleteUpdatePrice,
+    // model
+    getModels,
+    createModel,
+    updateModel,
+    deleteModel,
   } = new PartService();
 
   const useGetParts = () => {
@@ -68,6 +80,32 @@ export const usePart = () => {
     [GET_PARTS]
   );
 
+  const useGetModels = () => {
+    return useQuery({
+      queryKey: [GET_MODELS],
+      queryFn: (): Promise<TModel[]> => getModels(),
+      refetchInterval: 10000,
+    });
+  };
+
+  const { mutateAsync: mutateCreateModel } = useMutationWithToast(
+    async (data: TCreateUpdateModel) => await createModel(data),
+    "Model created successfully",
+    [GET_MODELS]
+  );
+
+  const { mutateAsync: mutateUpdateModel } = useMutationWithToast(
+    async (data: TCreateUpdateModel) => await updateModel(data),
+    "Model updated successfully",
+    [GET_MODELS]
+  );
+
+  const { mutateAsync: mutateDeleteModel } = useMutationWithToast(
+    async (model_id: string) => await deleteModel(model_id),
+    "Model deleted successfully",
+    [GET_MODELS]
+  );
+
   return {
     useGetParts,
     mutateCreatePart,
@@ -77,5 +115,9 @@ export const usePart = () => {
     useGetHistoryUpdatePrice,
     mutateUpdatePartPrice,
     mutateDeleteUpdatePrice,
+    useGetModels,
+    mutateCreateModel,
+    mutateUpdateModel,
+    mutateDeleteModel,
   };
 };

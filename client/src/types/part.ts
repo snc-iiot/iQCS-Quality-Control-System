@@ -47,3 +47,17 @@ export type TCreateUpdatePartPrice = {
   price: number | null;
   remarks: string;
 };
+
+export type TCreateUpdateModel = {
+  model_id?: string;
+  model_name: string;
+  model_description: string;
+};
+
+export type TModel = {
+  model_id: string;
+  model_name: string;
+  model_description: string;
+  created_at: string;
+  updated_at: string;
+};
