@@ -3,7 +3,7 @@ import ComposedChart from "@/components/ui/composed-chart";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { mapCompositionData } from "@/helpers/dashboard.helper";
 import { ProcessSelection, SNCOverviewData, SNCOverviewItem } from "@/types"; // Adjust the import path as needed
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 interface OverviewCardProps {
   plantCode: string;
@@ -28,6 +28,10 @@ export const OverviewCard: FC<OverviewCardProps> = ({
   setPartSelected,
   mapSncOverviewList,
 }) => {
+  const [mode, setMode] = useState("");
+  const [sort, setSort] = useState<"ng" | "percentage">("ng");
+  const [length, setLength] = useState("");
+
   const handleInfoClick = () => {
     setPlantSelected(plantCode);
     setPartSelected(null);
@@ -49,7 +53,7 @@ export const OverviewCard: FC<OverviewCardProps> = ({
     if (processes.length > 0) {
       setProcessSelected((prev) => [
         ...prev.filter((process) => process.plant_code !== plantCode),
-        { plant_code: plantCode, process_id: processes[0].process_id },
+        { plant_code: plantCode, process_id: "" },
       ]);
     }
   }, [processes]);
@@ -124,20 +128,77 @@ export const OverviewCard: FC<OverviewCardProps> = ({
         <h4 className="text-xs font-medium">กราฟแสดงข้อมูลการผลิตและการเสียนกระบวนการที่เลือก</h4>
         <div className="flex items-center gap-2">
           <SelectForm
-            placeholder="กรุณาเลือกกระบวนการ"
             options={processes?.map((process) => ({
               label: process?.process_name,
               value: process?.process_id,
             }))}
-            className="w-full md:w-[10rem] lg:w-[10rem]"
+            className="w-full md:w-[8rem] lg:w-[8rem]"
             value={processSelected.find((process) => process.plant_code === plantCode)?.process_id || ""}
             onChange={handleProcessChange}
+          />
+          <SelectForm
+            placeholder="Default"
+            options={[
+              {
+                label: "Sort by ng work",
+                value: "ng",
+              },
+              {
+                label: "Sort by percentage",
+                value: "percentage",
+              },
+            ]}
+            defaultValue={"ng"}
+            className="w-full md:w-[8rem] lg:w-[8rem]"
+            value={sort}
+            onChange={(e) => setSort(e?.target?.value as "ng" | "percentage")}
+          />
+
+          <SelectForm
+            placeholder="All length"
+            options={[
+              {
+                label: "5",
+                value: "5",
+              },
+              {
+                label: "10",
+                value: "10",
+              },
+              {
+                label: "15",
+                value: "15",
+              },
+              {
+                label: "20",
+                value: "20",
+              },
+            ]}
+            className="w-full md:w-[7rem] lg:w-[7rem]"
+            value={length}
+            onChange={(e) => setLength(e?.target?.value)}
+          />
+
+          <SelectForm
+            placeholder="Default"
+            options={[
+              {
+                label: "PPM",
+                value: "ppm",
+              },
+            ]}
+            className="w-full md:w-[6rem] lg:w-[6rem]"
+            value={mode}
+            onChange={(e) => setMode(e?.target?.value)}
           />
         </div>
       </div>
       <div className="flex h-[20rem] flex-col gap-2 rounded-md p-2">
         <ComposedChart
-          data={mapCompositionData(mapSncOverviewList, plantCode, processSelected)}
+          data={mapCompositionData(mapSncOverviewList, plantCode, processSelected)?.map((info) => ({
+            ...info,
+            percentage: info?.percentage * (mode === "ppm" ? 10000 : 1),
+          }))}
           Config={[
             { key: "ng", color: "#FF0000" },
             { key: "production", color: "#102693" },

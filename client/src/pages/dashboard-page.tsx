@@ -38,7 +38,10 @@ export const DashboardPage: FC = () => {
   );
 
   const [processSelected, setProcessSelected] = useState<string>("ALL");
-  const [processPartSelected, setProcessPartSelected] = useState<string>(processList[0]?.process_id);
+  const [processPartSelected, setProcessPartSelected] = useState<{ process: string; length: number }>({
+    process: "",
+    length: 9999999,
+  });
   const [ngTypeSelected, setNgTypeSelected] = useState<TDefectsTypeReq>("ALL");
   const [ranking, setRanking] = useState<number>(10);
   // const [partSelected, setPartSelected] = useState<string>("");
@@ -148,7 +151,7 @@ export const DashboardPage: FC = () => {
     useGetSummaryDefectsByPartGraph(
       selected?.start_date,
       selected?.type === "daily" ? selected?.start_date : selected?.end_date,
-      processPartSelected,
+      processPartSelected?.process === "" ? "ALL" : processPartSelected?.process,
       ngTypeSelected
     );
 
@@ -188,9 +191,12 @@ export const DashboardPage: FC = () => {
     });
   };
 
-  useEffect(() => {
-    setProcessPartSelected(graphSummaryList?.find((info) => info?.ng_quantity > 0)?.process_id ?? "");
-  }, [isLoadingSummaryDefectsByDateGraph === false]);
+  // useEffect(() => {
+  //   setProcessPartSelected({
+  //     ...processPartSelected,
+  //     process: graphSummaryList?.find((info) => info?.ng_quantity > 0)?.process_id ?? "",
+  //   });
+  // }, [isLoadingSummaryDefectsByDateGraph === false]);
 
   useEffect(() => {
     setPartSelected(partSummaryList[0]?.part_name ?? "");
@@ -453,6 +459,7 @@ export const DashboardPage: FC = () => {
                 </div>
               </>
             ) : (
+              // production_quantity
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
                 <BarChart accessibilityLayer data={defectData(processSelected)}>
                   <CartesianGrid vertical={true} />
@@ -486,21 +493,36 @@ export const DashboardPage: FC = () => {
               </h1>
               <p className="text-xs text-muted-foreground">
                 รายการสาเหตุที่ทำให้งานของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name} / List of
-                reasons for the work of each piece in the process{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name ??
+                  "กระบวนการทั้งหมด"}{" "}
+                / List of reasons for the work of each piece in the process{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name ??
+                  "All process"}{" "}
               </p>
             </div>
             <SelectForm
-              value={processPartSelected}
-              className="w-full md:w-[14rem] lg:w-[14rem]"
+              value={processPartSelected?.process}
+              className="w-full md:w-[8rem]"
               onChange={(e) => {
                 refetchSummaryDefectsByPartGraph();
-                setProcessPartSelected(e.target.value);
+                setProcessPartSelected({ ...processPartSelected, process: e.target.value });
               }}
+              placeholder="All process"
               options={processList?.map((process) => ({
                 label: process?.process_name,
                 value: process?.process_id,
+              }))}
+            />
+            <SelectForm
+              value={String(processPartSelected?.length)}
+              className="w-full md:w-[6rem]"
+              onChange={(e) => {
+                refetchSummaryDefectsByPartGraph();
+                setProcessPartSelected({ ...processPartSelected, length: Number(e.target.value) });
+              }}
+              options={["9999999", "5", "10", "15", "20"]?.map((num) => ({
+                label: num === "9999999" ? "All length" : num,
+                value: num,
               }))}
             />
           </div>
@@ -515,7 +537,12 @@ export const DashboardPage: FC = () => {
               </div>
             ) : (
               <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
-                <BarChart accessibilityLayer data={getPartSummaryList(partSummaryList)}>
+                <BarChart
+                  accessibilityLayer
+                  data={getPartSummaryList(partSummaryList)
+                    ?.sort((a, b) => b?.ng_quantity - a?.ng_quantity)
+                    ?.slice(0, Number(processPartSelected?.length))}
+                >
                   <CartesianGrid vertical={true} />
                   <YAxis />
                   <XAxis dataKey="label" tickLine={true} tickMargin={10} axisLine={false} />
@@ -523,8 +550,8 @@ export const DashboardPage: FC = () => {
                   <Bar
                     dataKey={"ng_quantity"}
                     fill={
-                      processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color ||
-                      "#000000"
+                      processList?.find(({ process_id }) => process_id === processPartSelected?.process)
+                        ?.process_color || "#000000"
                     }
                     className=" cursor-pointer"
                     onClick={(e) => setPartSelected(e?.label)}
@@ -543,9 +570,9 @@ export const DashboardPage: FC = () => {
               </h1>
               <p className="text-xs text-muted-foreground">
                 รายการสาเหตุที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name} / List of
-                reasons for the work of each piece in the process{" "}
-                {processList?.find(({ process_id }) => process_id === processPartSelected)?.process_name}{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name} /
+                List of reasons for the work of each piece in the process{" "}
+                {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name}{" "}
               </p>
             </div>
             <AutoComplete
@@ -581,8 +608,8 @@ export const DashboardPage: FC = () => {
                   <Bar
                     dataKey={"ng_quantity"}
                     fill={
-                      processList?.find(({ process_id }) => process_id === processPartSelected)?.process_color ||
-                      "#000000"
+                      processList?.find(({ process_id }) => process_id === processPartSelected?.process)
+                        ?.process_color || "#000000"
                     }
                   />
                 </BarChart>
@@ -592,13 +619,42 @@ export const DashboardPage: FC = () => {
         </div>
         {/*//! Summary Defects By Part Chart */}
         <LineBarComposedChart
-          data={getPartSummaryList(partSummaryList)?.map(({ label, ng_quantity, production_quantity, defect }) => ({
-            label,
-            production_quantity,
-            ng_quantity,
-            defect,
-          }))}
+          title={`การผลิตเทียบกับงานเสีย ${
+            processPartSelected?.length === 9999999 ? "ทั้งหมด" : `ท็อป ${processPartSelected?.length}`
+          } เรียงตามงานเสีย / Production compared to waste ${
+            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length} defective items`
+          } sort by broken work`}
+          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามข้อบกพร่องส่วนใหญ่ / Production compared to the number of defective jobs Sort by most faults"
+          data={getPartSummaryList(partSummaryList)
+            ?.sort((a, b) => b?.ng_quantity - a?.ng_quantity)
+            ?.slice(0, Number(processPartSelected?.length))
+            ?.map(({ label, ng_quantity, production_quantity, defect }) => ({
+              label,
+              production_quantity,
+              ng_quantity,
+              defect,
+            }))}
           isLoading={isLoadingSummaryDefectsByPartGraph}
+          isMode
+        />
+        <LineBarComposedChart
+          title={`การผลิตเทียบกับงานเสีย ${
+            processPartSelected?.length === 9999999 ? "ทั้งหมด" : `ท็อป ${processPartSelected?.length}`
+          } เรียงตามความแตกต่าง / Production compared to waste ${
+            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length}`
+          } sort by difference`}
+          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามความแตกต่าง / Production compared to the number of defective jobs Sort by difference"
+          data={getPartSummaryList(partSummaryList)
+            ?.sort((a, b) => Number(b?.defect ?? 0) - Number(a?.defect ?? 0))
+            ?.slice(0, Number(processPartSelected?.length))
+            ?.map(({ label, ng_quantity, production_quantity, defect }) => ({
+              label,
+              production_quantity,
+              ng_quantity,
+              defect,
+            }))}
+          isLoading={isLoadingSummaryDefectsByPartGraph}
+          isMode
         />
       </div>
     </div>

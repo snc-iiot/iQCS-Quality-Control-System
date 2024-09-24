@@ -62,6 +62,7 @@ export const mapCompositionData = (
   showPartId = false
 ): { label: string; part_id?: string; production: number; ng: number; percentage: number }[] => {
   const processId = processSelections.find((p) => p.plant_code === plantCode)?.process_id;
+
   const processData = overviewData
     .find((item) => item.plant_code === plantCode)
     ?.process.find((item) => item.process_id === processId)?.data;

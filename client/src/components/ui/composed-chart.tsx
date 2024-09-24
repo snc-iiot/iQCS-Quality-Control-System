@@ -52,7 +52,7 @@ const ComposedChart: FC<TComposedChart> = ({
         <CartesianGrid vertical={true} />
         {data?.length > 0 && (
           <YAxis
-            domain={[0, (dataMax: number) => (isNaN(dataMax) ? 1 : Math.ceil(dataMax * 1.1))]} // Handle NaN
+            domain={[0, (dataMax: number) => (isNaN(dataMax) ? 1 : Math.ceil(dataMax * 1.1))]}
             tickFormatter={(value) => (isNaN(value) ? "" : `${value.toLocaleString("en")}`)}
           />
         )}
@@ -62,7 +62,7 @@ const ComposedChart: FC<TComposedChart> = ({
             yAxisId="right"
             orientation="right"
             domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.1)]}
-            tickFormatter={(value) => (isNaN(value) ? "" : `${value.toLocaleString("en")}`)}
+            tickFormatter={(value) => (isNaN(value) ? "" : `${value.toLocaleString("en")} ${YAxisRight?.label ?? ""}`)}
           />
         )}
         <XAxis dataKey={dataObjectKeys[0]} tickLine={true} tickMargin={10} axisLine={false} />
@@ -115,7 +115,7 @@ const ComposedChart: FC<TComposedChart> = ({
               }
               yAxisId={configItem?.yAxisId}
             >
-              {enableLabelList && <LabelList dataKey={key} position="top" fontSize={10} />}
+              {enableLabelList && <LabelList dataKey={key} position="top" fontSize={10} fill="#FFF" />}
             </Bar>
           );
         })}

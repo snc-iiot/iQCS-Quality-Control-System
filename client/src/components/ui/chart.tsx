@@ -311,10 +311,33 @@ class CustomizedLabel extends React.PureComponent<CustomizedLabelProps> {
   render() {
     const { x, y, stroke, value, unit } = this.props;
 
+    const data = `${typeof value === "number" ? value?.toLocaleString("en") : value} ${unit}`;
+
+    const width = 8 * data?.length;
+
     return (
-      <text x={x} y={y} dy={-4} fill={stroke || "#000"} fontSize={10} textAnchor="middle">
-        {`${value} ${unit}`}
-      </text>
+      <g>
+        <rect
+          x={x ? x - width / 2 : 0}
+          y={y ? y - 30 : 0}
+          height={24}
+          fill="#00000080"
+          rx={4}
+          filter="url(#blurFilter)"
+          {...{ width }}
+        />
+        <text
+          x={x}
+          y={y ? y - 10 : 0}
+          dy={-4}
+          fill={stroke || "#FFF"}
+          fontSize={11}
+          textAnchor="middle"
+          fontWeight={900}
+        >
+          {data}
+        </text>
+      </g>
     );
   }
 }

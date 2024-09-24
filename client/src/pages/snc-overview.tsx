@@ -19,6 +19,8 @@ export interface FilteredState {
 
 // Utility function to group SNC overview list
 const groupSncOverviewList = (sncOverviewList: SNCOverviewItem[]): SNCOverviewData[] => {
+  console.log(sncOverviewList);
+
   const groupedByPlant = groupByField(sncOverviewList, "plant_code");
   return Object.keys(groupedByPlant).map((plantCode) => {
     const groupedData = groupedByPlant[plantCode];
@@ -28,7 +30,17 @@ const groupSncOverviewList = (sncOverviewList: SNCOverviewItem[]): SNCOverviewDa
       data: groupedData.filter((item) => item.process_id === processId),
     }));
 
-    return { plant_code: plantCode, process: processes };
+    return {
+      plant_code: plantCode,
+      process: [
+        {
+          process_id: "",
+          process_name: "All process",
+          data: groupedData,
+        },
+        ...processes,
+      ],
+    };
   });
 };
 
