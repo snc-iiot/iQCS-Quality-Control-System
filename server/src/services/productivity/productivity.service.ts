@@ -102,7 +102,6 @@ export class ProductivityService {
         statusCode: 200,
         message: 'Productivity raw data by datetime range',
         data: results,
-        // data: [input],
       };
     } catch (error) {
       return {
