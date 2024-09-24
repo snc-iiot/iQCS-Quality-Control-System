@@ -1594,7 +1594,8 @@ export class DefectService {
   ): Promise<TServiceResponse> {
     try {
       //! Check Cache
-      const cacheKey = `/iqcs/dev/v1/defects-logging/part-details_${input.start_date}_${input.end_date}_${input.part_id}_${input.process_id}_${input.defects_type ?? 'ALL'}`;
+      // const cacheKey = `/iqcs/dev/v1/defects-logging/part-details_${input.start_date}_${input.end_date}_${input.part_id}_${input.process_id}_${input.defects_type ?? 'ALL'}`;
+      const cacheKey = `/iqcs/dev/v1/defects-logging/part-details_${input.start_date}_${input.end_date}_${input.part_id}_${input.defects_type ?? 'ALL'}`;
       // console.log(cacheKey);
       const cacheTTL = 30 * 1000; // 30 seconds
       const cacheValue = await this.cacheManager.get(cacheKey);
@@ -1632,16 +1633,16 @@ export class DefectService {
         ? ['P', 'S']
         : [input.defects_type];
 
-      const allProcesses = await this.processRepository.find({
-        select: [
-          'process_id',
-          'process_name',
-          'process_description',
-          'process_order',
-          'process_color',
-          'plant_code',
-        ],
-      });
+      // const allProcesses = await this.processRepository.find({
+      //   select: [
+      //     'process_id',
+      //     'process_name',
+      //     'process_description',
+      //     'process_order',
+      //     'process_color',
+      //     'plant_code',
+      //   ],
+      // });
 
       const results = await this.defectsLoggingRepository
         .createQueryBuilder('t1')
