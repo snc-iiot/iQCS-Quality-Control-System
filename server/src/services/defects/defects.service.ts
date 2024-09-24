@@ -925,15 +925,15 @@ export class DefectService {
       // };
       // /*
 
-      // const allProcesses = await this.processRepository.find({
-      //   where: { plant_code: decoded.plant_code },
-      //   select: ['process_id', 'process_name'],
-      // });
+      const allProcesses = await this.processRepository.find({
+        where: { plant_code: decoded.plant_code },
+        select: ['process_id', 'process_name'],
+      });
 
-      // const filterProcess =
-      //   input.process_id === 'ALL'
-      //     ? allProcesses.map((item) => item.process_id)
-      //     : [input.process_id];
+      const filterProcess =
+        input.process_id === 'ALL'
+          ? allProcesses.map((item) => item.process_id)
+          : [input.process_id];
 
       const filterDefectsType = !['P', 'S'].includes(
         input.defects_type ?? 'ALL',
@@ -950,12 +950,12 @@ export class DefectService {
           defects_type: filterDefectsType,
         })
         // .andWhere('t1.ng_quantity > 0')
-        .andWhere('t1.process_id = :process_id', {
-          process_id: input.process_id,
-        })
-        // .andWhere('t1.process_id in (:...processes)', {
-        //   processes: filterProcess,
+        // .andWhere('t1.process_id = :process_id', {
+        //   process_id: input.process_id,
         // })
+        .andWhere('t1.process_id in (:...processes)', {
+          processes: filterProcess,
+        })
         .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
           start_datetime: startDatetime,
           end_datetime: endDatetime,

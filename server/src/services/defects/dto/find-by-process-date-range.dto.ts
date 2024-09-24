@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, Matches, IsUUID } from 'class-validator';
 
 export class FindByProcessDateRangeDto {
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   process_id: string;
 
