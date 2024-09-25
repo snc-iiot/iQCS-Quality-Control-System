@@ -3,11 +3,15 @@
   "cSpell.words": [
     "ciphertext",
     "clsx",
+    "cmdk",
     "combobox",
     "commitlint",
+    "conventionalcommits",
+    "cyntler",
     "datetime",
     "Formik",
     "ianvs",
+    "infile",
     "lucide",
     "navbutton",
     "PRODUCTIVITYS",
@@ -16,6 +20,8 @@
     "sweetalert",
     "tanstack",
     "TSNC",
+    "usehooks",
+    "vaul",
     "webp",
     "กระบวนการผลิต",
     "กรุณากรอกชื",
@@ -23,5 +29,8 @@
     "บันทึกข้อมูลของเสีย",
     "ระบบบันทึกข้อมูลของเสีย",
     "เลือกกระบวนการผลิต"
-  ]
+  ],
+  "markdown.extension.toc.levels": "2..6",
+  "markdown.extension.orderedList.autoRenumber": false,
+  "typescript.preferences.importModuleSpecifier": "relative"
 }
