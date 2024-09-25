@@ -11,7 +11,8 @@
     "format:write": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
     "host": "vite --host",
-    "release": "release-it"
+    "release": "release-it",
+    "prepare": "husky"
   },
   "dependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -48,6 +49,7 @@
     "date-fns": "^3.6.0",
     "dropzone": "^6.0.0-beta.2",
     "formik": "^2.4.6",
+    "husky": "^9.1.6",
     "input-otp": "^1.2.4",
     "jotai": "^2.9.1",
     "js-cookie": "^3.0.5",
