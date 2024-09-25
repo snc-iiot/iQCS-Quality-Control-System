@@ -10,9 +10,12 @@
     "preview": "vite preview",
     "format:write": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "host": "vite --host"
+    "host": "vite --host",
+    "release": "release-it"
   },
   "dependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@cyntler/react-doc-viewer": "^1.17.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -82,10 +85,72 @@
     "postcss": "^8.4.24",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
+    "release-it": "^17.6.0",
     "tailwind-merge": "^1.12.0",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
     "vite-plugin-pwa": "^0.17.2"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "infile": "CHANGELOG.md",
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            {
+              "type": "chore(deps)",
+              "section": "Dependency Upgrades"
+            },
+            {
+              "type": "fix(deps)",
+              "section": "Dependency Upgrades"
+            },
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "perf",
+              "section": "Performance Improvements"
+            },
+            {
+              "type": "revert",
+              "section": "Reverts"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring"
+            },
+            {
+              "type": "test",
+              "section": "Tests"
+            },
+            {
+              "type": "ci",
+              "section": "Continuous Integration"
+            }
+          ]
+        }
+      }
+    }
   }
 }

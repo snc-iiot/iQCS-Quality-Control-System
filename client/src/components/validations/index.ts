@@ -1,7 +1,7 @@
 import { TCreateUpdateDefectMultiple } from "@/types";
 import { TCreateUpdatePriceRatio } from "@/types/price-ratios";
 import * as Yup from "yup";
-import { TCreateUpdatePartPrice } from "./../../types/part";
+import { TCreateUpdateModel, TCreateUpdatePartPrice } from "./../../types/part";
 
 export const validationDefectSchema = Yup.object({
   date: Yup.string().required("โปรดระบุวันที่"),
@@ -34,6 +34,7 @@ export const validationPriceRatioSchema = Yup.object<TCreateUpdatePriceRatio>({
 });
 
 export const validationImportExcelPartSchema = Yup.object({
+  model_id: Yup.string().required("โปรดระบุ Model"),
   process_id: Yup.string().required("โปรดระบุ Process"),
   customer: Yup.string().required("โปรดระบุ Customer"),
   total_part: Yup.number().required("โปรดระบุ Total Part").min(1),
@@ -85,4 +86,9 @@ export const validationCaseMultipleSchema = Yup.object({
       })
     )
     .min(1),
+});
+
+export const validationModelSchema = Yup.object<TCreateUpdateModel>({
+  model_name: Yup.string().required("โปรดระบุชื่อ Model"),
+  model_description: Yup.string().notRequired(),
 });

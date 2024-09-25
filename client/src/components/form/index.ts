@@ -10,3 +10,4 @@ export * from "./create-update-price-ratio";
 export * from "./create-update-price-part";
 export * from "./create-update-defect-multiple";
 export * from "./case-multiple-form";
+export * from "./create-update-model";

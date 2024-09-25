@@ -1,5 +1,6 @@
 export type TCreateUpdatePart = {
   part_id?: string;
+  model_id: string;
   part_code: string;
   part_name: string;
   processes: string[];

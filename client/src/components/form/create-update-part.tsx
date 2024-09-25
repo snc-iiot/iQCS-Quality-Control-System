@@ -8,6 +8,7 @@ import { PageHeader } from "../common/page-header";
 import { Required } from "../common/required";
 import { FormField } from "../ui-pattern";
 import { InputForm, TextAreaForm } from "../ui-pattern/form-field/input-form";
+import { SelectForm } from "../ui-pattern/form-field/select-form";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 
@@ -19,9 +20,10 @@ interface CreateUpdatePartProps {
 }
 
 export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, className, data, onClose }) => {
-  const { processList } = useAtomStore();
+  const { processList, modelList } = useAtomStore();
   const { mutateCreatePart, mutateUpdatePart } = usePart();
   const [initialValues, setInitialValues] = useState<TCreateUpdatePart>({
+    model_id: data?.model_id || "",
     processes: data?.processes || [],
     part_code: data?.part_code || "",
     part_name: data?.part_name || "",
@@ -33,6 +35,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
 
   // Define a validation schema using Yup
   const validationSchema = Yup.object().shape({
+    model_id: Yup.string().required("โปรดเลือก Model"),
     processes: Yup.array().required("โปรดเลือกกระบวนการผลิต"),
     part_code: Yup.string().required("โปรดระบุ Part No."),
     part_name: Yup.string().required("โปรดระบุชื่อ Part"),
@@ -64,6 +67,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
   useEffect(() => {
     if (data) {
       setInitialValues({
+        model_id: data.model_id ?? "",
         processes: data.processes ?? [],
         part_code: data.part_code ?? "",
         part_name: data.part_name ?? "",
@@ -100,7 +104,23 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
         initialValues={initialValues}
       >
         {({ values, errors, handleChange, handleBlur, handleSubmit, handleReset, isSubmitting }) => (
-          <div className="space-y-5">
+          <div className="space-y-5 p-2">
+            <SelectForm
+              label="Model"
+              name="model_id"
+              placeholder="โปรดเลือก Model"
+              value={values.model_id}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.model_id}
+              required
+              options={
+                modelList?.map((model) => ({
+                  label: model?.model_name,
+                  value: model?.model_id,
+                })) || []
+              }
+            />
             <InputForm
               label="Part No."
               name="part_code"

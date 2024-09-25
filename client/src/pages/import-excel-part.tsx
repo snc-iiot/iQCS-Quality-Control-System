@@ -33,16 +33,18 @@ import { FC, useRef, useState } from "react";
 import Swal from "sweetalert2";
 
 type TGenerateExcelTemplate = {
+  model_id: string;
   process_id: string;
   customer: string;
   total_part: number | null;
 };
 
 export const ImportExcelPart: FC = () => {
-  const { processList } = useAtomStore();
+  const { processList, modelList } = useAtomStore();
   const excelHelper = new ExcelHelper();
   const inputRef = useRef<HTMLInputElement>(null);
   const initialValues: TGenerateExcelTemplate = {
+    model_id: "",
     process_id: "",
     customer: "",
     total_part: null,
@@ -75,6 +77,7 @@ export const ImportExcelPart: FC = () => {
     if (!file) return;
 
     enum Schema {
+      MODEL_ID = "model_id",
       PART_CODE = "part_code",
       PART_NAME = "part_name",
       PROCESSES = "processes",
@@ -101,6 +104,9 @@ export const ImportExcelPart: FC = () => {
         }
 
         switch (key) {
+          case Schema.MODEL_ID:
+            newPart.model_id = part[key];
+            break;
           case Schema.PART_CODE:
             newPart.part_code = part[key];
             break;
@@ -133,6 +139,7 @@ export const ImportExcelPart: FC = () => {
 
   const HEADER = [
     "No.",
+    "Model",
     "Part Code",
     "Part Name",
     "Processes",
@@ -183,6 +190,20 @@ export const ImportExcelPart: FC = () => {
                 {({ values, errors, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
                   return (
                     <div className="space-y-4">
+                      <SelectForm
+                        label="Model"
+                        options={modelList?.map((model) => ({
+                          label: model?.model_name,
+                          value: model?.model_id,
+                        }))}
+                        placeholder="Select Model"
+                        name="model_id"
+                        value={values.model_id}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.model_id}
+                        required
+                      />
                       <SelectForm
                         label="Process"
                         options={processList?.map((process) => ({
@@ -250,6 +271,7 @@ export const ImportExcelPart: FC = () => {
               {importPart?.map((part, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
+                  <TableCell>{modelList?.find((model) => model?.model_id === part?.model_id)?.model_name}</TableCell>
                   <TableCell>
                     <Input
                       value={part?.part_code}

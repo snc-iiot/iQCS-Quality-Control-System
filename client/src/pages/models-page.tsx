@@ -1,10 +1,34 @@
 import { PageHeader } from "@/components/common/page-header";
+import { CreateUpdateModel } from "@/components/form";
+import { WithAdminHOC, WithUserHOC } from "@/components/hoc";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
 import { useAtomStore } from "@/store";
-import { FC } from "react";
+import { TModel } from "@/types";
+import { FC, useState } from "react";
+
+const useFilterModel = (modelList: TModel[], search: string) => {
+  return modelList.filter((item) => item?.model_name?.toLowerCase().includes(search.toLowerCase()));
+};
 
 export const ModelPage: FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+
   const { modelList } = useAtomStore();
 
   const HEADER = [
@@ -15,11 +39,38 @@ export const ModelPage: FC = () => {
     "วันที่แก้ไข / Updated date",
     "จัดการ / Action",
   ];
+
+  const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
+  const ActionWithUser: FC<{ model: TModel }> = WithUserHOC((props) => {
+    const { model } = props as { model: TModel };
+    return <button className="text-yellow-500 hover:underline">Edit</button>;
+  });
+
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>โมเดล / Model</DialogTitle>
+            <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-scroll p-1">
+            <CreateUpdateModel onClose={() => setIsModalOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
       <main className="flex h-full w-full flex-col gap-2">
         <div className="flex flex-col gap-2 md:flex-row">
           <PageHeader title="ตั้งค่าโมเดล / Model setting" description="ตั้งค่าโมเดล และ สามารถเพิ่ม ลบ แก้ไข" />
+        </div>
+        <div className="flex w-full justify-between gap-2">
+          <Input
+            placeholder="ค้นหาโมเดล"
+            className="w-full md:w-1/4"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Button onClick={() => setIsModalOpen(true)}>Add Model</Button>
         </div>
         <div className="flex flex-1 flex-col overflow-y-auto">
           <Table>
@@ -29,7 +80,7 @@ export const ModelPage: FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {modelList?.map((item, index) => (
+              {useFilterModel(modelList, search)?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{item?.model_name}</TableCell>
@@ -38,8 +89,22 @@ export const ModelPage: FC = () => {
                   <TableCell>{renderFormattedDateWithTime(item?.updated_at)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <button className="btn btn-warning">แก้ไข</button>
-                      <button className="btn btn-danger">ลบ</button>
+                      <ActionWithUser model={item} />
+                      <AlertDialog>
+                        <ActionWithAuth />
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>คุณต้องการลบข้อมูลหรือไม่? / Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              การกระทำนี้ไม่สามารถย้อนกลับได้ / This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
+                            <AlertDialogAction>ลบ / Delete</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
