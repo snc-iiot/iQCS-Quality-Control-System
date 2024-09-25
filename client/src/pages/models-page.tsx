@@ -41,8 +41,8 @@ export const ModelPage: FC = () => {
   ];
 
   const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
-  const ActionWithUser: FC<{ model: TModel }> = WithUserHOC((props) => {
-    const { model } = props as { model: TModel };
+  const ActionWithUser: FC<{ model: TModel }> = WithUserHOC(() => {
+    // const { model } = props as { model: TModel };
     return <button className="text-yellow-500 hover:underline">Edit</button>;
   });
 
