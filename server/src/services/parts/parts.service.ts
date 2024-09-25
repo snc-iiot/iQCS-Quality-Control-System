@@ -46,9 +46,11 @@ export class PartsService {
         sap_code: input.sap_code,
         part_code: input.part_code,
         part_name: input.part_name,
+        model_id: input.model_id,
         part_description: input.part_description ?? '',
         processes: input.processes,
         price: input.price,
+        type: input.type,
         customers: input.customers ?? [],
         plant_code: decoded.plant_code,
       };
@@ -101,11 +103,13 @@ export class PartsService {
       const records = newPartCode.map((part) => ({
         sap_code: part.sap_code ?? null,
         part_code: part.part_code,
+        model_id: part.model_id,
         part_name: part.part_name,
         part_description: part.part_description ?? '',
         processes: part.processes,
         price: part.price ?? 0,
         customers: part.customers ?? [],
+        type: part.type,
         plant_code: decoded.plant_code,
       }));
 
@@ -153,10 +157,12 @@ export class PartsService {
       const record = {
         sap_code: input.sap_code,
         part_code: input.part_code,
+        model_id: input.model_id,
         part_name: input.part_name,
         part_description: input.part_description ?? '',
         processes: input.processes,
         price: input.price,
+        type: input.type,
         customers: input.customers ?? [],
       };
       const updated = await this.partRepository.update(
@@ -182,19 +188,30 @@ export class PartsService {
 
   async findAll(): Promise<TServiceResponse> {
     try {
-      const results = await this.partRepository.find({
-        order: { created_at: 'DESC' },
-        // select: [
-        //   'sap_code',
-        //   'part_code',
-        //   'part_name',
-        //   'part_description',
-        //   'plant_code',
-        //   'plant_code',
-        //   'created_at',
-        //   'updated_at',
-        // ],
-      });
+      const results = await this.partRepository
+        .createQueryBuilder('part')
+        .leftJoin(
+          'tb_model_material',
+          'model',
+          'part.model_id = model.model_id',
+        )
+        .select([
+          'part.part_id as part_id',
+          'part.sap_code as sap_code',
+          'part.part_code as part_code',
+          'part.part_name as part_name',
+          'part.part_description as part_description',
+          'part.processes as processes',
+          'part.price as price',
+          'part.customers as customers',
+          'part.plant_code as plant_code',
+          'part.type as type',
+          'part.created_at as created_at',
+          'part.updated_at as updated_at',
+        ])
+        .addSelect('model.model_name', 'model_name')
+        .orderBy('part.created_at', 'DESC')
+        .getRawMany();
 
       return {
         status: 'success',
@@ -214,24 +231,32 @@ export class PartsService {
 
   async findOne(input: FindPartDto): Promise<TServiceResponse> {
     try {
-      const results = await this.partRepository.find({
-        where: { part_id: input.part_id },
-        take: 1,
-        order: { created_at: 'DESC' },
-        // select: [
-        //   'part_code',
-        //   'part_name',
-        //   'part_description',
-        //   'created_at',
-        //   'updated_at',
-        // ],
-      });
+      const result = await this.partRepository
+        .createQueryBuilder('t1')
+        .leftJoin('tb_model_material', 't2', 't1.model_id = t2.model_id')
+        .select(
+          `t1.*, 
+           t2.model_name, 
+           t2.model_description`,
+        )
+        .where('t1.part_id = :part_id', { part_id: input.part_id })
+        .orderBy('t1.created_at', 'DESC')
+        .getRawOne();
+
+      if (!result) {
+        return {
+          status: 'error',
+          statusCode: 404,
+          message: 'Part not found',
+          data: [],
+        };
+      }
 
       return {
         status: 'success',
         statusCode: 200,
         message: 'Part information',
-        data: results,
+        data: result,
       };
     } catch (error) {
       return {
