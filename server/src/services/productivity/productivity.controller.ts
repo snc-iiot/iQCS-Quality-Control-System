@@ -20,6 +20,7 @@ import {
   FindByDateDto,
   FindByDatetimeDto,
   FindByDatetimeRangeDto,
+  DeleteProductivityDto,
 } from './dto/';
 
 @Controller('productivity-logging')
@@ -86,7 +87,7 @@ export class ProductivityController {
   }
 
   @Delete()
-  async delete(@Query() query: FindProductivityDto, @Res() res: Response) {
+  async delete(@Query() query: DeleteProductivityDto, @Res() res: Response) {
     const result = await this.productivityService.delete(query);
     return res.status(result.statusCode).json(result);
   }

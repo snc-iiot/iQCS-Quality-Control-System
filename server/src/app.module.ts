@@ -13,6 +13,7 @@ import { NgCaseModule } from './services/ng-case/ng-case.module';
 import { JwtMiddleware } from './common/middlewares';
 import { DefectModule } from './services/defects/defects.module';
 import { PartsModule } from './services/parts/parts.module';
+import { ModelModule } from './services/model-material/model.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MachinesModule } from './services/machines/machines.module';
 import { ProcessesModule } from './services/processes/processes.module';
@@ -41,6 +42,7 @@ import { DashboardModule } from './services/dashboard/dashboard.module';
     NgCaseModule,
     DefectModule,
     PartsModule,
+    ModelModule,
     MachinesModule,
     ProductivityModule,
     ProcessesModule,
@@ -94,6 +96,11 @@ export class AppModule implements NestModule {
     });
 
     consumer.apply(JwtMiddleware).forRoutes({
+      path: '/model*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
       path: '/documents*',
       method: RequestMethod.ALL,
     });
@@ -131,9 +138,16 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: '/productivity-logging*',
-      method: RequestMethod.ALL,
-    });
+    consumer
+      .apply(JwtMiddleware)
+      .exclude(
+        '/productivity-logging/raw-data-by-datetime-range',
+        '/productivity-logging/summary-by-datetime-range',
+        '/productivity-logging/summary-by-date',
+      )
+      .forRoutes({
+        path: '/productivity-logging*',
+        method: RequestMethod.ALL,
+      });
   }
 }

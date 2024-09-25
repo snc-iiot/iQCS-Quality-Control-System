@@ -76,24 +76,6 @@ export class ProductivityService {
     decoded: TJwtPayload,
   ): Promise<TServiceResponse> {
     try {
-      //  //! Check Cache
-      //  const cacheKey = `/toolbox/v1/productivity-logging/raw-data-by-datetime-range_${input.start_datetime}_${input.end_datetime}`;
-      //  // console.log(cacheKey);
-      //  const cacheTTL = 5 * 1000; // 5 seconds
-      //  const cacheValue = await this.cacheManager.get(cacheKey);
-      //  if (cacheValue !== undefined) {
-      //    return {
-      //      status: 'success',
-      //      statusCode: 200,
-      //      message: 'Data (Cache)',
-      //      data: cacheValue as any[],
-      //    };
-      //  }
-      //  //! ./Check Cache
-
-      // const datetime = new Date(input.datetime);
-      // if (process.platform === 'win32')
-      // datetime.setHours(datetime.getHours() - 7);
       const results =
         await this.ProductivityLoggingRepository.createQueryBuilder('t1')
           .where('t1.plant_code = :plant_code', {
@@ -115,16 +97,11 @@ export class ProductivityService {
           .orderBy('t1.created_at', 'DESC')
           .getRawMany();
 
-      //  //! Check Cache
-      //  await this.cacheManager.set(cacheKey, results, cacheTTL);
-      //  //! ./Check Cache
-
       return {
         status: 'success',
         statusCode: 200,
         message: 'Productivity raw data by datetime range',
         data: results,
-        // data: [input],
       };
     } catch (error) {
       return {
