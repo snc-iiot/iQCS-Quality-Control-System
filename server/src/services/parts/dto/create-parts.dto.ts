@@ -25,6 +25,14 @@ export class PartsDto {
   @IsNotEmpty()
   part_name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  model_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
   @IsArray()
   @ArrayMinSize(1)
   // @ValidateNested()

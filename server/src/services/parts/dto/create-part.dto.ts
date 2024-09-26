@@ -24,6 +24,14 @@ export class CreatePartDto {
   @IsNotEmpty()
   part_name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  model_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
   @IsArray()
   @ArrayMinSize(1)
   // @Type(() => ProcessDto)

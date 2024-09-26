@@ -18,6 +18,9 @@ export class Part {
   part_code: string;
 
   @Column()
+  model_id: string;
+
+  @Column()
   part_name: string;
 
   @Column()
@@ -34,6 +37,9 @@ export class Part {
 
   @Column()
   plant_code: string;
+
+  @Column()
+  type: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

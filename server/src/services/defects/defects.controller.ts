@@ -135,6 +135,19 @@ export class DefectController {
     return res.status(result.statusCode).json(result);
   }
 
+  @Get('graph-model-by-date-range')
+  async graphModelByDateRange(
+    @Query() query: FindByDateRangeDto,
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.defectService.graphModelByDateRange(
+      query,
+      req.decoded,
+    );
+    return res.status(result.statusCode).json(result);
+  }
+
   @Get('graph-summary-part-by-date-range')
   async graphSummaryPartDefectsByDateRange(
     @Query() query: FindByProcessDateRangeDto,
