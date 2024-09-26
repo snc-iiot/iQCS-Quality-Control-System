@@ -695,6 +695,80 @@ export class DefectService {
     }
   }
 
+  async graphModelByDateRange(
+    input: FindByDateRangeDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    try {
+      //! Check Cache
+      const cacheKey = `/iqcs/dev/v1/defects-logging/graph-model-by-date-range_${input.start_date}_${input.end_date}_${input.defects_type}_${decoded.plant_code}`;
+      const cacheTTL = 30 * 1000; // 30 seconds
+      const cacheValue = await this.cacheManager.get(cacheKey);
+      if (cacheValue !== undefined) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'Data (Cache)',
+          data: cacheValue as any[],
+        };
+      }
+      //! ./Check Cache
+
+      const startDatetime = new Date(`${input.start_date}T01:00:00.000Z`);
+      const endDatetime = new Date(`${input.end_date}T01:00:00.000Z`);
+      endDatetime.setHours(endDatetime.getHours() + 23);
+
+      const filterDefectsType = !['P', 'S'].includes(
+        input.defects_type ?? 'ALL',
+      )
+        ? ['P', 'S']
+        : [input.defects_type];
+
+      const results = await this.defectsLoggingRepository
+        .createQueryBuilder('t1')
+        .where('t1.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
+        .andWhere('t1.defects_type in (:...defects_type)', {
+          defects_type: filterDefectsType,
+        })
+        .andWhere('t1.ng_quantity > 0')
+        .andWhere('t1.datetime BETWEEN :start_datetime AND :end_datetime', {
+          start_datetime: startDatetime,
+          end_datetime: endDatetime,
+        })
+        .leftJoin('tb_part_material', 't2', 't1.part_id = t2.part_id')
+        .leftJoin('tb_model_material', 't3', 't2.model_id = t3.model_id')
+        .select(
+          `t2.model_id, t3.model_name,
+           SUM(t1.production_quantity) AS production_quantity,
+           SUM(t1.ng_quantity) AS ng_quantity,
+           ROUND((SUM(t1.ng_quantity)::numeric / SUM(t1.production_quantity) * 100), 2) AS defect_percentage`,
+        )
+        .groupBy('t2.model_id, t3.model_name')
+        .orderBy('t2.model_id', 'ASC')
+        .getRawMany();
+
+      //! Check Cache
+      await this.cacheManager.set(cacheKey, results, cacheTTL);
+      //! ./Check Cache
+
+      return {
+        status: 'success',
+        statusCode: 200,
+        message: 'Defects graph summary by date',
+        data: results,
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
   async graphSummaryByDateRange(
     input: FindByDateRangeDto,
     decoded: TJwtPayload,
