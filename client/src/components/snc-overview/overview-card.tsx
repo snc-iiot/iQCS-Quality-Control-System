@@ -125,7 +125,7 @@ export const OverviewCard: FC<OverviewCardProps> = ({
         </div>
       </div>
       <div className="flex w-full items-center justify-between">
-        <h4 className="text-xs font-medium">กราฟแสดงข้อมูลการผลิตและการเสียนกระบวนการที่เลือก</h4>
+        <h4 className="text-xs font-medium">กราฟแสดงข้อมูลการยอดผลิตและของเสีย</h4>
         <div className="flex items-center gap-2">
           <SelectForm
             options={processes?.map((process) => ({
