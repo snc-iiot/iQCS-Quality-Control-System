@@ -276,13 +276,15 @@ export class DefectService {
           't7',
           't1.part_id=t7.part_id and t1.plant_code=t7.plant_code and t1.datetime between t7.start_effective_date and t7.end_effective_date',
         )
+        .leftJoin('tb_model_material', 't8', 't4.model_id = t8.model_id')
         .select(
           `t1.*
           ,concat(to_char(t1.datetime, 'HH24:MI'), ' - ', to_char(t1.datetime + interval '1 hour', 'HH24:MI'))  as time_slot
           ,(case when extract(hour from t1.datetime) >= 8 and extract(hour from t1.datetime) < 20 then 'DAY' else 'NIGHT' end) as shift
           ,t2.case_name,t2.description AS ng_description,t3.name AS creator_name,t4.part_code,t4.part_name,t4.customers
           ,t5.machine_no,t5.machine_name,t6.employee_id,t6.operator_name
-          ,coalesce(t7.price,t4.price,0) as price,coalesce(t7.ng_price,t4.price * 1,0) as ng_price,coalesce(t7.scrap_price,t4.price * 1,0) as scrap_price,coalesce(t7.rework_price,t4.price * 0.5,0) as rework_price`,
+          ,coalesce(t7.price,t4.price,0) as price,coalesce(t7.ng_price,t4.price * 1,0) as ng_price,coalesce(t7.scrap_price,t4.price * 1,0) as scrap_price,coalesce(t7.rework_price,t4.price * 0.5,0) as rework_price
+          ,t8.model_name,t8.model_id`,
         )
         .orderBy('t1.created_at', 'DESC')
         .getRawMany();
