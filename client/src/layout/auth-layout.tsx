@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const AuthLayout: FC<Props> = ({ children }) => {
-  const { useGetParts, useGetHistoryUpdatePrice } = usePart();
+  const { useGetParts, useGetHistoryUpdatePrice, useGetModels } = usePart();
   const authService = new AuthService();
 
   const { useGetProcess } = useProcess();
@@ -29,6 +29,7 @@ export const AuthLayout: FC<Props> = ({ children }) => {
   useGetAccounts();
   useGetPriceRatios();
   useGetHistoryUpdatePrice();
+  useGetModels();
 
   if (!authService.isLoggedIn()) {
     return <Navigate to="/login" />;

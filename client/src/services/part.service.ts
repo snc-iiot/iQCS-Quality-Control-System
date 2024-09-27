@@ -195,7 +195,7 @@ export class PartService extends APIService {
   // Model
   public getModels = async (): Promise<TModel[]> => {
     try {
-      const { data } = await this.get<TResponse<TModel[]>>(`/models`);
+      const { data } = await this.get<TResponse<TModel[]>>(`/model`);
       this.store.setModelList(data?.data);
       return data?.data ?? [];
     } catch (error) {
@@ -206,7 +206,7 @@ export class PartService extends APIService {
 
   public createModel = async (data: TCreateUpdateModel): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.post<TResponse<unknown>>("/models", data);
+      const response = await this.post<TResponse<unknown>>("/model", data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -231,7 +231,7 @@ export class PartService extends APIService {
 
   public updateModel = async (data: TCreateUpdateModel): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.put<TResponse<unknown>>(`/models`, data);
+      const response = await this.put<TResponse<unknown>>(`/model`, data);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -256,7 +256,7 @@ export class PartService extends APIService {
 
   public deleteModel = async (model_id: string): Promise<TResponse<unknown>> => {
     try {
-      const response = await this.delete<TResponse<unknown>>(`/models?model_id=${model_id}`);
+      const response = await this.delete<TResponse<unknown>>(`/model?model_id=${model_id}`);
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {

@@ -11,7 +11,7 @@ import { validationModelSchema } from "../validations";
 interface CreateUpdateModelProps {
   isTitleVisible?: boolean;
   className?: string;
-  data?: Partial<TCreateUpdateModel>;
+  data?: Partial<TCreateUpdateModel> | null;
   onClose?: () => void;
   isPreview?: boolean;
 }

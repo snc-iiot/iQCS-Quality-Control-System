@@ -22,12 +22,14 @@ import { TModel } from "@/types";
 import { FC, useState } from "react";
 
 const useFilterModel = (modelList: TModel[], search: string) => {
-  return modelList.filter((item) => item?.model_name?.toLowerCase().includes(search.toLowerCase()));
+  return modelList?.filter((item) => item?.model_name?.toLowerCase()?.includes(search.toLowerCase()));
 };
 
 export const ModelPage: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+  const [selectedModel, setSelectedModel] = useState<TModel | null>(null);
 
   const { modelList } = useAtomStore();
 
@@ -41,9 +43,19 @@ export const ModelPage: FC = () => {
   ];
 
   const ActionWithAuth = WithAdminHOC(() => <AlertDialogTrigger className="text-red-500">Delete</AlertDialogTrigger>);
-  const ActionWithUser: FC<{ model: TModel }> = WithUserHOC(() => {
-    // const { model } = props as { model: TModel };
-    return <button className="text-yellow-500 hover:underline">Edit</button>;
+  const ActionWithUser: FC<{ model: TModel }> = WithUserHOC((props) => {
+    const { model } = props as { model: TModel };
+    return (
+      <button
+        className="text-yellow-500 hover:underline"
+        onClick={() => {
+          setSelectedModel(model);
+          setIsEdit(true);
+        }}
+      >
+        Edit
+      </button>
+    );
   });
 
   return (
@@ -56,6 +68,17 @@ export const ModelPage: FC = () => {
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-scroll p-1">
             <CreateUpdateModel onClose={() => setIsModalOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isEdit} onOpenChange={setIsEdit}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>แก้ไขโมเดล / Model</DialogTitle>
+            <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-scroll p-1">
+            <CreateUpdateModel onClose={() => setIsEdit(false)} data={selectedModel} />
           </div>
         </DialogContent>
       </Dialog>
@@ -80,13 +103,20 @@ export const ModelPage: FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {useFilterModel(modelList, search)?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={HEADER.length} className="text-center">
+                    No data available
+                  </TableCell>
+                </TableRow>
+              )}
               {useFilterModel(modelList, search)?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{item?.model_name}</TableCell>
-                  <TableCell>{item?.model_description}</TableCell>
-                  <TableCell>{renderFormattedDateWithTime(item?.created_at)}</TableCell>
-                  <TableCell>{renderFormattedDateWithTime(item?.updated_at)}</TableCell>
+                  <TableCell>{item?.model_description ?? "-"}</TableCell>
+                  <TableCell>{renderFormattedDateWithTime(new Date(item?.created_at))}</TableCell>
+                  <TableCell>{renderFormattedDateWithTime(new Date(item?.updated_at))}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <ActionWithUser model={item} />
