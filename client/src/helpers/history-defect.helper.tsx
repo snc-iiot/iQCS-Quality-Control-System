@@ -98,6 +98,10 @@ export const DEFECT_HEADER = (values: TValue) => {
     { label: "Part Code", key: "part_code" },
     { label: "Part Name", key: "part_name" },
     {
+      label: "Model Name",
+      key: "model_name",
+    },
+    {
       label: "Price per unit (USD)",
       key: "price",
     },

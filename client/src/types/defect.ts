@@ -7,6 +7,7 @@ export type TCreateUpdateDefect = {
   process_id: string;
   part_id: string;
   case_id: string;
+  model_name: string;
   ng_quantity: number | null;
 
   // Optional

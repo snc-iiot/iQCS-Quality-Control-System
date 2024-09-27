@@ -287,7 +287,7 @@ export const DefectHistory: FC = () => {
               </TableBody>
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={values?.mode == "daily" ? 7 : 9}>Total Summary</TableCell>
+                  <TableCell colSpan={values?.mode == "daily" ? 7 : 10}>Total Summary</TableCell>
                   <TableCell className="text-right">{summary("production_quantity")}</TableCell>
                   <TableCell className="text-right">{summary("ng_quantity")}</TableCell>
                   <TableCell className="text-right">{summary("rework_quantity")}</TableCell>

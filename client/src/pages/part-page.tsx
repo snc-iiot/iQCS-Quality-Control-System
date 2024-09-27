@@ -32,6 +32,7 @@ const HEADER = [
   "Part No.",
   "Part Name",
   "Model",
+  "Local/SKD",
   "Part Price",
   "SAP Code.",
   "Part Description",
@@ -178,6 +179,7 @@ export const PartPage: FC = () => {
                       <TableCell>
                         {modelList?.find(({ model_id }) => model_id === part?.model_id)?.model_name ?? ""}
                       </TableCell>
+                      <TableCell>{part?.type}</TableCell>
                       <TableCell>{part?.price ?? "0.00"}</TableCell>
                       <TableCell>{part?.sap_code || "-"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
