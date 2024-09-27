@@ -1,5 +1,12 @@
 
 
+## [0.6.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.5.0...0.6.0) (2024-09-27)
+
+
+### Features
+
+* Add model selection to defect forms ([b1984e3](https://github.com/snc-iiot/iQCS-Quality-Control-System/commit/b1984e3a762a8774b49539498c65e795f47c0c2b))
+
 ## [0.5.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.4.0...0.5.0) (2024-09-27)
 
 
