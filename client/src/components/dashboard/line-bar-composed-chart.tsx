@@ -79,7 +79,7 @@ const LineBarComposedChart: FC<TLineBarComposedChart> = ({
                 type: "linear",
                 color: "#ff7300",
                 yAxisId: "right",
-                label: "%",
+                label: mode === "ppm" ? "PPM" : "%",
               },
             ]}
           />

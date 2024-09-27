@@ -7,6 +7,7 @@ import {
   THistoryUpdatePrice,
   TMachine,
   TModel,
+  TModelSummary,
   TNGCause,
   TPart,
   TPartSummary,
@@ -30,6 +31,7 @@ export const defectAtom = atom<TDefect[]>([]);
 export const defectSummaryAtom = atom<TDefectSummary[]>([]);
 export const graphSummaryAtom = atom<TGraphSummary[]>([]);
 export const partSummaryAtom = atom<TPartSummary[]>([]);
+export const modelSummaryAtom = atom<TModelSummary[]>([]);
 export const topDefectAtom = atom<TTopDefect[]>([]);
 export const productivityAtom = atom<TProductivity[]>([]);
 export const productivitySummaryAtom = atom<TProductivitySummary[]>([]);

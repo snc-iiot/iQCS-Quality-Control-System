@@ -8,6 +8,7 @@ import {
   historyUpdatePriceAtom,
   machineAtom,
   modelAtom,
+  modelSummaryAtom,
   ngCauseAtom,
   partAtom,
   partSummaryAtom,
@@ -31,6 +32,7 @@ export const useAtomStore = () => {
   const [defectSummaryList, setDefectSummaryList] = useAtom(defectSummaryAtom);
   const [graphSummaryList, setGraphSummaryList] = useAtom(graphSummaryAtom);
   const [partSummaryList, setPartSummaryList] = useAtom(partSummaryAtom);
+  const [modelSummaryList, setModelSummaryList] = useAtom(modelSummaryAtom);
   const [topDefectList, setTopDefectList] = useAtom(topDefectAtom);
   const [productivityList, setProductivityList] = useAtom(productivityAtom);
   const [productivitySummaryList, setProductivitySummaryList] = useAtom(productivitySummaryAtom);
@@ -81,5 +83,7 @@ export const useAtomStore = () => {
     setSNCPartDetailList,
     modelList,
     setModelList,
+    modelSummaryList,
+    setModelSummaryList,
   };
 };

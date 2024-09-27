@@ -19,8 +19,6 @@ export interface FilteredState {
 
 // Utility function to group SNC overview list
 const groupSncOverviewList = (sncOverviewList: SNCOverviewItem[]): SNCOverviewData[] => {
-  console.log(sncOverviewList);
-
   const groupedByPlant = groupByField(sncOverviewList, "plant_code");
   return Object.keys(groupedByPlant).map((plantCode) => {
     const groupedData = groupedByPlant[plantCode];

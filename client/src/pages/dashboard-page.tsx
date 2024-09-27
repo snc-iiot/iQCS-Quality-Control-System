@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import LineBarComposedChart from "@/components/dashboard/line-bar-composed-chart";
+import PieChart from "@/components/dashboard/pie-chart";
 import { CardProcess } from "@/components/ui-pattern";
 import { SelectForm } from "@/components/ui-pattern/form-field/select-form";
 import { AutoComplete } from "@/components/ui/autocomplete";
@@ -28,8 +29,13 @@ export const DashboardPage: FC = () => {
     end_date: "",
   });
 
-  const { useGetSummaryDefectsByDateGraph, useGetTopDefects, useGetSummaryDefectsByPartGraph } = useDefect();
-  const { graphSummaryList, topDefectList, processList, partSummaryList } = useAtomStore();
+  const {
+    useGetSummaryDefectsByDateGraph,
+    useGetTopDefects,
+    useGetSummaryDefectsByPartGraph,
+    useGetSummaryDefectsByModelGraph,
+  } = useDefect();
+  const { graphSummaryList, topDefectList, processList, partSummaryList, modelSummaryList } = useAtomStore();
   const [shiftSelected, setShiftSelected] = useState<string>("ALL");
   const { groupProcess, groupDate } = useDashboardHelper(
     graphSummaryList
@@ -155,6 +161,13 @@ export const DashboardPage: FC = () => {
       ngTypeSelected
     );
 
+  const { isFetching: isLoadingSummaryDefectsByModelGraph, refetch: refetchSummaryDefectsByModelGraph } =
+    useGetSummaryDefectsByModelGraph(
+      selected?.start_date,
+      selected?.type === "daily" ? selected?.start_date : selected?.end_date,
+      ngTypeSelected
+    );
+
   const getPartSummaryList = (partSummaryList: TPartSummary[]) => {
     const dataPartName = groupByField(partSummaryList, "part_name");
 
@@ -203,8 +216,8 @@ export const DashboardPage: FC = () => {
   }, [isLoadingSummaryDefectsByPartGraph === false]);
 
   return (
-    <div className="flex h-full w-full flex-col space-y-2 overflow-y-auto p-2">
-      <div className="flex h-max w-full flex-col justify-between gap-2 md:flex-row lg:flex-row">
+    <div className="relative flex h-full w-full flex-col space-y-2 overflow-y-auto ">
+      <div className="top-0 z-10 mb-[-7px] flex h-max w-full flex-col justify-between gap-2 bg-white p-2 md:flex-row lg:sticky lg:flex-row">
         <PageHeader title="ภาพรวม / Dashboard" description="ภาพรวมของระบบ" />
         <div className="flex w-full flex-col gap-2 md:w-min md:flex-row lg:w-min">
           <SelectForm
@@ -350,7 +363,41 @@ export const DashboardPage: FC = () => {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-7">
+
+      <div className="grid h-max grid-cols-1 gap-2 px-2 md:grid-cols-3 lg:grid-cols-3">
+        <PieChart
+          title={`ยอดเปรียบเทียบของโมเดล / Comparison of models`}
+          description="แสดงยอดเปรียบเทียบของโมเดล / Show comparison of models"
+          data={modelSummaryList
+            ?.sort((a, b) => Number(b?.ng_quantity) - Number(a?.ng_quantity))
+            ?.map(({ model_name, ng_quantity, production_quantity, defect_percentage }) => ({
+              label: model_name ?? "ไม่มีโมเดล",
+              production_quantity: Number(production_quantity),
+              ng_quantity: Number(ng_quantity),
+              defect: Number(defect_percentage),
+            }))}
+          isLoading={isLoadingSummaryDefectsByModelGraph}
+          isMode
+        />
+        <div className=" col-span-2">
+          <LineBarComposedChart
+            title={`ยอดการผลิตและยอดงานเสียของแต่ละโมเดล / Total production and total lost work of each model `}
+            description="แสดงยอดการผลิตและงานเสียของแต่ละโมเดล / Displays total production and lost work for each model."
+            data={modelSummaryList
+              ?.sort((a, b) => Number(b?.ng_quantity) - Number(a?.ng_quantity))
+              ?.map(({ model_name, ng_quantity, production_quantity, defect_percentage }) => ({
+                label: model_name ?? "ไม่มีโมเดล",
+                production_quantity: Number(production_quantity),
+                ng_quantity: Number(ng_quantity),
+                defect: Number(defect_percentage),
+              }))}
+            isLoading={isLoadingSummaryDefectsByModelGraph}
+            isMode
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 px-2 md:grid-cols-2 lg:grid-cols-7">
         {mapCardProcess?.map((process) => (
           <CardProcess
             key={process?.process?.process_name}
@@ -369,7 +416,7 @@ export const DashboardPage: FC = () => {
           />
         ))}
       </div>
-      <div className="grid h-max grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-2">
+      <div className="grid h-max grid-cols-1 gap-2 px-2 md:grid-cols-2 lg:grid-cols-2">
         {/*//! Top Rank Chart  */}
         <div className="flex h-[25rem] flex-col gap-2 rounded-md border p-2">
           <div className="flex">
@@ -433,7 +480,7 @@ export const DashboardPage: FC = () => {
             </div>
             <SelectForm
               value={shiftSelected}
-              className="w-full md:w-[14rem] lg:w-[14rem]"
+              className="w-full md:w-[8rem] lg:w-[8rem]"
               onChange={(e) => setShiftSelected(e.target.value)}
               options={[
                 {
@@ -505,6 +552,7 @@ export const DashboardPage: FC = () => {
               className="w-full md:w-[8rem]"
               onChange={(e) => {
                 refetchSummaryDefectsByPartGraph();
+                refetchSummaryDefectsByModelGraph();
                 setProcessPartSelected({ ...processPartSelected, process: e.target.value });
               }}
               placeholder="All process"
@@ -518,6 +566,7 @@ export const DashboardPage: FC = () => {
               className="w-full md:w-[6rem]"
               onChange={(e) => {
                 refetchSummaryDefectsByPartGraph();
+                refetchSummaryDefectsByModelGraph();
                 setProcessPartSelected({ ...processPartSelected, length: Number(e.target.value) });
               }}
               options={["9999999", "5", "10", "15", "20"]?.map((num) => ({
@@ -551,7 +600,7 @@ export const DashboardPage: FC = () => {
                     dataKey={"ng_quantity"}
                     fill={
                       processList?.find(({ process_id }) => process_id === processPartSelected?.process)
-                        ?.process_color || "#000000"
+                        ?.process_color || "#FF2020"
                     }
                     className=" cursor-pointer"
                     onClick={(e) => setPartSelected(e?.label)}
@@ -609,7 +658,7 @@ export const DashboardPage: FC = () => {
                     dataKey={"ng_quantity"}
                     fill={
                       processList?.find(({ process_id }) => process_id === processPartSelected?.process)
-                        ?.process_color || "#000000"
+                        ?.process_color || "#FF2020"
                     }
                   />
                 </BarChart>
@@ -617,16 +666,15 @@ export const DashboardPage: FC = () => {
             )}
           </div>
         </div>
-        {/*//! Summary Defects By Part Chart */}
         <LineBarComposedChart
           title={`การผลิตเทียบกับงานเสีย ${
             processPartSelected?.length === 9999999 ? "ทั้งหมด" : `ท็อป ${processPartSelected?.length}`
-          } เรียงตามงานเสีย / Production compared to waste ${
-            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length} defective items`
-          } sort by broken work`}
-          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามข้อบกพร่องส่วนใหญ่ / Production compared to the number of defective jobs Sort by most faults"
+          } เรียงตามความแตกต่าง / Production compared to waste ${
+            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length}`
+          } sort by difference`}
+          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามความแตกต่าง / Production compared to the number of defective jobs Sort by difference"
           data={getPartSummaryList(partSummaryList)
-            ?.sort((a, b) => b?.ng_quantity - a?.ng_quantity)
+            ?.sort((a, b) => Number(b?.defect ?? 0) - Number(a?.defect ?? 0))
             ?.slice(0, Number(processPartSelected?.length))
             ?.map(({ label, ng_quantity, production_quantity, defect }) => ({
               label,
@@ -640,12 +688,12 @@ export const DashboardPage: FC = () => {
         <LineBarComposedChart
           title={`การผลิตเทียบกับงานเสีย ${
             processPartSelected?.length === 9999999 ? "ทั้งหมด" : `ท็อป ${processPartSelected?.length}`
-          } เรียงตามความแตกต่าง / Production compared to waste ${
-            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length}`
-          } sort by difference`}
-          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามความแตกต่าง / Production compared to the number of defective jobs Sort by difference"
+          } เรียงตามงานเสีย / Production compared to waste ${
+            processPartSelected?.length === 9999999 ? "all" : `top ${processPartSelected?.length} defective items`
+          } sort by broken work`}
+          description="การผลิตเทียบกับจำนวนงานที่มีข้อบกพร่อง จัดเรียงตามข้อบกพร่องส่วนใหญ่ / Production compared to the number of defective jobs Sort by most faults"
           data={getPartSummaryList(partSummaryList)
-            ?.sort((a, b) => Number(b?.defect ?? 0) - Number(a?.defect ?? 0))
+            ?.sort((a, b) => b?.ng_quantity - a?.ng_quantity)
             ?.slice(0, Number(processPartSelected?.length))
             ?.map(({ label, ng_quantity, production_quantity, defect }) => ({
               label,
