@@ -28,10 +28,11 @@ interface CreateUpdateNgProps {
 
 export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = true, data, onClose, className }) => {
   const base64Helper = new Base64Helper();
+  const [modelId, setModelId] = useState<string>("");
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [isOpenAddCause, setIsOpenAddCause] = useState<boolean>(false);
   const { mutateCreateDefect, mutateUpdateDefect } = useDefect();
-  const { partList, ngCauseList, processList, machineList, accountList } = useAtomStore();
+  const { partList, ngCauseList, processList, machineList, accountList, modelList } = useAtomStore();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDefect>({
     defects_log_id: data?.defects_log_id || "",
     datetime: data?.datetime || "",
@@ -198,10 +199,29 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                 error={errors.process_id}
                 required
               />
+              <SelectForm
+                label="Model (ตัวช่วยในการ Filter Part No.)"
+                name="model_id"
+                placeholder="ทั้งหมด / All"
+                options={modelList?.map((model) => ({
+                  label: model?.model_name,
+                  value: model?.model_id,
+                }))}
+                value={modelId}
+                onChange={(e) => {
+                  setModelId(e.target.value);
+                }}
+              />
               <div>
                 <ComboBoxResponsive
                   label="Part No."
                   options={partList
+                    ?.filter((model) => {
+                      if (modelId) {
+                        return model?.model_id == modelId;
+                      }
+                      return model;
+                    })
                     ?.filter((part) => {
                       if (values?.process_id) {
                         return part.processes?.includes(values?.process_id);

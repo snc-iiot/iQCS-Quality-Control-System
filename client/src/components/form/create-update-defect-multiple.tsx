@@ -45,11 +45,12 @@ const initialDefectValues: TCreateUpdateDefectMultiple = {
 export const CreateUpdateDefectMultiple: FC = () => {
   const { mutateCreateDefectMultiple } = useDefect();
   const base64Helper = new Base64Helper();
+  const [modelId, setModelId] = useState<string>("");
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
   const [isOpenAddPart, setIsOpenAddPart] = useState<boolean>(false);
   const [initialValues, setInitialValues] = useState<TCreateUpdateDefectMultiple>(initialDefectValues);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
-  const { partList, processList, machineList, accountList, ngCauseList } = useAtomStore();
+  const { partList, processList, machineList, accountList, ngCauseList, modelList } = useAtomStore();
   const [caseMultipleValues, setCaseMultipleValues] = useState<TCreateUpdateDefectMultiple["defects"]>([
     {
       case_id: "",
@@ -175,10 +176,29 @@ export const CreateUpdateDefectMultiple: FC = () => {
           error={errors.process_id}
           required
         />
+        <SelectForm
+          label="Model (ตัวช่วยในการ Filter Part No.)"
+          name="model_id"
+          placeholder="ทั้งหมด / All"
+          options={modelList?.map((model) => ({
+            label: model?.model_name,
+            value: model?.model_id,
+          }))}
+          value={modelId}
+          onChange={(e) => {
+            setModelId(e.target.value);
+          }}
+        />
         <div>
           <ComboBoxResponsive
             label="Part No."
             options={partList
+              ?.filter((model) => {
+                if (modelId) {
+                  return model?.model_id == modelId;
+                }
+                return model;
+              })
               ?.filter((part) => {
                 if (values?.process_id) {
                   return part.processes?.includes(values?.process_id);
