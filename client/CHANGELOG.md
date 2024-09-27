@@ -1,5 +1,7 @@
 
 
+## [1.0.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.6.0...1.0.0) (2024-09-27)
+
 ## [0.6.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.5.0...0.6.0) (2024-09-27)
 
 
