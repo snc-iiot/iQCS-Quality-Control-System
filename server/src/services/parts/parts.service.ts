@@ -198,6 +198,7 @@ export class PartsService {
         .select([
           'part.part_id as part_id',
           'part.sap_code as sap_code',
+          'part.model_id as model_id',
           'part.part_code as part_code',
           'part.part_name as part_name',
           'part.part_description as part_description',
