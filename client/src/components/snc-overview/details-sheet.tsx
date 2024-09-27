@@ -3,7 +3,7 @@ import ComposedChart from "@/components/ui/composed-chart";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { mapCompositionData } from "@/helpers/dashboard.helper";
 import { ProcessSelection, SNCOverviewData, TSNCPartDetail } from "@/types";
-import { ChangeEvent, FC, ReactNode, useEffect } from "react";
+import { ChangeEvent, FC, ReactNode, useEffect, useState } from "react";
 
 interface DetailsSheetProps {
   plantSelected: string | null;
@@ -15,6 +15,11 @@ interface DetailsSheetProps {
   setPartSelected: React.Dispatch<React.SetStateAction<string | null>>;
   sncPartDetailList: TSNCPartDetail[]; // Adjust the type based on your data
   filtered?: JSX.Element | ReactNode;
+  defaultValue?: {
+    mode?: string;
+    sort?: "ng" | "percentage";
+    length?: string;
+  };
 }
 
 export const DetailsSheet: FC<DetailsSheetProps> = ({
@@ -27,7 +32,14 @@ export const DetailsSheet: FC<DetailsSheetProps> = ({
   setPartSelected,
   sncPartDetailList,
   filtered,
+  defaultValue,
 }) => {
+  const [mode, setMode] = useState(defaultValue?.mode ?? "");
+  const [sort, setSort] = useState<"ng" | "percentage">(defaultValue?.sort ?? "ng");
+  const [length, setLength] = useState(defaultValue?.length ?? "");
+
+  console.log(sncPartDetailList);
+
   const selectedPlantData = mapSncOverviewList?.find((item) => item.plant_code === plantSelected);
   const handleProcessChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedProcess = processSelected.find((p) => p.plant_code === plantSelected);
@@ -43,6 +55,20 @@ export const DetailsSheet: FC<DetailsSheetProps> = ({
       label: item.label,
       value: item.part_id ?? "",
     })
+  );
+
+  console.log(
+    mapSncOverviewList
+      ?.find(({ plant_code }) => plant_code === plantSelected)
+      ?.process?.filter(({ process_id }) => process_id !== "")
+      ?.flatMap(({ process_id, process_name, data }) => {
+        const dataPart = data?.map((info) => ({
+          ...info,
+          process_id,
+          process_name,
+        }));
+        return dataPart;
+      })
   );
 
   //default setPartSelected first part
@@ -69,12 +95,71 @@ export const DetailsSheet: FC<DetailsSheetProps> = ({
         }}
         className="flex flex-col gap-2"
       >
-        <SheetHeader>
-          <SheetTitle>รายงานข้อมูลของโรงงาน {plantSelected}</SheetTitle>
-          <SheetDescription>
-            รายงานข้อมูลของโรงงาน {plantSelected} ทั้งหมด {selectedPlantData?.process?.length} กระบวนการ
-          </SheetDescription>
-          {filtered}
+        <SheetHeader className="flex flex-row justify-between">
+          <div>
+            <SheetTitle>รายงานข้อมูลของโรงงาน {plantSelected}</SheetTitle>
+            <SheetDescription>
+              รายงานข้อมูลของโรงงาน {plantSelected} ทั้งหมด {selectedPlantData?.process?.length} กระบวนการ
+            </SheetDescription>
+            {filtered}
+          </div>
+
+          <div className=" flex gap-2 pr-4">
+            <SelectForm
+              options={[
+                {
+                  label: "Sort by ng work",
+                  value: "ng",
+                },
+                {
+                  label: "Sort by percentage",
+                  value: "percentage",
+                },
+              ]}
+              defaultValue={"ng"}
+              className="w-full md:w-[9rem] lg:w-[9rem]"
+              value={sort}
+              onChange={(e) => setSort(e?.target?.value as "ng" | "percentage")}
+            />
+
+            <SelectForm
+              placeholder="All length"
+              options={[
+                {
+                  label: "5",
+                  value: "5",
+                },
+                {
+                  label: "10",
+                  value: "10",
+                },
+                {
+                  label: "15",
+                  value: "15",
+                },
+                {
+                  label: "20",
+                  value: "20",
+                },
+              ]}
+              className="w-full md:w-[7rem] lg:w-[7rem]"
+              value={length}
+              onChange={(e) => setLength(e?.target?.value)}
+            />
+
+            <SelectForm
+              placeholder="Default"
+              options={[
+                {
+                  label: "PPM",
+                  value: "ppm",
+                },
+              ]}
+              className="w-full md:w-[6rem] lg:w-[6rem]"
+              value={mode}
+              onChange={(e) => setMode(e?.target?.value)}
+            />
+          </div>
         </SheetHeader>
         <div className="flex h-full w-full flex-col overflow-y-hidden">
           <div className="flex flex-grow-0 flex-col gap-2 overflow-y-auto">
@@ -98,18 +183,25 @@ export const DetailsSheet: FC<DetailsSheetProps> = ({
                   </div>
                   <div className="flex h-[20rem] flex-col gap-2 rounded-md p-2">
                     <ComposedChart
-                      data={
-                        process.data?.map((item) => ({
+                      data={process.data
+                        ?.map((item) => ({
                           label: item.part_name,
                           production: item.production_quantity,
                           ng: item.ng_quantity,
-                          percentage: item.defects_percentage?.toFixed(2),
-                        })) ?? []
-                      }
+                          percentage: Number((item.defects_percentage * (mode === "ppm" ? 10000 : 1))?.toFixed(2) ?? 0),
+                        }))
+                        ?.sort((x, y) => (x?.[sort] < y?.[sort] ? 1 : -1))
+                        ?.slice(0, Number(length === "" ? process.data?.length : length))}
                       Config={[
                         { key: "ng", color: "#FF0000" },
                         { key: "production", color: "#102693" },
-                        { key: "percentage", color: "#000000", chart: "Line", yAxisId: "right", label: "%" },
+                        {
+                          key: "percentage",
+                          color: "#000000",
+                          chart: "Line",
+                          yAxisId: "right",
+                          label: mode === "ppm" ? "PPM" : "%",
+                        },
                       ]}
                       enableLabelList={true}
                     />
@@ -126,15 +218,18 @@ export const DetailsSheet: FC<DetailsSheetProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <SelectForm
-                      options={selectedPlantData.process.map((proc) => ({
-                        label: proc.process_name,
-                        value: proc.process_id,
-                      }))}
+                      options={selectedPlantData?.process
+                        ?.filter(({ process_id }) => process_id !== "")
+                        .map((proc) => ({
+                          label: proc.process_name,
+                          value: proc.process_id,
+                        }))}
+                      value={processSelected.find((p) => p.plant_code === plantSelected)?.process_id || ""}
                       placeholder="กรุณาเลือกกระบวนการ"
                       className="w-full md:w-[10rem] lg:w-[10rem]"
-                      value={processSelected.find((p) => p.plant_code === plantSelected)?.process_id || ""}
                       onChange={handleProcessChange}
                     />
+
                     <SelectForm
                       options={partOptions}
                       placeholder="กรุณาเลือกชิ้นงาน / Select part"

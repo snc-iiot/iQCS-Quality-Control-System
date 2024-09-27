@@ -136,8 +136,8 @@ export const OverviewCard: FC<OverviewCardProps> = ({
             value={processSelected.find((process) => process.plant_code === plantCode)?.process_id || ""}
             onChange={handleProcessChange}
           />
+
           <SelectForm
-            placeholder="Default"
             options={[
               {
                 label: "Sort by ng work",
@@ -149,7 +149,7 @@ export const OverviewCard: FC<OverviewCardProps> = ({
               },
             ]}
             defaultValue={"ng"}
-            className="w-full md:w-[8rem] lg:w-[8rem]"
+            className="w-full md:w-[9rem] lg:w-[9rem]"
             value={sort}
             onChange={(e) => setSort(e?.target?.value as "ng" | "percentage")}
           />
@@ -195,14 +195,28 @@ export const OverviewCard: FC<OverviewCardProps> = ({
       </div>
       <div className="flex h-[20rem] flex-col gap-2 rounded-md p-2">
         <ComposedChart
-          data={mapCompositionData(mapSncOverviewList, plantCode, processSelected)?.map((info) => ({
-            ...info,
-            percentage: info?.percentage * (mode === "ppm" ? 10000 : 1),
-          }))}
+          data={mapCompositionData(mapSncOverviewList, plantCode, processSelected)
+            ?.map((info) => ({
+              ...info,
+              percentage: info?.percentage * (mode === "ppm" ? 10000 : 1),
+            }))
+            ?.sort((x, y) => (x?.[sort] < y?.[sort] ? 1 : -1))
+            ?.slice(
+              0,
+              Number(
+                length === "" ? mapCompositionData(mapSncOverviewList, plantCode, processSelected)?.length : length
+              )
+            )}
           Config={[
             { key: "ng", color: "#FF0000" },
             { key: "production", color: "#102693" },
-            { key: "percentage", color: "#000000", chart: "Line", yAxisId: "right", label: "%" },
+            {
+              key: "percentage",
+              color: "#000000",
+              chart: "Line",
+              yAxisId: "right",
+              label: mode === "ppm" ? "PPM" : "%",
+            },
           ]}
           enableLabelList={true}
         />

@@ -166,7 +166,10 @@ export const PartPage: FC = () => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         {part?.processes
-                          ?.map((item) => processList?.find(({ process_id }) => process_id === item)?.process_name)
+                          ?.map(
+                            (item) => processList?.find(({ process_id }) => process_id === item)?.process_name ?? ""
+                          )
+                          ?.filter((info) => info !== "")
                           ?.join(", ") ?? "TEST"}
                       </TableCell>
                       <TableCell>{part?.part_code}</TableCell>

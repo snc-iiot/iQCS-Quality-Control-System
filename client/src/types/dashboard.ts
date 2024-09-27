@@ -16,6 +16,14 @@ export type TPartSummaryDetails = {
   ng_quantity: number;
 };
 
+export type TModelSummary = {
+  model_id: string;
+  model_name: string;
+  production_quantity: string;
+  ng_quantity: string;
+  defect_percentage: string;
+};
+
 export type TPartSummary = {
   shift: "DAY" | "NIGHT";
   process_id: string;

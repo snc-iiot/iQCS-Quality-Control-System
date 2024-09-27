@@ -6,6 +6,7 @@ import {
   TDefect,
   TDefectSummary,
   TGraphSummary,
+  TModelSummary,
   TPartSummary,
   TResponse,
   TTopDefect,
@@ -232,6 +233,28 @@ export class DefectService extends APIService {
         `/defects-logging/graph-summary-part-by-date-range?start_date=${start_date}&end_date=${end_date}&process_id=${process_id}&defects_type=${defects_type}`
       );
       this.store.setPartSummaryList(res?.data || []);
+      return res?.data || [];
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("GET_SUMMARY_DEFECTS_ERROR", error);
+        return [];
+      } else {
+        console.error("UNKNOWN_ERROR", error);
+        return [];
+      }
+    }
+  };
+
+  public getSummaryDefectsByModelGraph = async (
+    start_date: string,
+    end_date: string,
+    defects_type: "ALL" | "P" | "S"
+  ): Promise<TModelSummary[]> => {
+    try {
+      const { data: res } = await this.get<TResponse<TModelSummary[]>>(
+        `/defects-logging/graph-model-by-date-range?start_date=${start_date}&end_date=${end_date}&defects_type=${defects_type}`
+      );
+      this.store.setModelSummaryList(res?.data || []);
       return res?.data || [];
     } catch (error) {
       if (error instanceof AxiosError) {
