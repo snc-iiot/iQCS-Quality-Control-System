@@ -260,10 +260,12 @@ export const PartPage: FC = () => {
           <div className="max-h-[60vh] overflow-y-scroll">
             <CreateUpdatePart
               data={{
+                model_id: selectedPart?.model_id,
                 part_id: selectedPart?.part_id,
                 part_code: selectedPart?.part_code,
                 part_name: selectedPart?.part_name,
                 price: Number(selectedPart?.price),
+                type: selectedPart?.type,
                 processes: selectedPart?.processes,
                 sap_code: selectedPart?.sap_code || "",
                 part_description: selectedPart?.part_description || "",

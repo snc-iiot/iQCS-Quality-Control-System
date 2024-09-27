@@ -28,6 +28,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
     part_code: data?.part_code || "",
     part_name: data?.part_name || "",
     price: data?.price || 0,
+    type: data?.type || "LOCAL",
     sap_code: data?.sap_code || "",
     part_description: data?.part_description || "",
     customers: data?.customers || [],
@@ -40,6 +41,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
     part_code: Yup.string().required("โปรดระบุ Part No."),
     part_name: Yup.string().required("โปรดระบุชื่อ Part"),
     price: Yup.number().required("โปรดระบุ Price"),
+    type: Yup.string().oneOf(["LOCAL", "SKD"]).required("โปรดเลือก Type"),
   });
 
   // Define the submit handler
@@ -72,6 +74,7 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
         part_code: data.part_code ?? "",
         part_name: data.part_name ?? "",
         price: data.price ?? 0,
+        type: data?.type ?? "LOCAL",
         sap_code: data?.sap_code || "",
         part_description: data?.part_description || "",
         customers: data?.customers || [],
@@ -120,6 +123,20 @@ export const CreateUpdatePart: FC<CreateUpdatePartProps> = ({ isTitleVisible, cl
                   value: model?.model_id,
                 })) || []
               }
+            />
+            <SelectForm
+              label="Type"
+              name="type"
+              placeholder="โปรดเลือก Type"
+              value={values.type}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.type}
+              required
+              options={[
+                { label: "LOCAL", value: "LOCAL" },
+                { label: "SKD", value: "SKD" },
+              ]}
             />
             <InputForm
               label="Part No."

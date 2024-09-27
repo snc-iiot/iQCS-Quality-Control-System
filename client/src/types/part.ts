@@ -5,6 +5,7 @@ export type TCreateUpdatePart = {
   part_name: string;
   processes: string[];
   price: number;
+  type: "LOCAL" | "SKD";
 
   //! Not required
   sap_code: string;
@@ -21,6 +22,7 @@ export type TPart = {
   part_description: string;
   processes: string[];
   price: string;
+  type: "LOCAL" | "SKD";
   customers: string[];
   plant_code: string;
   created_at: string;

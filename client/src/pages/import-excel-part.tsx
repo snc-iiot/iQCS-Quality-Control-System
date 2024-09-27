@@ -34,6 +34,7 @@ import Swal from "sweetalert2";
 
 type TGenerateExcelTemplate = {
   model_id: string;
+  type: "LOCAL" | "SKD";
   process_id: string;
   customer: string;
   total_part: number | null;
@@ -45,6 +46,7 @@ export const ImportExcelPart: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const initialValues: TGenerateExcelTemplate = {
     model_id: "",
+    type: "LOCAL",
     process_id: "",
     customer: "",
     total_part: null,
@@ -56,10 +58,12 @@ export const ImportExcelPart: FC = () => {
 
   const handleSubmit = async (values: TGenerateExcelTemplate) => {
     const data = Array.from({ length: values.total_part ?? 1 }).map((_) => ({
+      model_id: values?.model_id,
       part_code: "",
       part_name: "",
       processes: values?.process_id,
       price: null,
+      type: values?.type,
       sap_code: "",
       part_description: "",
       customers: values?.customer,
@@ -82,6 +86,7 @@ export const ImportExcelPart: FC = () => {
       PART_NAME = "part_name",
       PROCESSES = "processes",
       PRICE = "price",
+      TYPE = "type",
       SAP_CODE = "sap_code",
       PART_DESCRIPTION = "part_description",
       CUSTOMERS = "customers",
@@ -119,6 +124,9 @@ export const ImportExcelPart: FC = () => {
           case Schema.PRICE:
             newPart.price = part[key] === 0 ? null : part[key];
             break;
+          case Schema.TYPE:
+            newPart.type = part[key];
+            break;
           case Schema.SAP_CODE:
             newPart.sap_code = part[key];
             break;
@@ -144,6 +152,7 @@ export const ImportExcelPart: FC = () => {
     "Part Name",
     "Processes",
     "Price",
+    "Type",
     "SAP Code (Optional)",
     "Part Description (Optional)",
     "Customers (Optional)",
@@ -202,6 +211,20 @@ export const ImportExcelPart: FC = () => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         error={errors.model_id}
+                        required
+                      />
+                      <SelectForm
+                        label="Type"
+                        options={[
+                          { label: "LOCAL", value: "LOCAL" },
+                          { label: "SKD", value: "SKD" },
+                        ]}
+                        placeholder="Select Type"
+                        name="type"
+                        value={values.type}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.type}
                         required
                       />
                       <SelectForm
@@ -267,7 +290,6 @@ export const ImportExcelPart: FC = () => {
                   </TableCell>
                 </TableRow>
               )}
-
               {importPart?.map((part, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
@@ -307,6 +329,20 @@ export const ImportExcelPart: FC = () => {
                       type="number"
                       inputMode="numeric"
                     />
+                  </TableCell>
+                  <TableCell>
+                    <select
+                      value={part?.type}
+                      onChange={(e) => {
+                        const newPart = [...importPart];
+                        newPart[index].type = e.target.value as "LOCAL" | "SKD";
+                        setImportPart(newPart);
+                      }}
+                      className="w-[5rem] rounded-none border-none bg-transparent outline-none"
+                    >
+                      <option value="LOCAL">LOCAL</option>
+                      <option value="SKD">SKD</option>
+                    </select>
                   </TableCell>
                   <TableCell>
                     <Input
@@ -390,23 +426,6 @@ export const ImportExcelPart: FC = () => {
         type="file"
         accept=".xlsx, .xls .csv"
         className="hidden"
-        // onChange={(e) => {
-        //   const file = e.target.files?.[0];
-        //   if (file) {
-        //     excelHelper.parseExcelData(file).then((data) => {
-        //       const importPart = data.map((part) => ({
-        //         part_code: part?.part_code,
-        //         part_name: part?.part_name,
-        //         processes: [part?.processes],
-        //         price: part?.price == 0 ? null : part?.price,
-        //         sap_code: part?.sap_code,
-        //         part_description: part?.part_description,
-        //         customers: [part?.customers],
-        //       }));
-        //       setImportPart(importPart);
-        //     });
-        //   }
-        // }}
         onChange={async (e) => {
           await handleChange(e);
         }}
