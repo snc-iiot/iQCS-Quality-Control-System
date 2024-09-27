@@ -1,5 +1,17 @@
 
 
+## [0.5.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.4.0...0.5.0) (2024-09-27)
+
+
+### Features
+
+* Update version to 0.4.1 in package-lock.json and package.json ([4bcaa4f](https://github.com/snc-iiot/iQCS-Quality-Control-System/commit/4bcaa4fcb0bb8dcca76da9d8e3ae1b0c8f3b01fd))
+
+
+### Code Refactoring
+
+* Update CreateUpdatePart component to handle type selection ([e13c7c3](https://github.com/snc-iiot/iQCS-Quality-Control-System/commit/e13c7c32d4f5f4ddff768eb3c20d3d25a4a908a8))
+
 ## [0.4.1](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.4.0...0.4.1) (2024-09-27)
 
 ## [0.4.0](https://github.com/snc-iiot/iQCS-Quality-Control-System/compare/0.3.1...0.4.0) (2024-09-27)
