@@ -15,6 +15,7 @@ export type TCreateUpdatePart = {
 export type TPart = {
   part_id: string;
   sap_code: string | null;
+  model_id: string;
   part_code: string;
   part_name: string;
   part_description: string;

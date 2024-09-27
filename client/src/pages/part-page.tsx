@@ -31,6 +31,7 @@ const HEADER = [
   "Process.",
   "Part No.",
   "Part Name",
+  "Model",
   "Part Price",
   "SAP Code.",
   "Part Description",
@@ -56,7 +57,7 @@ const HEADER_HISTORY = [
 
 export const PartPage: FC = () => {
   const navigate = useNavigate();
-  const { partList, processList, historyUpdatePriceList } = useAtomStore();
+  const { partList, processList, historyUpdatePriceList, modelList } = useAtomStore();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const [isUpdatePriceDialogOpen, setIsUpdatePriceDialogOpen] = useState<boolean>(false);
@@ -169,11 +170,14 @@ export const PartPage: FC = () => {
                           ?.map(
                             (item) => processList?.find(({ process_id }) => process_id === item)?.process_name ?? ""
                           )
-                          ?.filter((info) => info !== "")
+                          ?.filter((info) => info != "" && info != null)
                           ?.join(", ") ?? "TEST"}
                       </TableCell>
                       <TableCell>{part?.part_code}</TableCell>
                       <TableCell>{part?.part_name}</TableCell>
+                      <TableCell>
+                        {modelList?.find(({ model_id }) => model_id === part?.model_id)?.model_name ?? ""}
+                      </TableCell>
                       <TableCell>{part?.price ?? "0.00"}</TableCell>
                       <TableCell>{part?.sap_code || "-"}</TableCell>
                       <TableCell>{part?.part_description || "-"}</TableCell>
