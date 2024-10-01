@@ -243,7 +243,7 @@ export const PartPage: FC = () => {
         </div>
       </main>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่ม Part / Add Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
@@ -254,7 +254,7 @@ export const PartPage: FC = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไข Part / Edit Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
@@ -287,7 +287,7 @@ export const PartPage: FC = () => {
           setIsUpdatePriceDialogOpen(isOpen);
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
           <DialogHeader>
             <DialogTitle>Update part price</DialogTitle>
             <DialogDescription>Please fill in the information completely</DialogDescription>

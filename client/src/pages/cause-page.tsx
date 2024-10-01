@@ -170,7 +170,7 @@ export const CausePage: FC = () => {
         </div>
       </main>
       <Dialog open={isOpenCreateUpdateDialog} onOpenChange={setIsOpenCreateUpdateDialog}>
-        <DialogContent>
+        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่มอาการการเสีย / Add Symptom</DialogTitle>
             <DialogDescription>กรุณากรอกข้อมูลด้านล่าง / Please fill in the information</DialogDescription>
@@ -179,7 +179,7 @@ export const CausePage: FC = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไขอาการการเสีย / Edit Symptom</DialogTitle>
             <DialogDescription>กรุณากรอกข้อมูลด้านล่าง / Please fill in the information</DialogDescription>
