@@ -165,8 +165,8 @@ const useExport = (data: TDefect[]) => {
     ID: info?.defects_log_id,
     Shift: info?.shift,
     Time: info?.datetime,
-    Date: `${new Date(String(info?.datetime)).getDate()}/${new Date(String(info?.datetime)).getMonth() + 1}/${new Date(
-      String(info?.datetime)
+    Date: `${new Date(String(info?.date)).getDate()}/${new Date(String(info?.date)).getMonth() + 1}/${new Date(
+      String(info?.date)
     ).getFullYear()}`,
     Line: info?.plant_code,
     "Part No.": info?.part_code,

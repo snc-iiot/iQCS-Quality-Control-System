@@ -13,7 +13,7 @@ export const SettingNGForm = () => {
       />
 
       <InputForm
-        label="สาเหตุของเสีย / Cause of NG"
+        label="อาการของเสีย / Symptom of NG"
         required
         // maxLength={100}
         // value="demo"

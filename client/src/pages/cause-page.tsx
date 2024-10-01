@@ -122,7 +122,7 @@ export const CausePage: FC = () => {
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <main className="flex h-full w-full flex-col gap-2">
         <div className="flex flex-col gap-2 md:flex-row">
-          <PageHeader title="ตั้งค่าสาเหตุการเสีย / Cause settings" description="เพิ่ม แก้ไข ลบ สาเหตุการเสีย" />
+          <PageHeader title="ตั้งค่าอาการการเสีย / Symptom settings" description="เพิ่ม แก้ไข ลบ อาการการเสีย" />
           <div className="flex w-full justify-end gap-2">
             <Input
               placeholder="ค้นหา"
@@ -131,7 +131,7 @@ export const CausePage: FC = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
             <Button className="whitespace-nowrap" onClick={() => setIsOpenCreateUpdateDialog(true)}>
-              Add Cause
+              Add Symptom
             </Button>
           </div>
         </div>
@@ -172,7 +172,7 @@ export const CausePage: FC = () => {
       <Dialog open={isOpenCreateUpdateDialog} onOpenChange={setIsOpenCreateUpdateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>เพิ่มสาเหตุการเสีย / Add Cause</DialogTitle>
+            <DialogTitle>เพิ่มอาการการเสีย / Add Symptom</DialogTitle>
             <DialogDescription>กรุณากรอกข้อมูลด้านล่าง / Please fill in the information</DialogDescription>
           </DialogHeader>
           <CreateUpdateCause onClose={() => setIsOpenCreateUpdateDialog(false)} />
@@ -181,7 +181,7 @@ export const CausePage: FC = () => {
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>แก้ไขสาเหตุการเสีย / Edit Cause</DialogTitle>
+            <DialogTitle>แก้ไขอาการการเสีย / Edit Symptom</DialogTitle>
             <DialogDescription>กรุณากรอกข้อมูลด้านล่าง / Please fill in the information</DialogDescription>
           </DialogHeader>
           <CreateUpdateCause

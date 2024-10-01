@@ -133,10 +133,10 @@ export const CreateUpdateDefectMultiple: FC = () => {
   return (
     <div className={cn("relative flex w-full flex-col gap-2")}>
       <PageHeader
-        title="บันทึกข้อมูลแบบหลายสาเหตุ"
+        title="บันทึกข้อมูลแบบหลายอาการ"
         description={
           <div className="flex flex-col gap-1 text-sm">
-            <p className="text-muted-foreground">ใช้สำหรับบันทึกข้อมูลการเกิด NG ที่มีสาเหตุมากกว่า 1 สาเหตุ</p>
+            <p className="text-muted-foreground">ใช้สำหรับบันทึกข้อมูลการเกิด NG ที่มีอาการมากกว่า 1 อาการ</p>
           </div>
         }
       />
@@ -253,14 +253,14 @@ export const CreateUpdateDefectMultiple: FC = () => {
         />
         {/*//! Select multiple case */}
         <Button variant="outline" type="button" className="w-full" onClick={() => setIsSheetOpen(true)}>
-          เลือกสาเหตุ / Select Defect
+          เลือกอาการ / Select Defect
         </Button>
         {errors?.defects && (
-          <p className="text-sm text-red-500">Please select at least one defect / โปรดเลือกอย่างน้อย 1 สาเหตุ</p>
+          <p className="text-sm text-red-500">Please select at least one defect / โปรดเลือกอย่างน้อย 1 อาการ</p>
         )}
         {caseMultipleValues.length > 0 && (
           <div>
-            <p className="text-sm font-semibold">รายการสาเหตุ / Defect List</p>
+            <p className="text-sm font-semibold">รายการอาการ / Defect List</p>
             {caseMultipleValues.map((caseValue, index) => (
               <p key={index} className="text-sm text-muted-foreground">
                 {getCauseDetail(caseValue?.case_id)?.case_name} - {caseValue?.ng_quantity} ชิ้น
@@ -478,8 +478,8 @@ export const CreateUpdateDefectMultiple: FC = () => {
       <Sheet open={isSheetOpen} onOpenChange={() => setIsSheetOpen(false)}>
         <SheetContent side="right" style={{ minWidth: "100vw", overflow: "auto" }}>
           <SheetHeader>
-            <SheetTitle>เลือกสาเหตุ / Select Defect</SheetTitle>
-            <SheetDescription>โปรดเลือกสาเหตุที่เกิดขึ้น / Please select the defect that occurred</SheetDescription>
+            <SheetTitle>เลือกอาการ / Select Defect</SheetTitle>
+            <SheetDescription>โปรดเลือกอาการที่เกิดขึ้น / Please select the defect that occurred</SheetDescription>
           </SheetHeader>
           <CaseMultipleForm
             processId={""}

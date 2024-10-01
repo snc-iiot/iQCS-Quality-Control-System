@@ -9,7 +9,7 @@ export const SettingList: FC = () => {
       title: "ตั้งค่ากระบวนการผลิต / Setting processes",
       href: "/processes",
       icon: Settings,
-      description: "ตั้งค่าสาเหตุการเสีย",
+      description: "ตั้งค่ากระบวนการผลิต",
       disabled: false,
     },
     {
@@ -20,10 +20,10 @@ export const SettingList: FC = () => {
       disabled: false,
     },
     {
-      title: "ตั้งค่าสาเหตุการเสีย / Setting Cause",
+      title: "ตั้งค่าอาการเสีย / Setting Symptom",
       href: "/cause",
       icon: Settings,
-      description: "ตั้งค่าสาเหตุการเสีย",
+      description: "ตั้งค่าอาการเสีย",
       disabled: false,
     },
   ];

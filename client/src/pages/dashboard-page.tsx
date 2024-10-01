@@ -422,10 +422,10 @@ export const DashboardPage: FC = () => {
           <div className="flex">
             <div className={cn("w-full")}>
               <h1 className="text-sm font-semibold">
-                {ranking} สาเหตุที่ทำให้งานเสียมากที่สุด / Top {ranking} causes that cause the most defects
+                {ranking} อาการที่ทำให้งานเสียมากที่สุด / Top {ranking} symptoms that symptom the most defects
               </h1>
               <p className="text-xs text-muted-foreground">
-                รายการสาเหตุที่ทำให้งานเสียมากที่สุด / List of causes that cause the most work loss
+                รายการอาการที่ทำให้งานเสียมากที่สุด / List of symptoms that symptom the most work loss
               </p>
             </div>
             <SelectForm
@@ -539,7 +539,7 @@ export const DashboardPage: FC = () => {
                 รายละเอียดของเสียแยกตามชิ้นงาน / Details of waste separated by work piece
               </h1>
               <p className="text-xs text-muted-foreground">
-                รายการสาเหตุที่ทำให้งานของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
+                รายการอาการที่ทำให้งานของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
                 {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name ??
                   "กระบวนการทั้งหมด"}{" "}
                 / List of reasons for the work of each piece in the process{" "}
@@ -615,10 +615,10 @@ export const DashboardPage: FC = () => {
           <div className="flex flex-col justify-between gap-2 md:flex-row lg:flex-row">
             <div className={cn("w-full")}>
               <h1 className="text-sm font-semibold">
-                สาเหตุของงานเสียแยกตามชิ้นงาน / Causes of waste separated by work piece
+                อาการของงานเสียแยกตามชิ้นงาน / Symptoms of waste separated by work piece
               </h1>
               <p className="text-xs text-muted-foreground">
-                รายการสาเหตุที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
+                รายการอาการที่ทำให้งานเสียของแต่ละ ชิ้นงาน ในกระบวนการ{" "}
                 {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name} /
                 List of reasons for the work of each piece in the process{" "}
                 {processList?.find(({ process_id }) => process_id === processPartSelected?.process)?.process_name}{" "}

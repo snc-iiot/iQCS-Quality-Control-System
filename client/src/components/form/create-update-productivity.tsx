@@ -261,7 +261,7 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
       <Dialog open={isOpenAddCause} onOpenChange={() => setIsOpenAddCause(false)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>เพิ่ม Cause / Add Cause</DialogTitle>
+            <DialogTitle>เพิ่ม Symptom / Add Symptom</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
           <CreateUpdateCause onClose={() => setIsOpenAddCause(false)} />

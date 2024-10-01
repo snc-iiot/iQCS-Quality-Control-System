@@ -17,19 +17,19 @@ export const useNGCause = () => {
 
   const { mutateAsync: mutateDeleteNGCause } = useMutationWithToast(
     async (data: string) => await deleteNGCause(data),
-    "Deleting NG Cause",
+    "Deleting NG Symptom",
     [GET_NG_CAUSES]
   );
 
   const { mutateAsync: mutateCreateNGCause } = useMutationWithToast(
     async (data: TCreateNGCause) => await createNGCause(data),
-    "Creating NG Cause",
+    "Creating NG Symptom",
     [GET_NG_CAUSES]
   );
 
   const { mutateAsync: mutateUpdateNGCause } = useMutationWithToast(
     async (data: TCreateNGCause) => await updateNGCause(data),
-    "Updating NG Cause",
+    "Updating NG Symptoms",
     [GET_NG_CAUSES]
   );
 

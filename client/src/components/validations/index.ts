@@ -9,7 +9,7 @@ export const validationDefectSchema = Yup.object({
   process_id: Yup.string().required("โปรดระบุ Process"),
   defects_type: Yup.string().required("โปรดระบุประเภทของ NG").oneOf(["S", "P"]),
   part_id: Yup.string().required("โปรดระบุ Part"),
-  case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+  case_id: Yup.string().required("โปรดระบุ อาการของ NG"),
   ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(0),
   production_quantity: Yup.number().required("โปรดระบุจำนวนผลิต").min(1),
 });
@@ -21,7 +21,7 @@ export const validationProductivitySchema = Yup.object({
 });
 
 export const validationCauseSchema = Yup.object({
-  case_name: Yup.string().required("โปรดระบุ Case Name"),
+  case_name: Yup.string().required("โปรดระบุ Symptom Name"),
   processes: Yup.array().required("โปรดระบุ Processes").min(1),
 });
 
@@ -56,7 +56,7 @@ export const validationDefectMultipleSchema = Yup.object<TCreateUpdateDefectMult
   defects: Yup.array()
     .of(
       Yup.object({
-        case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+        case_id: Yup.string().required("โปรดระบุ อาการของ NG"),
         ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(0),
       })
     )
@@ -81,7 +81,7 @@ export const validationCaseMultipleSchema = Yup.object({
   defects: Yup.array()
     .of(
       Yup.object({
-        case_id: Yup.string().required("โปรดระบุ สาเหตุของ NG"),
+        case_id: Yup.string().required("โปรดระบุ อาการของ NG"),
         ng_quantity: Yup.number().required("โปรดระบุจำนวน NG").min(0),
       })
     )

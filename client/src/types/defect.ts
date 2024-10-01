@@ -53,6 +53,7 @@ export type TCreateUpdateDefectMultiple = {
 
 export type TDefect = {
   defects_log_id: string;
+  date: string;
   datetime: string;
   defects_type: "S" | "P";
   process_id: string;

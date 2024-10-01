@@ -89,8 +89,8 @@ export const CreateUpdateNg: FC<CreateUpdateNgProps> = ({ isTitleVisible = true 
           required
         />
         <SelectForm
-          label="สาเหตุ / Cause"
-          placeholder="เลือกสาเหตุ"
+          label="อาการ / Symptom"
+          placeholder="เลือกอาการ"
           required
           options={[{ label: "Process 1", value: "process-1" }]}
         />

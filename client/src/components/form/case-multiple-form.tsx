@@ -44,15 +44,15 @@ const DefectField: FC<DefectFieldProps> = ({
 }) => (
   <div className="grid grid-cols-2 gap-2">
     <ComboBoxResponsive
-      label="สาเหตุ / Cause"
+      label="อาการ / Symptom"
       options={ngCaseByProcess.map((ng) => ({
         label: ng.case_name,
         value: ng.case_id,
       }))}
       value={defect.case_id}
       onChange={(value) => onValueSelectChange(index, value)}
-      labelFilter="ค้นหาสาเหตุ / Search Cause"
-      emptyLabel="เลือกสาเหตุ"
+      labelFilter="ค้นหาอาการ / Search Symptom"
+      emptyLabel="เลือกอาการ"
       error={errors?.defects?.[index]?.case_id}
       required
     />

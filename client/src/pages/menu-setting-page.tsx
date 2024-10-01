@@ -36,10 +36,10 @@ const menuItems = [
     disabled: false,
   },
   {
-    title: "การตั้งค่าสาเหตุการเสีย / Cause Settings",
+    title: "การตั้งค่าอาการการเสีย / Symptom Settings",
     href: "cause",
     icon: Settings,
-    description: "จัดการการตั้งค่าสาเหตุการเสีย / Manage cause settings",
+    description: "จัดการการตั้งค่าอาการการเสีย / Manage Symptom settings",
     disabled: false,
   },
   {

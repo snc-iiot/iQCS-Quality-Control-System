@@ -295,7 +295,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
               />
               <div>
                 <ComboBoxResponsive
-                  label="สาเหตุ / Cause"
+                  label="อาการ / Symptom"
                   options={ngCauseList
                     ?.filter((ng) => {
                       if (values?.part_id) {
@@ -317,8 +317,8 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                     });
                   }}
                   error={errors?.case_id}
-                  labelFilter="ค้นหาสาเหตุ / Search Cause"
-                  emptyLabel="เลือกสาเหตุ"
+                  labelFilter="ค้นหาอาการ / Search Symptom"
+                  emptyLabel="เลือกอาการ"
                   required
                 />
                 <Button
@@ -327,7 +327,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
                   type="button"
                   onClick={() => setIsOpenAddCause(true)}
                 >
-                  เพิ่ม Cause / Add Cause
+                  เพิ่ม Symptom / Add Symptom
                 </Button>
               </div>
 
@@ -560,7 +560,7 @@ export const CreateUpdateDefect: FC<CreateUpdateNgProps> = ({ isTitleVisible = t
       <Dialog open={isOpenAddCause} onOpenChange={() => setIsOpenAddCause(false)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>เพิ่ม Cause / Add Cause</DialogTitle>
+            <DialogTitle>เพิ่ม Symptom / Add Symptom</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
           <CreateUpdateCause onClose={() => setIsOpenAddCause(false)} />

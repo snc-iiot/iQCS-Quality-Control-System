@@ -34,7 +34,7 @@ export const TableCauseNg = () => {
           <TableRow className="whitespace-nowrap">
             <TableHead className="whitespace-nowrap">No.</TableHead>
             <TableHead className="whitespace-nowrap">กระบวนการผลิต / Process</TableHead>
-            <TableHead>สาเหตุของเสีย / Cause of NG</TableHead>
+            <TableHead>อาการของเสีย / Symptom of NG</TableHead>
             <TableHead className="text w-[100px] whitespace-nowrap">รายละเอียด / Description</TableHead>
             <TableHead className="text whitespace-nowrap">วันที่สร้าง / Created Date</TableHead>
             <TableHead className="text whitespace-nowrap">วันที่แก้ไข / Updated Date</TableHead>
