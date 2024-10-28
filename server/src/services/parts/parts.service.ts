@@ -186,10 +186,13 @@ export class PartsService {
     }
   }
 
-  async findAll(): Promise<TServiceResponse> {
+  async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
       const results = await this.partRepository
         .createQueryBuilder('part')
+        .where('part.plant_code = :plant_code', {
+          plant_code: decoded.plant_code,
+        })
         .leftJoin(
           'tb_model_material',
           'model',

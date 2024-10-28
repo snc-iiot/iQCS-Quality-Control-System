@@ -54,8 +54,11 @@ export class PartsController {
   }
 
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.partService.findAll();
+  async findAll(
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.partService.findAll(req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
