@@ -20,6 +20,7 @@ import { renderFormattedDateWithTime } from "@/helpers/date-time.helper";
 import { useAtomStore } from "@/store";
 import { TModel } from "@/types";
 import { FC, useState } from "react";
+import { usePart } from "../services/hooks";
 
 const useFilterModel = (modelList: TModel[], search: string) => {
   return modelList?.filter((item) => item?.model_name?.toLowerCase()?.includes(search.toLowerCase()));
@@ -30,6 +31,8 @@ export const ModelPage: FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<TModel | null>(null);
+
+  const { mutateDeleteModel } = usePart();
 
   const { modelList } = useAtomStore();
 
@@ -131,7 +134,16 @@ export const ModelPage: FC = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>ยกเลิก / Cancel</AlertDialogCancel>
-                            <AlertDialogAction>ลบ / Delete</AlertDialogAction>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                const res = await mutateDeleteModel(item?.model_id);
+                                if (res?.status === "success") {
+                                  setIsEdit(false);
+                                }
+                              }}
+                            >
+                              ลบ / Delete
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

@@ -4,6 +4,7 @@ import { renderFormattedDate, renderFormattedDateWithTime } from "@/helpers/date
 import { cn } from "@/lib/utils";
 import { TDefect } from "@/types";
 import { FC, useMemo } from "react";
+import { useAtomStore } from "../../store";
 
 interface DefectDetailProps {
   defect: TDefect;
@@ -13,6 +14,7 @@ interface DefectDetailProps {
 }
 
 export const DefectDetail: FC<DefectDetailProps> = ({ defect, isOpen, onClose }) => {
+  const { processList } = useAtomStore();
   if (!defect) {
     return null;
   }
@@ -48,6 +50,7 @@ export const DefectDetail: FC<DefectDetailProps> = ({ defect, isOpen, onClose })
 
   const newDefect = {
     ...defect,
+    process_id: processList?.find((p) => p?.process_id === defect?.process_id)?.process_name,
     datetime: getTimeSlotByDateTimestamp(new Date(defect?.datetime)?.getTime())?.label,
     date: renderFormattedDate(new Date(defect?.datetime)),
     created_at: renderFormattedDateWithTime(new Date(defect?.created_at)),
