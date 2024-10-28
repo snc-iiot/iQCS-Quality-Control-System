@@ -54,8 +54,11 @@ export class ModelController {
   }
 
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.modelService.findAll();
+  async findAll(
+    @Req() req: Request & { decoded: TJwtPayload },
+    @Res() res: Response,
+  ) {
+    const result = await this.modelService.findAll(req.decoded);
     return res.status(result.statusCode).json(result);
   }
 
