@@ -69,7 +69,7 @@ export const AutoComplete: React.FC<CustomInputAutoCompleteProps> = ({
     }
   }, [highlightedIndex]);
 
-  const filteredOptions = options?.filter((option) => option.toLowerCase().includes(value?.toLowerCase() || ""));
+  const filteredOptions = options?.filter((option) => option?.toLowerCase().includes(value?.toLowerCase() || ""));
 
   return (
     <div className={cn("relative", className)}>
