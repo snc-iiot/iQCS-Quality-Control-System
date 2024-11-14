@@ -249,9 +249,9 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
       </FormField>
 
       <Dialog open={isOpenAddPart} onOpenChange={() => setIsOpenAddPart(false)}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%]  overflow-auto">
           <DialogHeader>
-            <DialogTitle>เพิ่ม Part / Add Part</DialogTitle>
+            <DialogTitle>เพิ่ม Part / Add Part </DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
           </DialogHeader>
           <CreateUpdatePart onClose={() => setIsOpenAddPart(false)} />
@@ -259,7 +259,7 @@ export const CreateUpdateProductivity: FC<CreateUpdateProductivityProps> = ({
       </Dialog>
 
       <Dialog open={isOpenAddCause} onOpenChange={() => setIsOpenAddCause(false)}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่ม Symptom / Add Symptom</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

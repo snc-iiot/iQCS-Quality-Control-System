@@ -186,7 +186,7 @@ const DocumentManagementPage = () => {
         </div>
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่มเอกสาร / Add Document</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
@@ -196,7 +196,7 @@ const DocumentManagementPage = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไขเอกสาร / Edit Document</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

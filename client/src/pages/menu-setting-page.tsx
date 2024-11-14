@@ -86,7 +86,7 @@ const MenuSettingPage: FC = () => {
         <MenuPage data={mapMenuItems} />
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เปลี่ยนรหัสผ่าน / Change password</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

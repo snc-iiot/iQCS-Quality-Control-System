@@ -467,7 +467,7 @@ export const CreateUpdateDefectMultiple: FC = () => {
         </div>
       </form>
       <Dialog open={isOpenAddPart} onOpenChange={() => setIsOpenAddPart(false)}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%]  overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่ม Part / Add Part</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

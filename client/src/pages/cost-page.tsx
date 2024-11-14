@@ -132,7 +132,7 @@ export const CostPage: FC = () => {
         </div>
       </main>
       <Dialog open={isDialogOpen} onOpenChange={() => setIsDialogOpen(false)}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>
               {ratioSelected

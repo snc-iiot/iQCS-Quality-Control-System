@@ -64,7 +64,7 @@ export const ModelPage: FC = () => {
   return (
     <div className="relative flex h-full w-full flex-col gap-4 p-4">
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>โมเดล / Model</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
@@ -75,7 +75,7 @@ export const ModelPage: FC = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isEdit} onOpenChange={setIsEdit}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไขโมเดล / Model</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

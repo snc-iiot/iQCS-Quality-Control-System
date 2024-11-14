@@ -101,7 +101,7 @@ export const SettingMachinePage: FC = () => {
           setIsDialogOpen(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่มเครื่องจักร / Add machine</DialogTitle>
             <DialogDescription>กรุณากรอกชื่อเครื่องจักร และหมายเลขเครื่องจักรที่ต้องการเพิ่ม</DialogDescription>
@@ -117,7 +117,7 @@ export const SettingMachinePage: FC = () => {
           setIsUpdateDialogOpen(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไขเครื่องจักร / Edit machine</DialogTitle>
             <DialogDescription>กรุณากรอกชื่อเครื่องจักร และหมายเลขเครื่องจักรที่ต้องการแก้ไข</DialogDescription>
@@ -144,7 +144,7 @@ export const SettingMachinePage: FC = () => {
           setIsPreview(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>ข้อมูลเครื่องจักร / Machine Information</DialogTitle>
             <DialogDescription>

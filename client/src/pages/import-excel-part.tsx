@@ -185,7 +185,7 @@ export const ImportExcelPart: FC = () => {
                 Generate Excel Template
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+            <DialogContent className="max-h-[80%] overflow-auto">
               <DialogHeader>
                 <DialogTitle>Generate Excel Template</DialogTitle>
                 <DialogDescription>เลือก Process ที่ต้องการ หลังจากนั้นกดปุ่ม Download</DialogDescription>

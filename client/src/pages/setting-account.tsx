@@ -82,7 +82,7 @@ export const AccountSettingPage: FC = () => {
           setIsDialogOpen(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่มชื่อ / Add name</DialogTitle>
             <DialogDescription>กรุณากรอกชื่อ Operator ที่ต้องการเพิ่ม</DialogDescription>
@@ -98,7 +98,7 @@ export const AccountSettingPage: FC = () => {
           setIsEdit(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไขชื่อ / Edit name</DialogTitle>
             <DialogDescription>กรุณากรอกชื่อ Operator ที่ต้องการแก้ไข</DialogDescription>
@@ -124,7 +124,7 @@ export const AccountSettingPage: FC = () => {
           setIsPreview(isOpen);
         }}
       >
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>ข้อมูล Operator / Operator Information</DialogTitle>
             <DialogDescription>

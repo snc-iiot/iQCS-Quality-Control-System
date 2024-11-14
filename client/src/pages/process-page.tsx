@@ -202,7 +202,7 @@ export const ProcessPage: FC = () => {
       </main>
       {/* Dialogs */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>เพิ่ม Process / Add Process</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>
@@ -211,7 +211,7 @@ export const ProcessPage: FC = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
-        <DialogContent className="max-h-[80%] min-h-max overflow-auto">
+        <DialogContent className="max-h-[80%] overflow-auto">
           <DialogHeader>
             <DialogTitle>แก้ไข Process / Edit Process</DialogTitle>
             <DialogDescription>โปรดกรอกข้อมูลให้ครบถ้วน / Please fill in all required fields</DialogDescription>

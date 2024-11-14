@@ -18,7 +18,7 @@ export const TableCauseNg = () => {
           <DialogTrigger>
             <Button variant="outline">เพิ่มข้อมูล</Button>
           </DialogTrigger>
-          <DialogContent className="">
+          <DialogContent className="max-h-[80%]">
             <DialogHeader>
               <DialogTitle>สร้างข้อมูลของเสีย / Create NG Data</DialogTitle>
               <DialogDescription>
