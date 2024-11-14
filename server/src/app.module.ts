@@ -32,8 +32,8 @@ import { DashboardModule } from './services/dashboard/dashboard.module';
       port: 5432,
       username: 'Backend-CoDE',
       password: '$nc.C0DE@z0z3',
-      database: 'iQCS_V1_DEV',
-      // database: 'iQCS_V1_PROD',
+      // database: 'iQCS_V1_DEV',
+      database: 'iQCS_V1_PROD',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
@@ -138,16 +138,9 @@ export class AppModule implements NestModule {
       method: RequestMethod.ALL,
     });
 
-    consumer
-      .apply(JwtMiddleware)
-      .exclude(
-        '/productivity-logging/raw-data-by-datetime-range',
-        '/productivity-logging/summary-by-datetime-range',
-        '/productivity-logging/summary-by-date',
-      )
-      .forRoutes({
-        path: '/productivity-logging*',
-        method: RequestMethod.ALL,
-      });
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/productivity-logging*',
+      method: RequestMethod.ALL,
+    });
   }
 }

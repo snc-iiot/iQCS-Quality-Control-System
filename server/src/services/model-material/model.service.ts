@@ -150,9 +150,10 @@ export class ModelService {
     }
   }
 
-  async findAll(): Promise<TServiceResponse> {
+  async findAll(decoded: TJwtPayload): Promise<TServiceResponse> {
     try {
       const results = await this.modelRepository.find({
+        where: { plant_code: decoded.plant_code },
         order: { created_at: 'DESC' },
       });
 
@@ -183,7 +184,7 @@ export class ModelService {
       if (!result)
         return {
           status: 'error',
-          statusCode: 404,
+          statusCode: 400,
           message: 'Model not found',
           data: [],
         };

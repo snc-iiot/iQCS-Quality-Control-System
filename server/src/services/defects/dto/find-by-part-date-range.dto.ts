@@ -19,9 +19,9 @@ export class FindPartByDateRangeDto {
   @IsNotEmpty()
   part_id: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  process_id: string;
+  // @IsUUID()
+  // @IsNotEmpty()
+  // process_id: string;
 
   // @IsString()
   // @IsNotEmpty()
