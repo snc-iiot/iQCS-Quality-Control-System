@@ -1,7 +1,7 @@
 // export const API_BASE_URL = "http://10.1.8.175:3000/api";
 
-// export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/iqcs/prod/v1";
-export const API_BASE_URL = "http://10.1.9.69:3000/api";
+export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/iqcs/prod/v1";
+// export const API_BASE_URL = "http://10.1.9.69:3000/api";
 
 // export const API_BASE_URL = "https://api-gateway-v1.sncformer.com/iqcs/dev/v1";
 
