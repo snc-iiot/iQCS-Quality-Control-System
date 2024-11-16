@@ -17,9 +17,16 @@ interface CreateUpdateDocumentProps {
   className?: string;
   data?: Partial<TCreateUpdateDocument>;
   onClose?: () => void;
+  folderId?: string;
 }
 
-export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVisible, className, data, onClose }) => {
+export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({
+  isTitleVisible,
+  className,
+  data,
+  onClose,
+  folderId,
+}) => {
   const base64Helper = new Base64Helper();
   const { mutateCreateDocument, mutateUpdateDocument } = useDocument();
   const [initialValues, setInitialValues] = useState<TCreateUpdateDocument>({
@@ -28,6 +35,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
     document_description: data?.document_description ?? "",
     effective_date: data?.effective_date ?? "",
     expire_date: data?.expire_date ?? "",
+    folder_id: folderId ?? "",
   });
 
   const validationSchema = Yup.object().shape({
@@ -83,6 +91,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
       ...values,
       document_id: data?.document_id,
       document_data: initialValues?.document_data === data?.source_file ? null : initialValues?.document_data,
+      folder_id: (folderId ?? "") !== "" ? folderId : null,
     };
 
     if (data) {
@@ -112,6 +121,7 @@ export const CreateUpdateDocument: FC<CreateUpdateDocumentProps> = ({ isTitleVis
         document_description: data.document_description ?? "",
         effective_date: data.effective_date ?? "",
         expire_date: data.expire_date ?? "",
+        folder_id: folderId ?? "",
       });
     }
   }, [data]);

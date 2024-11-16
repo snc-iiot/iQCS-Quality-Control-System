@@ -10,3 +10,4 @@ export * from "./document";
 export * from "./account";
 export * from "./machine";
 export * from "./price-ratios";
+export * from "./folder";

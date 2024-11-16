@@ -4,6 +4,7 @@ import {
   defectAtom,
   defectSummaryAtom,
   documentAtom,
+  folderAtom,
   graphSummaryAtom,
   historyUpdatePriceAtom,
   machineAtom,
@@ -27,6 +28,7 @@ export const useAtomStore = () => {
   const [processList, setProcessList] = useAtom(processAtom);
   const [partList, setPartList] = useAtom(partAtom);
   const [documentList, setDocumentList] = useAtom(documentAtom);
+  const [folderList, setFolderList] = useAtom(folderAtom);
   const [ngCauseList, setNgCauseList] = useAtom(ngCauseAtom);
   const [defectList, setDefectList] = useAtom(defectAtom);
   const [defectSummaryList, setDefectSummaryList] = useAtom(defectSummaryAtom);
@@ -85,5 +87,7 @@ export const useAtomStore = () => {
     setModelList,
     modelSummaryList,
     setModelSummaryList,
+    folderList,
+    setFolderList,
   };
 };

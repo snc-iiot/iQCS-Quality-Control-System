@@ -20,11 +20,13 @@ import {
   TSNCPartDetail,
   TTopDefect,
 } from "@/types";
+import { TFolder } from "@/types/folder";
 import { atom } from "jotai";
 
 export const plantsAtom = atom<TPlant[]>([]);
 export const processAtom = atom<TProcess[]>([]);
 export const documentAtom = atom<TDocument[]>([]);
+export const folderAtom = atom<TFolder[]>([]);
 export const partAtom = atom<TPart[]>([]);
 export const ngCauseAtom = atom<TNGCause[]>([]);
 export const defectAtom = atom<TDefect[]>([]);

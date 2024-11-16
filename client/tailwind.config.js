@@ -259,5 +259,5 @@ export default {
       },
     },
   },
-  plugins: [tailwindAnimate, tailwindScrollbar],
+  plugins: [tailwindAnimate, tailwindScrollbar, require('@tailwindcss/line-clamp'),],
 };

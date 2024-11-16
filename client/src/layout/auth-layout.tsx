@@ -1,6 +1,7 @@
 import { AuthService } from "@/services/auth.service";
 import { useDocument, useNGCause, usePart, useProcess } from "@/services/hooks";
 import { useAccount } from "@/services/hooks/use-account";
+import { useFolder } from "@/services/hooks/use-folder";
 import { useMachine } from "@/services/hooks/use-machine";
 import { usePriceRatio } from "@/services/hooks/use-price-ratio";
 import { FC, ReactNode } from "react";
@@ -16,6 +17,7 @@ export const AuthLayout: FC<Props> = ({ children }) => {
 
   const { useGetProcess } = useProcess();
   const { useGetDocuments } = useDocument();
+  const { useGetFolders } = useFolder();
   const { useGetNGCauses } = useNGCause();
   const { useGetMachines } = useMachine();
   const { useGetAccounts } = useAccount();
@@ -24,6 +26,7 @@ export const AuthLayout: FC<Props> = ({ children }) => {
   useGetParts();
   useGetProcess();
   useGetDocuments();
+  useGetFolders();
   useGetNGCauses();
   useGetMachines();
   useGetAccounts();

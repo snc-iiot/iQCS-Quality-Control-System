@@ -1,4 +1,4 @@
-import { GET_DOCUMENTS } from "@/lib/constants";
+import { GET_DOCUMENTS, GET_FOLDERS } from "@/lib/constants";
 import { TCreateUpdateDocument, TDocument } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { DocumentService } from "../document.service";
@@ -18,19 +18,19 @@ export const useDocument = () => {
   const { mutateAsync: mutateCreateDocument } = useMutationWithToast(
     async (data: TCreateUpdateDocument) => await createDocument(data),
     "Document created successfully",
-    [GET_DOCUMENTS]
+    [GET_DOCUMENTS, GET_FOLDERS]
   );
 
   const { mutateAsync: mutateUpdateDocument } = useMutationWithToast(
     async (data: TCreateUpdateDocument) => await updateDocument(data),
     "Document updated successfully",
-    [GET_DOCUMENTS]
+    [GET_DOCUMENTS, GET_FOLDERS]
   );
 
   const { mutateAsync: mutateDeleteDocument } = useMutationWithToast(
     async (document_id: string) => await deleteDocument(document_id),
     "Document deleted successfully",
-    [GET_DOCUMENTS]
+    [GET_DOCUMENTS, GET_FOLDERS]
   );
 
   return {
