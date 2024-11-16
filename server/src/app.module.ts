@@ -23,6 +23,7 @@ import { DocumentsModule } from './services/documents/documents.module';
 import { UpdatePriceModule } from './services/update-price/update-price.module';
 import { PriceRatioModule } from './services/price-ratio/price-ratio.module';
 import { DashboardModule } from './services/dashboard/dashboard.module';
+import { FolderModule } from './services/folder/folder.module';
 
 @Module({
   imports: [
@@ -32,8 +33,8 @@ import { DashboardModule } from './services/dashboard/dashboard.module';
       port: 5432,
       username: 'Backend-CoDE',
       password: '$nc.C0DE@z0z3',
-      // database: 'iQCS_V1_DEV',
-      database: 'iQCS_V1_PROD',
+      database: 'iQCS_V1_DEV',
+      // database: 'iQCS_V1_PROD',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
@@ -48,6 +49,7 @@ import { DashboardModule } from './services/dashboard/dashboard.module';
     ProcessesModule,
     OperatorsModule,
     DocumentsModule,
+    FolderModule,
     UpdatePriceModule,
     PriceRatioModule,
     DashboardModule,
@@ -102,6 +104,11 @@ export class AppModule implements NestModule {
 
     consumer.apply(JwtMiddleware).forRoutes({
       path: '/documents*',
+      method: RequestMethod.ALL,
+    });
+
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/folder*',
       method: RequestMethod.ALL,
     });
 

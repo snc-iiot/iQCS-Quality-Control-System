@@ -1,3 +1,4 @@
+import { Folder } from './../../folder/entities/folder.entity';
 import { IsString, IsNotEmpty /*,IsEmpty, Matches*/ } from 'class-validator';
 
 export class CreateDocumentDto {
@@ -8,6 +9,8 @@ export class CreateDocumentDto {
   @IsString()
   @IsNotEmpty()
   document_data: string;
+
+  folder_id: string;
 
   document_description: string;
 

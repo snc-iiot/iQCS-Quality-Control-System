@@ -32,6 +32,9 @@ export class Document {
   @Column()
   creator_id: string;
 
+  @Column()
+  folder_id: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

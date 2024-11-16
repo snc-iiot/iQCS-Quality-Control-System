@@ -13,6 +13,8 @@ export class UpdateDocumentDto {
   // @IsNotEmpty()
   document_data: string;
 
+  folder_id: string;
+
   document_description: string;
 
   // @Matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, {
