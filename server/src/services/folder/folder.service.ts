@@ -54,43 +54,58 @@ export class FolderService {
         where: { plant_code: decoded.plant_code },
       });
 
+      // ตรวจสอบว่า folders มีข้อมูลหรือไม่
+      if (folders.length === 0) {
+        return {
+          status: 'success',
+          statusCode: 200,
+          message: 'No folders found',
+          data: [],
+        };
+      }
+
       // นับจำนวน document ในแต่ละ folder_id
       const folderIds = folders.map((folder) => folder.folder_id);
-      const documentCounts = await this.documentRepository
-        .createQueryBuilder('documents')
-        .select('folder_id')
-        .addSelect('COUNT(document_id)', 'count')
-        .where('folder_id IN (:...folderIds)', { folderIds })
-        .groupBy('folder_id')
-        .getRawMany();
+      let documentCounts = [];
+      if (folderIds.length > 0) {
+        documentCounts = await this.documentRepository
+          .createQueryBuilder('documents')
+          .select('folder_id')
+          .addSelect('COUNT(document_id)', 'count')
+          .where('folder_id IN (:...folderIds)', { folderIds })
+          .groupBy('folder_id')
+          .getRawMany();
+      }
 
-      // สร้าง map เพื่อเชื่อมโยง folder_id กับจำนวนเอกสาร
       const documentCountMap = documentCounts.reduce(
         (map, doc) => ({ ...map, [doc.folder_id]: parseInt(doc.count, 10) }),
         {},
       );
 
-      // ดึงข้อมูล creator name จาก tb_users
+      // ดึง creator_ids ที่ไม่ซ้ำ
       const creatorIds = [
         ...new Set(folders.map((folder) => folder.creator_id)),
-      ];
-      const creators = await this.userRepository
-        .createQueryBuilder('users')
-        .select(['user_id', 'name'])
-        .where('user_id IN (:...creatorIds)', { creatorIds })
-        .getRawMany();
+      ].filter((id) => id); // กรอง null/undefined ออก
 
-      // สร้าง map เพื่อเชื่อมโยง creator_id กับ name
+      let creators = [];
+      if (creatorIds.length > 0) {
+        // ดึงข้อมูล creator name จาก tb_users
+        creators = await this.userRepository
+          .createQueryBuilder('users')
+          .select(['user_id', 'name'])
+          .where('user_id IN (:...creatorIds)', { creatorIds })
+          .getRawMany();
+      }
+
       const creatorMap = creators.reduce(
         (map, user) => ({ ...map, [user.user_id]: user.name }),
         {},
       );
 
-      // อัปเดต number_of_files และเพิ่ม creator_name ในแต่ละ folder
+      // เพิ่มจำนวนเอกสารและชื่อผู้สร้างใน folder
       for (const folder of folders) {
         folder.number_of_files = documentCountMap[folder.folder_id] || 0;
         folder['creator_name'] = creatorMap[folder.creator_id] || 'Unknown';
-        await this.folderRepository.save(folder);
       }
 
       return {
@@ -100,6 +115,7 @@ export class FolderService {
         data: folders,
       };
     } catch (error) {
+      console.error(error); // ตรวจสอบ error จริง
       return {
         status: 'error',
         statusCode: 500,
