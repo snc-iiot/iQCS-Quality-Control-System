@@ -24,6 +24,9 @@ export class DocumentService extends APIService {
   public createDocument = async (data: TCreateUpdateDocument): Promise<TResponse<unknown>> => {
     try {
       const response = await this.post<TResponse<unknown>>("/documents", data);
+      if (response?.data?.status === "success") {
+        this.getDocuments();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -49,6 +52,9 @@ export class DocumentService extends APIService {
   public updateDocument = async (data: TCreateUpdateDocument): Promise<TResponse<unknown>> => {
     try {
       const response = await this.put<TResponse<unknown>>(`/documents`, data);
+      if (response?.data?.status === "success") {
+        this.getDocuments();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -74,6 +80,9 @@ export class DocumentService extends APIService {
   public deleteDocument = async (document_id: string): Promise<TResponse<unknown>> => {
     try {
       const response = await this.delete<TResponse<unknown>>(`documents?document_id=${document_id}`);
+      if (response?.data?.status === "success") {
+        this.getDocuments();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {

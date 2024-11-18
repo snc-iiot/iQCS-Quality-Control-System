@@ -11,7 +11,7 @@ export const useDocument = () => {
     return useQuery({
       queryKey: [GET_DOCUMENTS],
       queryFn: (): Promise<TDocument[]> => getDocuments(),
-      refetchInterval: 10000,
+      staleTime: 1000 * 60 * 5, // 5 minutes
     });
   };
 

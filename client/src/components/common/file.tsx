@@ -4,7 +4,7 @@ import { useDocument } from "@/services/hooks";
 import { TDocument } from "@/types";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { EllipsisVertical, X } from "lucide-react";
 import { FC, useEffect, useRef, useState } from "react";
 import { useDrag } from "react-dnd";
 import { Button } from "../ui/button";
@@ -22,7 +22,7 @@ export const File: FC<TFileProps> = ({
 }) => {
   const { mutateDeleteDocument, mutateUpdateDocument } = useDocument();
 
-  let holdTimer: NodeJS.Timeout | null = null;
+  // let holdTimer: NodeJS.Timeout | null = null;
   const modalRef = useRef<HTMLDivElement | null>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "file",
@@ -37,7 +37,7 @@ export const File: FC<TFileProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDetails, setIsOpenDetails] = useState("");
   const [onDelete, setOnDelete] = useState(false);
-  const [isDragging2, setIsDragging2] = useState(false);
+  // const [isDragging2, setIsDragging2] = useState(false);
 
   const TFile = data?.source_file?.split(".")[data?.source_file?.split(".")?.length - 1];
 
@@ -57,37 +57,37 @@ export const File: FC<TFileProps> = ({
     };
   }, [isOpenDetails]);
 
-  const handleMouseDown = () => {
-    setIsDragging2(false);
-    holdTimer = setTimeout(() => {
-      if (!isDragging2) {
-        setIsOpenDetails(data?.document_id);
-      }
-    }, 400);
-  };
+  // const handleMouseDown = () => {
+  //   setIsDragging2(false);
+  //   holdTimer = setTimeout(() => {
+  //     if (!isDragging2) {
+  //       setIsOpenDetails(data?.document_id);
+  //     }
+  //   }, 400);
+  // };
 
-  const handleMouseMove = () => {
-    if (holdTimer) {
-      setIsDragging2(true);
-      clearTimeout(holdTimer);
-    }
-  };
+  // const handleMouseMove = () => {
+  //   if (holdTimer) {
+  //     setIsDragging2(true);
+  //     clearTimeout(holdTimer);
+  //   }
+  // };
 
-  const handleMouseUp = () => {
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-    }
-  };
+  // const handleMouseUp = () => {
+  //   if (holdTimer) {
+  //     clearTimeout(holdTimer);
+  //   }
+  // };
 
   return (
     <>
       <motion.div
         ref={drag}
         layoutId={`file-${data?.document_id}`}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        // onMouseDown={handleMouseDown}
+        // onMouseMove={handleMouseMove}
+        // onMouseUp={handleMouseUp}
+        // onMouseLeave={handleMouseUp}
         style={{
           cursor: "pointer",
           backgroundColor: "#ffffff00",
@@ -123,18 +123,27 @@ export const File: FC<TFileProps> = ({
                 onChange={(e) => setLabel(e.target.value)}
                 onBlur={() => {
                   setIsEditing(false);
-                  mutateUpdateDocument({ ...data, document_name: label, document_data: null });
+                  if (label !== data.document_name)
+                    mutateUpdateDocument({ ...data, document_name: label, document_data: null });
                 }}
                 autoFocus
               />
             </div>
           ) : (
-            <p
-              className="line-clamp-2 h-[2.7rem] w-full text-center text-[0.9rem] leading-[1.2]"
-              onDoubleClick={() => setIsEditing(true)}
-            >
-              {label}
-            </p>
+            <div className="mt-2 flex w-full items-center justify-between gap-2">
+              <p
+                className="line-clamp-1 w-max text-center text-sm leading-[1.2]"
+                onDoubleClick={() => setIsEditing(true)}
+              >
+                {label}
+              </p>
+              <button
+                className="rounded-full border border-white p-1 text-gray-200 group-hover:text-gray-500 hover:border hover:border-gray-200 hover:text-gray-500"
+                onClick={() => setIsOpenDetails(data?.folder_id)}
+              >
+                <EllipsisVertical size={18} />
+              </button>
+            </div>
           )}
         </div>
       </motion.div>

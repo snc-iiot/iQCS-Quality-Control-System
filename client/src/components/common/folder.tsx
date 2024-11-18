@@ -5,7 +5,7 @@ import { useFolder } from "@/services/hooks/use-folder";
 import { TFolder } from "@/types";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { EllipsisVertical, X } from "lucide-react";
 import { FC, useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { Button } from "../ui/button";
@@ -19,14 +19,14 @@ export type TFolderProps = {
 export const Folder: FC<TFolderProps> = ({ data = {} as TFolder, setFolder = () => {} }) => {
   const { mutateDeleteFolder, mutateUpdateFolder } = useFolder();
   const { mutateUpdateDocument } = useDocument();
-  let holdTimer: NodeJS.Timeout | null = null;
+  // let holdTimer: NodeJS.Timeout | null = null;
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.folder_name);
   const [isOpenDetails, setIsOpenDetails] = useState("");
   const [onDelete, setOnDelete] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  // const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,27 +44,27 @@ export const Folder: FC<TFolderProps> = ({ data = {} as TFolder, setFolder = () 
     };
   }, [isOpenDetails]);
 
-  const handleMouseDown = () => {
-    setIsDragging(false);
-    holdTimer = setTimeout(() => {
-      if (!isDragging) {
-        setIsOpenDetails(data?.folder_id);
-      }
-    }, 400);
-  };
+  // const handleMouseDown = () => {
+  //   setIsDragging(false);
+  //   holdTimer = setTimeout(() => {
+  //     if (!isDragging) {
+  //       setIsOpenDetails(data?.folder_id);
+  //     }
+  //   }, 400);
+  // };
 
-  const handleMouseMove = () => {
-    if (holdTimer) {
-      setIsDragging(true);
-      clearTimeout(holdTimer);
-    }
-  };
+  // const handleMouseMove = () => {
+  //   if (holdTimer) {
+  //     setIsDragging(true);
+  //     clearTimeout(holdTimer);
+  //   }
+  // };
 
-  const handleMouseUp = () => {
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-    }
-  };
+  // const handleMouseUp = () => {
+  //   if (holdTimer) {
+  //     clearTimeout(holdTimer);
+  //   }
+  // };
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "file",
@@ -86,10 +86,10 @@ export const Folder: FC<TFolderProps> = ({ data = {} as TFolder, setFolder = () 
       <motion.div
         ref={drop}
         layoutId={`folder-${data?.folder_id}`}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        // onMouseDown={handleMouseDown}
+        // onMouseMove={handleMouseMove}
+        // onMouseUp={handleMouseUp}
+        // onMouseLeave={handleMouseUp}
         style={{
           cursor: "pointer",
           backgroundColor: "#ffffff00",
@@ -113,22 +113,29 @@ export const Folder: FC<TFolderProps> = ({ data = {} as TFolder, setFolder = () 
                 onChange={(e) => setLabel(e.target.value)}
                 onBlur={() => {
                   setIsEditing(false);
-                  mutateUpdateFolder({ ...data, folder_name: label });
+                  if (label !== data.folder_name) mutateUpdateFolder({ ...data, folder_name: label });
                 }}
                 autoFocus
               />
             </div>
           ) : (
-            <p
-              className="line-clamp-2 h-[2.7rem] w-full text-center text-[0.9rem] leading-[1.2]"
-              onDoubleClick={() => setIsEditing(true)}
-            >
-              {label}
-            </p>
+            <div className="mt-2 flex w-full items-center justify-between gap-2">
+              <p
+                className="line-clamp-1 w-max text-center text-sm leading-[1.2]"
+                onDoubleClick={() => setIsEditing(true)}
+              >
+                {label}
+              </p>
+              <button
+                className="rounded-full border border-white p-1 text-gray-200 group-hover:text-gray-500 hover:border hover:border-gray-200 hover:text-gray-500"
+                onClick={() => setIsOpenDetails(data?.folder_id)}
+              >
+                <EllipsisVertical size={18} />
+              </button>
+            </div>
           )}
         </div>
       </motion.div>
-
       {isOpenDetails !== "" && (
         <div className="absolute left-0 top-0 flex h-screen w-screen flex-col items-center justify-center overflow-hidden p-2">
           <motion.div

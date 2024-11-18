@@ -116,7 +116,7 @@ const DocumentManagementPage: FC = () => {
         <div className="grid max-h-full grid-cols-4 gap-4 overflow-auto py-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-12">
           {folder === "" &&
             folderList?.map((info) => (
-              <div key={`folder-${info?.folder_id}`}>
+              <div key={`folder-${info?.folder_id}`} className="group">
                 <Folder data={info} setFolder={setFolder} />
               </div>
             ))}
@@ -143,8 +143,8 @@ const DocumentManagementPage: FC = () => {
               {CountNewFolder > 0 ? `New Folder (${CountNewFolder})` : "New Folder"}"{" "}
             </p>
             <Button
-              onClick={() => {
-                mutateCreateFolder({
+              onClick={async () => {
+                await mutateCreateFolder({
                   folder_name: CountNewFolder > 0 ? `New Folder (${CountNewFolder})` : "New Folder",
                 });
                 setIsDialogCreateFolder(false);
