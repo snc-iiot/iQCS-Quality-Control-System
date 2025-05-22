@@ -3,9 +3,11 @@ import { TCreateUpdateDocument, TDocument, TResponse } from "@/types";
 import { AxiosError } from "axios";
 import { useAtomStore } from "../store/use-atom-store";
 import { APIService } from "./api.service";
+import { FolderService } from "./folder.service";
 
 export class DocumentService extends APIService {
   store = useAtomStore();
+  folderService = new FolderService();
   constructor() {
     super(API_BASE_URL);
   }
@@ -14,6 +16,7 @@ export class DocumentService extends APIService {
     try {
       const { data } = await this.get<TResponse<TDocument[]>>(`/documents`);
       this.store.setDocumentList(data?.data);
+      this.folderService.getFolders();
       return data?.data ?? [];
     } catch (error) {
       console.error(error);
@@ -26,6 +29,7 @@ export class DocumentService extends APIService {
       const response = await this.post<TResponse<unknown>>("/documents", data);
       if (response?.data?.status === "success") {
         this.getDocuments();
+        this.folderService.getFolders();
       }
       return response?.data;
     } catch (error) {
@@ -54,6 +58,7 @@ export class DocumentService extends APIService {
       const response = await this.put<TResponse<unknown>>(`/documents`, data);
       if (response?.data?.status === "success") {
         this.getDocuments();
+        this.folderService.getFolders();
       }
       return response?.data;
     } catch (error) {
@@ -82,6 +87,7 @@ export class DocumentService extends APIService {
       const response = await this.delete<TResponse<unknown>>(`documents?document_id=${document_id}`);
       if (response?.data?.status === "success") {
         this.getDocuments();
+        this.folderService.getFolders();
       }
       return response?.data;
     } catch (error) {

@@ -24,6 +24,9 @@ export class FolderService extends APIService {
   public createFolder = async (data: TCreateUpdateFolder): Promise<TResponse<unknown>> => {
     try {
       const response = await this.post<TResponse<unknown>>("/folders", data);
+      if (response?.data?.status === "success") {
+        this.getFolders();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -49,6 +52,9 @@ export class FolderService extends APIService {
   public updateFolder = async (data: TCreateUpdateFolder): Promise<TResponse<unknown>> => {
     try {
       const response = await this.put<TResponse<unknown>>(`/folders`, data);
+      if (response?.data?.status === "success") {
+        this.getFolders();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -74,6 +80,9 @@ export class FolderService extends APIService {
   public deleteFolder = async (folder_id: string): Promise<TResponse<unknown>> => {
     try {
       const response = await this.delete<TResponse<unknown>>(`folders?folder_id=${folder_id}`);
+      if (response?.data?.status === "success") {
+        this.getFolders();
+      }
       return response?.data;
     } catch (error) {
       if (error instanceof AxiosError) {
