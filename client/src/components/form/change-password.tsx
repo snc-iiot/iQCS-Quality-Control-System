@@ -34,6 +34,7 @@ export const ChangePassword: FC<ChangePasswordProps> = ({ isTitleVisible, classN
 
   // Define the submit handler
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    return null;
     setSubmitting(true);
     const res = await mutateChangePassword(values);
     setSubmitting(res?.status == "success" ? false : true);
