@@ -27,7 +27,9 @@ export const ChangePassword: FC<ChangePasswordProps> = ({ isTitleVisible, classN
   const validationSchema = Yup.object().shape({
     old_password: Yup.string().required("โปรดระบุ รหัสผ่าน"),
     new_password: Yup.string().required("โปรดระบุ รหัสผ่านใหม่"),
-    confirm_new_password: Yup.string().required("โปรดยืนยัน รหัสผ่านใหม่"),
+    confirm_new_password: Yup.string()
+      .required("โปรดยืนยัน รหัสผ่านใหม่")
+      .oneOf([Yup.ref("new_password"), ""], "การยืนยันรหัสผ่านไม่ตรงกับรหัสผ่านใหม่"),
   });
 
   // Define the submit handler
